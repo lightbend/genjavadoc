@@ -1,0 +1,4 @@
+<plugin>
+  <name>GenJavaDoc</name>
+  <classname>scala.javadoc.GenJavaDocPlugin</classname>
+</plugin>
