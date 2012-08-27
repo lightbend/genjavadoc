@@ -16,15 +16,16 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
   val name = "GenJavaDoc"
   val description = ""
   val components = List[PluginComponent](MyComponent)
+  println("started")
 
   private object MyComponent extends PluginComponent with Transform {
 
     import global._
     import global.definitions._
+    
+    override val global = GenJavaDocPlugin.this.global
 
-    val global = GenJavaDocPlugin.this.global
-
-    override val runsAfter = List("typer")
+    override val runsAfter = List("uncurry")
 
     val phaseName = "GenJavaDoc"
 
@@ -40,7 +41,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
           else if (a.startOrPoint > b.endOrPoint) 1
           else 0
       }
-      var comments = TreeMap() ++ unit.comments.map(c ⇒ (c.pos, c))
+      var comments = TreeMap[Position, DocComment]() ++ global.docComments.map { case (k, v) ⇒ (v.pos, v) }
       var positions = comments.keySet
 
       override def transformUnit(unit: CompilationUnit): Unit = {
@@ -62,7 +63,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         out.outdent()
         out("}")
       }
-      
+
       def write(out: Out, m: MethodInfo) {
         m.comment foreach (out(_))
         out(m.sig + " {}")
@@ -98,7 +99,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
               (positions.from(old) intersect positions.to(tree.pos)).toSeq map comments filter ScalaDoc lastOption
             } else None
           } else None
-        val commentText = comment map (_.text)
+        val commentText = comment map (_.raw)
         tree match {
           case c: ClassDef  ⇒ withClass(c, commentText)(super.transform(tree))
           case d: DefDef    ⇒ addMethod(d, commentText); tree
@@ -128,8 +129,8 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         clazz = clazz map (_.addMember(MethodInfo(d, comment)))
       }
 
-      object ScalaDoc extends (unit.Comment ⇒ Boolean) {
-        def apply(c: unit.Comment): Boolean = c.text.startsWith("/**")
+      object ScalaDoc extends (global.DocComment ⇒ Boolean) {
+        def apply(c: global.DocComment): Boolean = c.raw.startsWith("/**")
       }
 
       trait Template

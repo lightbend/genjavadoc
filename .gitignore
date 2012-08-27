@@ -1,4 +1,4 @@
 .classpath
 .project
 .*.swp
-*/target/
+target/

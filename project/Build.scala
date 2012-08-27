@@ -15,6 +15,12 @@ object B extends Build {
     scalaVersion := "2.10.0-M7"
   )
 
+  lazy val top = Project(
+    id = "top",
+    base = file("."),
+    aggregate = Seq(plugin, tests)
+  )
+
   lazy val plugin = Project(
     id = "plugin",
     base = file("plugin"),
@@ -27,12 +33,12 @@ object B extends Build {
   lazy val tests = Project(
     id = "tests",
     base = file("tests"),
-    dependencies = Seq(plugin % "plugin"),
     settings = Project.defaultSettings ++ Seq(
-      autoCompilerPlugins := true,
       libraryDependencies ++= Seq(
         "org.scalatest" % "scalatest" % "1.9-2.10.0-M7-B1" % "test" cross CrossVersion.full
-      )
+      ),
+      scalacOptions in Compile <<= (packageBin in plugin in Compile, scalacOptions in Compile, clean) map ((pack, opt, clean) => opt :+ ("-Xplugin:" + pack.getAbsolutePath))
     )
   )
+
 }
