@@ -27,7 +27,11 @@ class A {
    * class A.B
    */
   // one line comment
-  class B {
+  class B extends A {
+    /**
+     * secondary constructor
+     */
+    def this(s: String) = this()
     /**
      * def b(args: String*): Unit
      */
@@ -61,4 +65,12 @@ object A {
    * static p
    */
   def p = "i am not forwarded"
+    
+  object NoComment
+  
+  /**
+   * a non-comment
+   */
+  p
+  val x = new AnyRef
 }

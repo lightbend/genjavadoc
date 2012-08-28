@@ -110,27 +110,55 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         cls
       }
 
+      var visited: List[Tree] = Nil
+
       override def transform(tree: Tree): Tree = {
-        lazy val commentText =
-          if (tree.pos.isDefined) {
+        def commentText(tp: Position) = {
+          val ret = if (tp.isDefined) {
             val old = pos
-            pos = tree.pos
+            pos = tp
             if (old.precedes(pos)) {
-              (positions.from(old) intersect positions.to(tree.pos)).toSeq map comments filter ScalaDoc lastOption match {
-                case Some(c) ⇒ c.text
+              (positions.from(old) intersect positions.to(pos)).toSeq map comments filter ScalaDoc lastOption match {
+                case Some(c) ⇒ c.text :+ s"// found in '${between(old, pos)}'"
                 case None ⇒
-                  Seq(s"// empty old=$old tree=${tree.pos}") ++ (positions.from(old) intersect positions.to(tree.pos)).map(_.toString)
+                  Seq(s"// empty '${between(old, pos)}' (${pos.lineContent}:${pos.column})")
               }
-            } else Seq("// not preceding")
+            } else Seq("// not preceding") ++ visited.reverse.map(t ⇒ "// " + global.showRaw(t))
           } else Seq("// no position")
+          visited = Nil
+          ret
+        }
+
         tree match {
-          case c: ClassDef  ⇒ withClass(c, commentText) { global.newRawTreePrinter.print(tree); super.transform(tree) }
-          case d: DefDef    ⇒ addMethod(d, commentText); tree
-          case o: ModuleDef ⇒ withClass(o, commentText)(super.transform(tree))
-          case v: ValDef    ⇒ tree
-          case _            ⇒ super.transform(tree)
+          case c: ClassDef ⇒
+            withClass(c, commentText(c.pos)) {
+              global.newRawTreePrinter.print(tree)
+              println()
+              super.transform(tree)
+            }
+          case d: DefDef ⇒
+            val lookat =
+              if (d.name.toString == "<init>") {
+                if (clazz.get.constructor) d.symbol.enclClass.pos
+                else d.pos
+              } else d.pos
+            addMethod(d, commentText(lookat))
+            tree
+          case o: ModuleDef  ⇒ withClass(o, commentText(o.pos))(super.transform(tree))
+          case _: ValDef     ⇒ tree
+          case _: PackageDef ⇒ super.transform(tree)
+          case _: Template   ⇒ super.transform(tree)
+          case _: TypeTree   ⇒ tree
+          case _ ⇒
+            if (tree.pos.isDefined) {
+              visited ::= tree
+              pos = tree.pos
+            }
+            tree
         }
       }
+
+      def between(p1: Position, p2: Position) = unit.source.content.slice(p1.startOrPoint, p2.startOrPoint).filterNot(_ == '\n').mkString
 
       // list of top-level classes in this unit
       var classes = Vector.empty[ClassTemplate]
@@ -157,30 +185,38 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         def apply(c: Comment): Boolean = c.text.head.startsWith("/**")
       }
 
-      trait Template
-      trait ClassTemplate extends Template {
-        def addMember(t: Template): ClassTemplate
-        def members: Seq[Template]
+      trait Templ
+      trait ClassTemplate extends Templ {
+        def addMember(t: Templ): ClassTemplate
+        def members: Seq[Templ]
+        def sig: String
+        def firstConstructor: Boolean
+        def firstConstructor_=(b: Boolean): Unit
+        def constructor: Boolean = {
+          val ret = firstConstructor
+          firstConstructor = false
+          ret
+        }
       }
 
-      case class ClassInfo(sig: String, comment: Seq[String], file: String, members: Vector[Template] = Vector.empty) extends ClassTemplate {
-        def addMember(t: Template) = copy(members = members :+ t)
+      case class ClassInfo(sig: String, comment: Seq[String], file: String, members: Vector[Templ], var firstConstructor: Boolean) extends ClassTemplate {
+        def addMember(t: Templ) = copy(members = members :+ t)
       }
-      case class ModuleInfo(sig: String, comment: Seq[String], file: String, members: Vector[Template] = Vector.empty) extends ClassTemplate {
-        def addMember(t: Template) = copy(members = members :+ t)
+      case class ModuleInfo(sig: String, comment: Seq[String], file: String, members: Vector[Templ], var firstConstructor: Boolean) extends ClassTemplate {
+        def addMember(t: Templ) = copy(members = members :+ t)
       }
       object ClassInfo {
         def apply(c: ImplDef, comment: Seq[String]): ClassTemplate = {
           val name = c.name.toString
           val file = c.symbol.enclosingTopLevelClass.fullName('/') + ".java"
           c match {
-            case _: ClassDef  ⇒ ClassInfo(name, comment, file)
-            case _: ModuleDef ⇒ ModuleInfo(name, comment, file)
+            case _: ClassDef  ⇒ ClassInfo(name, comment, file, Vector.empty, true)
+            case _: ModuleDef ⇒ ModuleInfo(name, comment, file, Vector.empty, true)
           }
         }
       }
 
-      case class MethodInfo(sig: String, name: String, comment: Seq[String]) extends Template
+      case class MethodInfo(sig: String, name: String, comment: Seq[String]) extends Templ
       object MethodInfo {
         def apply(d: DefDef, comment: Seq[String]): MethodInfo = {
           MethodInfo(d.name.toString, d.name.toString, comment)
