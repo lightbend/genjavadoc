@@ -211,7 +211,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
               }
               val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
               val interfaces = if (!intf.isEmpty) " implements " + intf else ""
-              val sig = s"$acc class $name$parent$interfaces"
+              val sig = s"$acc $fl $kind $name$parent$interfaces"
               val file = c.symbol.enclosingTopLevelClass.fullName('/') + ".java"
               ClassInfo(sig, mods.hasModuleFlag, comment, file, Vector.empty, true)
           }
@@ -301,8 +301,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         import Flags._
         var f: List[String] = Nil
         if (m.isFinal) f ::= "final"
-        if (m.hasAbstractFlag) f ::= "abstract"
-        if (m.hasStaticFlag) f ::= "static"
+        if (m.hasAbstractFlag && !m.isInterface) f ::= "abstract"
         f mkString " "
       }
 
