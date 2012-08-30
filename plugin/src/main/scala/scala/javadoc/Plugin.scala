@@ -13,13 +13,24 @@ import scala.tools.nsc.ast.parser.SyntaxAnalyzer
 import scala.reflect.internal.util.NoPosition
 import scala.reflect.internal.ClassfileConstants
 import java.io.File
+import java.util.Properties
+import java.io.StringReader
 
 class GenJavaDocPlugin(val global: Global) extends Plugin {
   import global._
 
-  val name = "GenJavaDoc"
+  val name = "genjavadoc"
   val description = ""
   val components = List[PluginComponent](MyComponent)
+ 
+  override def processOptions(options: List[String], error: String => Unit): Unit = {
+    val stream = new StringReader(options mkString "\n")
+    this.options = new Properties()
+    this.options.load(stream)
+  }
+  var options: Properties = _
+
+  lazy val outputBase = new File(options.getProperty("out", "."))
 
   private object MyComponent extends PluginComponent with Transform {
 
@@ -42,6 +53,10 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
     } with SyntaxAnalyzer
 
     class GenJavaDocTransformer(val unit: CompilationUnit) extends Transformer {
+
+      /*
+       * First: Get the Comments
+       */
 
       case class Comment(pos: Position, text: Seq[String])
       var pos: Position = rangePos(unit.source, 0, 0, 0)
@@ -66,53 +81,15 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
 
       val positions = comments.keySet
 
+      /*
+       * Second: Traverse the Tree
+       */
+
       override def transformUnit(unit: CompilationUnit): Unit = {
         super.transformUnit(unit)
         for (c ← flatten(classes)) {
           write(file(c.file), c)
         }
-      }
-
-      def write(out: Out, c: ClassInfo) {
-        c.comment foreach (out(_))
-        out(s"${c.sig} { // ${c.file}")
-        out.indent()
-        for (m ← c.members)
-          m match {
-            case clazz: ClassInfo   ⇒ write(out, clazz)
-            case method: MethodInfo ⇒ write(out, method)
-          }
-        out.outdent()
-        out("}")
-      }
-
-      def write(out: Out, m: MethodInfo) {
-        m.comment foreach (out(_))
-        out(m.sig + " {}")
-      }
-
-      trait Out {
-        var ind = 0
-
-        def println(s: String): Unit
-        def apply(s: String) { println(" " * ind + s) }
-        def indent() { ind += 2 }
-        def outdent() { ind -= 2 }
-      }
-
-      def file(name: String): Out = {
-        println("*** " + name)
-        val f = new File(name)
-        f.getParentFile.mkdirs
-        val w = new PrintStream(f)
-        new Out {
-          def println(s: String) { w.println(s) }
-        }
-      }
-
-      def flatten(c: Seq[ClassTemplate]): Seq[ClassInfo] = {
-        val (cls: Seq[ClassInfo], obj: Seq[ModuleInfo]) = c partition (_.isInstanceOf[ClassInfo])
-        cls
       }
 
       var visited: List[Tree] = Nil
@@ -172,10 +149,10 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
       def between(p1: Position, p2: Position) = unit.source.content.slice(p1.startOrPoint, p2.startOrPoint).filterNot(_ == '\n').mkString
 
       // list of top-level classes in this unit
-      var classes = Vector.empty[ClassTemplate]
+      var classes = Vector.empty[ClassInfo]
 
       // the current class, any level
-      var clazz: Option[ClassTemplate] = None
+      var clazz: Option[ClassInfo] = None
 
       def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
         val old = clazz
@@ -196,31 +173,34 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         def apply(c: Comment): Boolean = c.text.head.startsWith("/**")
       }
 
+      /*
+       * Our Very Own AST
+       */
+
       trait Templ
-      trait ClassTemplate extends Templ {
-        def addMember(t: Templ): ClassTemplate
-        def members: Seq[Templ]
-        def sig: String
-        def firstConstructor: Boolean
-        def firstConstructor_=(b: Boolean): Unit
+
+      case class ClassInfo(
+        sig: String,
+        module: Boolean,
+        comment: Seq[String],
+        file: String,
+        members: Vector[Templ],
+        var firstConstructor: Boolean) extends Templ {
+        
+        def addMember(t: Templ) = copy(members = members :+ t)
         def constructor: Boolean = {
           val ret = firstConstructor
           firstConstructor = false
           ret
         }
       }
-
-      case class ClassInfo(sig: String, comment: Seq[String], file: String, members: Vector[Templ], var firstConstructor: Boolean) extends ClassTemplate {
-        def addMember(t: Templ) = copy(members = members :+ t)
-      }
-      case class ModuleInfo(sig: String, comment: Seq[String], file: String, members: Vector[Templ], var firstConstructor: Boolean) extends ClassTemplate {
-        def addMember(t: Templ) = copy(members = members :+ t)
-      }
       object ClassInfo {
-        def apply(c: ImplDef, comment: Seq[String]): ClassTemplate = {
+        def apply(c: ImplDef, comment: Seq[String]): ClassInfo = {
           c match {
             case ClassDef(mods, name, tparams, impl) ⇒
               val acc = access(mods)
+              val fl = flags(mods)
+              val kind = if (mods.isInterface) "interface" else "class"
               val name = c.name.toString
               val parent = {
                 val p = impl.parents.head
@@ -233,10 +213,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
               val interfaces = if (!intf.isEmpty) " implements " + intf else ""
               val sig = s"$acc class $name$parent$interfaces"
               val file = c.symbol.enclosingTopLevelClass.fullName('/') + ".java"
-              ClassInfo(sig, comment, file, Vector.empty, true)
-            case _: ModuleDef ⇒
-              // ModuleInfo(name, comment, file, Vector.empty, true)
-              sys.error("dunno")
+              ClassInfo(sig, mods.hasModuleFlag, comment, file, Vector.empty, true)
           }
         }
       }
@@ -260,6 +237,58 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         }
       }
 
+      /*
+       * Third: Writing out the Java
+       */
+
+      def write(out: Out, c: ClassInfo) {
+        c.comment foreach (out(_))
+        out(s"${c.sig} { // ${c.file}")
+        out.indent()
+        for (m ← c.members)
+          m match {
+            case clazz: ClassInfo   ⇒ write(out, clazz)
+            case method: MethodInfo ⇒ write(out, method)
+          }
+        out.outdent()
+        out("}")
+      }
+
+      def write(out: Out, m: MethodInfo) {
+        m.comment foreach (out(_))
+        out(m.sig + " {}")
+      }
+
+      trait Out {
+        var ind = 0
+
+        def println(s: String): Unit
+        def apply(s: String) { println(" " * ind + s) }
+        def indent() { ind += 2 }
+        def outdent() { ind -= 2 }
+      }
+
+      def file(name: String): Out = {
+        println("*** " + name)
+        val f = new File(outputBase, name)
+        println(f)
+        f.getParentFile.mkdirs
+        val w = new PrintStream(f)
+        new Out {
+          def println(s: String) { w.println(s) }
+        }
+      }
+
+      def flatten(c: Seq[ClassInfo]): Seq[ClassInfo] = {
+        val (obj: Seq[ClassInfo], cls: Seq[ClassInfo]) = c partition (_.module)
+        cls
+      }
+
+      /*
+       * Fourth: Some Helpers
+       * aka The Plumbing
+       */
+
       def access(m: Modifiers): String = {
         import Flags._
         if (m.isPublic) "public"
@@ -267,16 +296,21 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         else if (m.isPrivate) "private"
         else sys.error("unknown visibility: " + m)
       }
+      
+      def flags(m: Modifiers): String = {
+        import Flags._
+        var f: List[String] = Nil
+        if (m.isFinal) f ::= "final"
+        if (m.hasAbstractFlag) f ::= "abstract"
+        if (m.hasStaticFlag) f ::= "static"
+        f mkString " "
+      }
 
-      /**
-       * The Java signature of type 'info', for symbol sym. The symbol is used to give the right return
-       *  type for constructors.
-       */
       def js(sym0: Symbol, info: Type): String = {
         val isTraitSignature = sym0.enclClass.isTrait
 
         def removeThis(in: Type): Type = {
-//          println("transforming " + in)
+          //          println("transforming " + in)
           in match {
             case ThisType(parent) if !parent.isPackage ⇒ removeThis(parent.tpe)
             case SingleType(parent, name)              ⇒ typeRef(removeThis(parent), name, Nil)
