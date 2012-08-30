@@ -37,8 +37,13 @@ object B extends Build {
       libraryDependencies ++= Seq(
         "org.scalatest" % "scalatest" % "1.9-2.10.0-M7-B1" % "test" cross CrossVersion.full
       ),
-      scalacOptions in Compile <<= (packageBin in plugin in Compile, scalacOptions in Compile, clean) map ((pack, opt, clean) => opt :+ ("-Xplugin:" + pack.getAbsolutePath))
+      browse := false,
+      scalacOptions in Compile <<= (packageBin in plugin in Compile, scalacOptions in Compile, clean, browse) map (
+        (pack, opt, clean, b) => opt ++ Seq("-Xplugin:" + pack.getAbsolutePath) ++ (if (b) Seq("-Ybrowse:uncurry") else Nil)
+      )
     )
   )
+  
+  lazy val browse = SettingKey[Boolean]("browse", "run with -Ybrowse:uncurry")
 
 }

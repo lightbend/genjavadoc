@@ -5,6 +5,8 @@
 package akka.rk
 package buh.is.it
 
+trait X
+
 /**
  * class A
  */
@@ -17,7 +19,7 @@ class A {
   /**
    * def params[T <: B](b: T): T
    */
-  def params[T <: B](b: T): T = b
+  def params[T >: D <: B](b: T): List[T] = b :: Nil
 
   /**
    * extra comment
@@ -27,7 +29,7 @@ class A {
    * class A.B
    */
   // one line comment
-  class B extends A {
+  class B extends X {
     /**
      * secondary constructor
      */
@@ -46,7 +48,11 @@ class A {
         def x = 2
       }
     }
+    def d(a: String)(b: X) = ""
   }
+  
+  class C extends { val i = 1 } with X
+  class D extends { val i = 1 } with B
 }
 
 /**
@@ -58,15 +64,15 @@ object A {
    */
   def IAmStatic = 42
   /**
-   * val static: String
+   * val stattic: String
    */
-  val static = "1"
+  val stattic = "1"
   /**
    * static p
    */
   def p = "i am not forwarded"
     
-  object NoComment
+  private object NoComment
   
   /**
    * a non-comment
