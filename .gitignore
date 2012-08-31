@@ -1,4 +1,6 @@
 .classpath
 .project
+.cache
+.target/
 .*.swp
 target/
