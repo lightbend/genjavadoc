@@ -1,2 +1,3 @@
-public  interface X extends Object { // akka/rk/buh/is/it/X.java
+package akka.rk.buh.is.it;
+public  interface X {
 }

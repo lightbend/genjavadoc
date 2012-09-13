@@ -50,9 +50,12 @@ class A {
     }
     def d(a: String)(b: X) = ""
   }
-  
+
   class C extends { val i = 1 } with X
   class D extends { val i = 1 } with B
+  object D {
+    def math = 0l
+  }
 }
 
 /**
@@ -71,9 +74,29 @@ object A {
    * static p
    */
   def p = "i am not forwarded"
-    
+
+  /**
+   * class A.C
+   */
+  class C1 {
+    /**
+     * object A.C.C1
+     */
+    object C1
+  }
+
+  /**
+   * object C1
+   */
+  object C1 {
+    /**
+     * A.C1.method
+     */
+    def method = ()
+  }
+
   private object NoComment
-  
+
   /**
    * a non-comment
    */
