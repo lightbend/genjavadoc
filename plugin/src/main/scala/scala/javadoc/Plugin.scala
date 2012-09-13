@@ -88,7 +88,9 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
       override def transformUnit(unit: CompilationUnit): Unit = {
         super.transformUnit(unit)
         for (c ← flatten(classes)) {
-          write(file(c.file), c)
+          val out = file(c.file)
+          out.println(s"package ${c.pckg};")
+          write(out, c)
         }
       }
 
@@ -183,6 +185,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
         sig: String,
         module: Boolean,
         comment: Seq[String],
+        pckg: String,
         file: String,
         members: Vector[Templ],
         var firstConstructor: Boolean) extends Templ {
@@ -213,7 +216,8 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
               val interfaces = if (!intf.isEmpty) " implements " + intf else ""
               val sig = s"$acc $fl $kind $name$parent$interfaces"
               val file = c.symbol.enclosingTopLevelClass.fullName('/') + ".java"
-              ClassInfo(sig, mods.hasModuleFlag, comment, file, Vector.empty, true)
+              val pckg = c.symbol.enclosingPackage.fullName
+              ClassInfo(sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, true)
           }
         }
       }
