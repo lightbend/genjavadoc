@@ -2,7 +2,7 @@ package akka.rk.buh.is.it;
 /**
  * class A
  */
-public  class A extends java.lang.Object {
+public  class A {
   public  A () {}
   /**
    * def p(x: Array[Int]): Predef.type

@@ -9,7 +9,7 @@ trait Output { this: TransformCake =>
 
   def write(out: Out, c: ClassInfo) {
     c.comment foreach (out(_))
-    out(s"${c.sig} { // ${c.file}")
+    out(s"${c.sig} {")
     out.indent()
     for (m ← c.members)
       m match {

@@ -34,7 +34,7 @@ trait AST { this: TransformCake ⇒
           val name = c.name.toString
           val parent = {
             val p = impl.parents.head
-            if (p.isEmpty) ""
+            if (p.isEmpty || p.symbol == definitions.ObjectClass) ""
             else {
               s" extends ${js(c.symbol, p.tpe)}"
             }
