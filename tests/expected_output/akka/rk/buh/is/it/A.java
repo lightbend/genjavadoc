@@ -3,56 +3,56 @@ package akka.rk.buh.is.it;
  * class A
  */
 public  class A {
-  public  A () {}
+  public  A () { throw new RuntimeException(); }
   /**
    * def p(x: Array[Int]): Predef.type
    */
-  public  scala.Predef p (int[] x) { return null; }
+  public  scala.Predef p (int[] x) { throw new RuntimeException(); }
   /**
    * def params[T <: B](b: T): T
    */
-  public <T extends akka.rk.buh.is.it.A.B> scala.collection.immutable.List<T> params (T b) { return null; }
+  public <T extends akka.rk.buh.is.it.A.B> scala.collection.immutable.List<T> params (T b) { throw new RuntimeException(); }
   /**
    * class A.B
    */
-  public  class B extends java.lang.Object implements akka.rk.buh.is.it.X {
-    public  B () {}
+  public  class B implements akka.rk.buh.is.it.X {
+    public  B () { throw new RuntimeException(); }
     /**
      * secondary constructor
      */
-    public  B (String s) {}
+    public  B (java.lang.String s) { throw new RuntimeException(); }
     /**
-     * def b(args: String*): Unit
+     * def b(args: java.lang.String*): Unit
      */
-    public  void b (scala.collection.Seq<String> args) {}
-    public  java.lang.String d (java.lang.String a, akka.rk.buh.is.it.X b) { return null; }
+    public  void b (scala.collection.Seq<java.lang.String> args) { throw new RuntimeException(); }
+    public  java.lang.String d (java.lang.String a, akka.rk.buh.is.it.X b) { throw new RuntimeException(); }
   }
-  public  class C extends java.lang.Object implements akka.rk.buh.is.it.X {
-    public  int i () { return 0; }
-    public  C () {}
+  public  class C implements akka.rk.buh.is.it.X {
+    public  int i () { throw new RuntimeException(); }
+    public  C () { throw new RuntimeException(); }
   }
   public  class D extends akka.rk.buh.is.it.A.B {
-    public  int i () { return 0; }
-    public  D () {}
+    public  int i () { throw new RuntimeException(); }
+    public  D () { throw new RuntimeException(); }
   }
   public class D$ {
-    public D$() {}
-    public long math() { return 0l; }
+    public D$() { throw new RuntimeException(); }
+    public long math() { throw new RuntimeException(); }
   }
-  D$ D() { return null; }
-  static int IAmStatic() { return 0; }
-  static String stattic() { return null; }
+  D$ D() { throw new RuntimeException(); }
+  static int IAmStatic() { throw new RuntimeException(); }
+  static java.lang.String stattic() { throw new RuntimeException(); }
   static public class C1 {
-    public C1() {}
+    public C1() { throw new RuntimeException(); }
     public class C1$ {
-      public C1$() {}
+      public C1$() { throw new RuntimeException(); }
     }
-    public akka.rk.buh.is.it.A.C1.C1$ C1() { return null; }
+    public akka.rk.buh.is.it.A.C1.C1$ C1() { throw new RuntimeException(); }
   }
   static public class C1$ {
     static public final akka.rk.buh.is.it.A.C1$ MODULE$ = null;
-    public C1$() {}
-    public void method() {}
+    public C1$() { throw new RuntimeException(); }
+    public void method() { throw new RuntimeException(); }
   }
-  static public java.lang.Object x() { return null; }
+  static public java.lang.Object x() { throw new RuntimeException(); }
 }

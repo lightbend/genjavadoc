@@ -35,7 +35,7 @@ class A {
      */
     def this(s: String) = this()
     /**
-     * def b(args: String*): Unit
+     * def b(args: java.lang.String*): Unit
      */
     def b(args: String*) {
       /**
@@ -67,7 +67,7 @@ object A {
    */
   def IAmStatic = 42
   /**
-   * val stattic: String
+   * val stattic: java.lang.String
    */
   val stattic = "1"
   /**

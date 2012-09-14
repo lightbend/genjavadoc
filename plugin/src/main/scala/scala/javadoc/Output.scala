@@ -22,7 +22,7 @@ trait Output { this: TransformCake =>
 
   def write(out: Out, m: MethodInfo) {
     m.comment foreach (out(_))
-    out(m.sig + " {}")
+    out(m.sig + " { throw new RuntimeException(); }")
   }
 
   trait Out {

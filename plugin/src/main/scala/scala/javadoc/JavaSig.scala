@@ -13,9 +13,9 @@ trait JavaSig { this: TransformCake ⇒
       //          println("transforming " + in)
       in match {
         case ThisType(parent) if !parent.isPackage ⇒ removeThis(parent.tpe)
-        case SingleType(parent, name)              ⇒ typeRef(removeThis(parent), name, Nil)
-        case TypeRef(pre, sym, args)               ⇒ typeRef(removeThis(pre), sym, args)
-        case x                                     ⇒ x
+        case SingleType(parent, name) ⇒ typeRef(removeThis(parent), name, Nil)
+        case TypeRef(pre, sym, args) ⇒ typeRef(removeThis(pre), sym, args)
+        case x ⇒ x
       }
     }
 
@@ -34,7 +34,7 @@ trait JavaSig { this: TransformCake ⇒
     def boundsSig(bounds: List[Type]) = {
       val (isTrait, isClass) = bounds partition (_.typeSymbol.isTrait)
       val classPart = isClass match {
-        case Nil    ⇒ "" // + boxedSig(ObjectClass.tpe)
+        case Nil ⇒ "" // + boxedSig(ObjectClass.tpe)
         case x :: _ ⇒ " extends " + boxedSig(x)
       }
       classPart :: (isTrait map boxedSig) mkString " implements "
@@ -47,7 +47,7 @@ trait JavaSig { this: TransformCake ⇒
     // Anything which could conceivably be a module (i.e. isn't known to be
     // a type parameter or similar) must go through here or the signature is
     // likely to end up with Foo<T>.Empty where it needs Foo<T>.Empty$.
-    def fullNameInSig(sym: Symbol): String = sym.name.toString
+    def fullNameInSig(sym: Symbol): String = sym.fullName
 
     def jsig(tp0: Type, existentiallyBound: List[Symbol] = Nil, toplevel: Boolean = false, primitiveOK: Boolean = true): String = {
       val tp = tp0.dealias
@@ -88,14 +88,15 @@ trait JavaSig { this: TransformCake ⇒
             else toJava(tp)
           } else if (sym.isClass) {
             val preRebound = pre.baseType(sym.owner) // #2585
-            dotCleanup((
+            val name =
               if (needsJavaSig(preRebound)) {
                 val s = jsig(preRebound, existentiallyBound)
                 s + "." + sym.javaSimpleName
-              } else fullNameInSig(sym))
-              + (
-                if (args.isEmpty) "" else
-                  "<" + (args map argSig).mkString + ">"))
+              } else fullNameInSig(sym)
+            val generics =
+              if (args.isEmpty) "" else
+                "<" + (args map argSig).mkString + ">"
+            name + generics
           } else jsig(erasure.erasure(sym0)(tp), existentiallyBound, toplevel, primitiveOK)
         case PolyType(tparams, restpe) ⇒
           assert(tparams.nonEmpty)
@@ -121,17 +122,17 @@ trait JavaSig { this: TransformCake ⇒
       }
     }
     def toJava(info: Type): String = info.dealias.typeSymbol match {
-      case UnitClass    ⇒ "void"
+      case UnitClass ⇒ "void"
       case BooleanClass ⇒ "boolean"
-      case ByteClass    ⇒ "byte"
-      case ShortClass   ⇒ "short"
-      case CharClass    ⇒ "char"
-      case IntClass     ⇒ "int"
-      case LongClass    ⇒ "long"
-      case FloatClass   ⇒ "float"
-      case DoubleClass  ⇒ "double"
-      case ArrayClass   ⇒ jsig(info)
-      case _            ⇒ info.toString.replace('#', '.')
+      case ByteClass ⇒ "byte"
+      case ShortClass ⇒ "short"
+      case CharClass ⇒ "char"
+      case IntClass ⇒ "int"
+      case LongClass ⇒ "long"
+      case FloatClass ⇒ "float"
+      case DoubleClass ⇒ "double"
+      case ArrayClass ⇒ jsig(info)
+      case _ ⇒ info.typeSymbol.fullName
     }
     val _info = removeThis(info)
     if (needsJavaSig(info)) {
@@ -170,23 +171,9 @@ trait JavaSig { this: TransformCake ⇒
     if (cls.owner.isClass) cls.owner.tpe else pre // why not cls.isNestedClass?
   }
 
-  // Ensure every '.' in the generated signature immediately follows
-  // a close angle bracket '>'.  Any which do not are replaced with '$'.
-  // This arises due to multiply nested classes in the face of the
-  // rewriting explained at rebindInnerClass.   This should be done in a
-  // more rigorous way up front rather than catching it after the fact,
-  // but that will be more involved.
-  private def dotCleanup(sig: String): String = {
-    var last: Char = '\0'
-    sig map {
-      case '.' if last != '>' ⇒ last = '.'; '$'
-      case ch                 ⇒ last = ch; ch
-    }
-  }
-
   private def hiBounds(bounds: TypeBounds): List[Type] = bounds.hi.normalize match {
     case RefinedType(parents, _) ⇒ parents map (_.normalize)
-    case tp                      ⇒ tp :: Nil
+    case tp ⇒ tp :: Nil
   }
 
   import erasure.GenericArray
