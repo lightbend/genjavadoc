@@ -18,7 +18,7 @@ object B extends Build {
   lazy val top = Project(
     id = "top",
     base = file("."),
-    aggregate = Seq(plugin, tests)
+    aggregate = Seq(plugin, tests, javaOut)
   )
 
   lazy val plugin = Project(
@@ -43,7 +43,18 @@ object B extends Build {
       )
     )
   )
-  
+
+  lazy val javaOut = Project(
+    id = "javaOut",
+    base = file("javaOut"),
+    settings = Project.defaultSettings ++ Seq(
+      libraryDependencies ++= Seq(
+        "org.scalatest" % "scalatest" % "1.9-2.10.0-M7-B1" % "test" cross CrossVersion.full
+      ),
+      unmanagedSources in Compile <<= (baseDirectory in tests, compile in tests in Test) map ((b, c) => (b / "target/java/akka" ** "*.java").get)
+    )
+  )
+
   lazy val browse = SettingKey[Boolean]("browse", "run with -Ybrowse:uncurry")
 
 }

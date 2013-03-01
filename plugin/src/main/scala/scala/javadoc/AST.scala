@@ -6,16 +6,23 @@ trait AST { this: TransformCake ⇒
 
   import global._
 
-  trait Templ
+  trait Templ {
+    def name: String
+    def sig: String
+  }
 
   case class ClassInfo(
-    sig: String,
+    name: String,
+    pattern: String ⇒ String,
     module: Boolean,
     comment: Seq[String],
     pckg: String,
-    file: String,
+    filepattern: String ⇒ String,
     members: Vector[Templ],
     var firstConstructor: Boolean) extends Templ {
+
+    def sig = pattern(name)
+    def file = filepattern(name)
 
     def addMember(t: Templ) = copy(members = members :+ t)
     def constructor: Boolean = {
@@ -41,15 +48,17 @@ trait AST { this: TransformCake ⇒
           }
           val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
           val interfaces = if (!intf.isEmpty) " implements " + intf else ""
-          val sig = s"$acc $fl $kind $name$parent$interfaces"
-          val file = c.symbol.enclosingTopLevelClass.fullName('/') + ".java"
+          val sig = (n: String) ⇒ s"$acc $fl $kind $n$parent$interfaces"
+          val file = (n: String) ⇒ s"${c.symbol.enclosingPackage.fullName('/')}/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
-          ClassInfo(sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, true)
+          ClassInfo(name, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, true)
       }
     }
   }
 
-  case class MethodInfo(sig: String, name: String, comment: Seq[String]) extends Templ
+  case class MethodInfo(pattern: String ⇒ String, name: String, comment: Seq[String]) extends Templ {
+    def sig = pattern(name)
+  }
   object MethodInfo {
     def apply(d: DefDef, comment: Seq[String]): MethodInfo = {
       val acc = access(d.mods)
@@ -63,8 +72,8 @@ trait AST { this: TransformCake ⇒
       }
       val ret = js(d.symbol, d.tpt.tpe)
       val args = d.vparamss.head map (p ⇒ s"${js(d.symbol, p.tpt.tpe)} ${p.name}") mkString ("(", ", ", ")")
-      val sig = s"$acc $tp $name $args"
-      MethodInfo(sig, d.name.toString, comment)
+      val pattern = (n: String) ⇒ s"$acc $tp $n $args"
+      MethodInfo(pattern, name, comment)
     }
   }
 

@@ -9,10 +9,15 @@ import java.io.File
 class TheSpec extends WordSpec with MustMatchers {
 
   "GenJavaDoc" must {
-
+    
     "generate the expected output" in {
+      pending
       lines(run("tests", "./cleanup.pl")) foreach println
       lines(run("tests", "diff", "-wur", "expected_output", "target/java")) foreach println
+    }
+    
+    "generate equivalent javap signatures" in {
+      pending
     }
 
   }

@@ -13,9 +13,9 @@ trait JavaSig { this: TransformCake ⇒
       //          println("transforming " + in)
       in match {
         case ThisType(parent) if !parent.isPackage ⇒ removeThis(parent.tpe)
-        case SingleType(parent, name) ⇒ typeRef(removeThis(parent), name, Nil)
-        case TypeRef(pre, sym, args) ⇒ typeRef(removeThis(pre), sym, args)
-        case x ⇒ x
+        case SingleType(parent, name)              ⇒ typeRef(removeThis(parent), name, Nil)
+        case TypeRef(pre, sym, args)               ⇒ typeRef(removeThis(pre), sym, args)
+        case x                                     ⇒ x
       }
     }
 
@@ -34,7 +34,7 @@ trait JavaSig { this: TransformCake ⇒
     def boundsSig(bounds: List[Type]) = {
       val (isTrait, isClass) = bounds partition (_.typeSymbol.isTrait)
       val classPart = isClass match {
-        case Nil ⇒ "" // + boxedSig(ObjectClass.tpe)
+        case Nil    ⇒ "" // + boxedSig(ObjectClass.tpe)
         case x :: _ ⇒ " extends " + boxedSig(x)
       }
       classPart :: (isTrait map boxedSig) mkString " implements "
@@ -47,7 +47,7 @@ trait JavaSig { this: TransformCake ⇒
     // Anything which could conceivably be a module (i.e. isn't known to be
     // a type parameter or similar) must go through here or the signature is
     // likely to end up with Foo<T>.Empty where it needs Foo<T>.Empty$.
-    def fullNameInSig(sym: Symbol): String = sym.fullName
+    def fullNameInSig(sym: Symbol): String = sym.fullName + sym.moduleSuffix
 
     def jsig(tp0: Type, existentiallyBound: List[Symbol] = Nil, toplevel: Boolean = false, primitiveOK: Boolean = true): String = {
       val tp = tp0.dealias
@@ -122,17 +122,17 @@ trait JavaSig { this: TransformCake ⇒
       }
     }
     def toJava(info: Type): String = info.dealias.typeSymbol match {
-      case UnitClass ⇒ "void"
+      case UnitClass    ⇒ "void"
       case BooleanClass ⇒ "boolean"
-      case ByteClass ⇒ "byte"
-      case ShortClass ⇒ "short"
-      case CharClass ⇒ "char"
-      case IntClass ⇒ "int"
-      case LongClass ⇒ "long"
-      case FloatClass ⇒ "float"
-      case DoubleClass ⇒ "double"
-      case ArrayClass ⇒ jsig(info)
-      case _ ⇒ info.typeSymbol.fullName
+      case ByteClass    ⇒ "byte"
+      case ShortClass   ⇒ "short"
+      case CharClass    ⇒ "char"
+      case IntClass     ⇒ "int"
+      case LongClass    ⇒ "long"
+      case FloatClass   ⇒ "float"
+      case DoubleClass  ⇒ "double"
+      case ArrayClass   ⇒ jsig(info)
+      case _            ⇒ fullNameInSig(info.typeSymbol)
     }
     val _info = removeThis(info)
     if (needsJavaSig(info)) {
@@ -173,7 +173,7 @@ trait JavaSig { this: TransformCake ⇒
 
   private def hiBounds(bounds: TypeBounds): List[Type] = bounds.hi.normalize match {
     case RefinedType(parents, _) ⇒ parents map (_.normalize)
-    case tp ⇒ tp :: Nil
+    case tp                      ⇒ tp :: Nil
   }
 
   import erasure.GenericArray
