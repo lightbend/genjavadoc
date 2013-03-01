@@ -56,24 +56,23 @@ trait AST { this: TransformCake ⇒
     }
   }
 
-  case class MethodInfo(pattern: String ⇒ String, name: String, comment: Seq[String]) extends Templ {
-    def sig = pattern(name)
+  case class MethodInfo(pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
+    def sig = pattern(s"$ret $name")
   }
   object MethodInfo {
     def apply(d: DefDef, comment: Seq[String]): MethodInfo = {
       val acc = access(d.mods)
-      val name =
+      val (ret, name) =
         if (d.name == nme.CONSTRUCTOR) {
-          d.symbol.enclClass.name.toString
-        } else s"${js(d.symbol, d.tpt.tpe)} ${d.name}"
+          ("", d.symbol.enclClass.name.toString)
+        } else (js(d.symbol, d.tpt.tpe), d.name.toString)
       val tp = d.symbol.owner.thisType.memberInfo(d.symbol) match {
         case p @ PolyType(params, _) ⇒ js(d.symbol, p)
         case _                       ⇒ ""
       }
-      val ret = js(d.symbol, d.tpt.tpe)
       val args = d.vparamss.head map (p ⇒ s"${js(d.symbol, p.tpt.tpe)} ${p.name}") mkString ("(", ", ", ")")
       val pattern = (n: String) ⇒ s"$acc $tp $n $args"
-      MethodInfo(pattern, name, comment)
+      MethodInfo(pattern, ret, name, comment)
     }
   }
 
