@@ -35,9 +35,7 @@ trait Output { this: TransformCake ⇒
   }
 
   def file(name: String): Out = {
-    println("*** " + name)
     val f = new File(outputBase, name)
-    println(f)
     f.getParentFile.mkdirs
     val w = new PrintStream(f)
     new Out {

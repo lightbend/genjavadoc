@@ -11,15 +11,9 @@ class TheSpec extends WordSpec with MustMatchers {
   "GenJavaDoc" must {
     
     "generate the expected output" in {
-      pending
-      lines(run("tests", "./cleanup.pl")) foreach println
-      lines(run("tests", "diff", "-wur", "expected_output", "target/java")) foreach println
+      lines(run("tests", "diff", "-wurI", "^\\s*//", "expected_output/akka", "target/java/akka")) foreach println
     }
     
-    "generate equivalent javap signatures" in {
-      pending
-    }
-
   }
   
   def run(dir: String, cmd: String*): Process = {
