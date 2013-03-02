@@ -1,6 +1,6 @@
 package scala.javadoc
 
-trait BasicTransform { this: TransformCake =>
+trait BasicTransform { this: TransformCake ⇒
   import global._
 
   def newTransformUnit(unit: CompilationUnit): Unit = {
@@ -21,7 +21,7 @@ trait BasicTransform { this: TransformCake =>
   }
 
   def newTransform(tree: Tree): Tree = {
-    def commentText(tp: Position) = {
+    def commentText(tp: Position, endPos: Option[Position]) = {
       val ret = if (tp.isDefined) {
         val old = pos
         pos = tp
@@ -34,35 +34,45 @@ trait BasicTransform { this: TransformCake =>
           }
         } else Seq("// not preceding") ++ visited.reverse.map(t ⇒ "// " + global.showRaw(t))
       } else Seq("// no position")
+      endPos foreach (pos = _)
       visited = Nil
       ret
     }
 
+    def track(t: Tree) = {
+      if (!keep && tree.pos.isDefined) {
+        visited ::= tree
+        pos = tree.pos
+      }
+      tree
+    }
+
+    def endPos(t: Tree) = {
+      val traverser = new CollectTreeTraverser({
+        case t if t.pos.isDefined ⇒ t.pos
+      })
+      traverser.traverse(t)
+      if (traverser.results.isEmpty) None else Some(traverser.results.max)
+    }
+
     tree match {
       case c: ClassDef if keep ⇒
-        withClass(c, commentText(c.pos)) {
-          //              global.newRawTreePrinter.print(tree)
-          //              println()
+        withClass(c, commentText(c.pos, None)) {
           superTransform(tree)
         }
       case d: DefDef if keep ⇒
-        val lookat =
+        val (lookat, end) =
           if (d.name == nme.CONSTRUCTOR) {
-            if (clazz.get.constructor) d.symbol.enclClass.pos
-            else d.pos
-          } else d.pos
-        addMethod(d, commentText(lookat))
-        noKeep(superTransform(tree))
-      case _: ValDef     ⇒ tree
-      case _: PackageDef ⇒ superTransform(tree)
-      case _: Template   ⇒ superTransform(tree)
-      case _: TypeTree   ⇒ tree
-      case _ ⇒
-        if (tree.pos.isDefined) {
-          visited ::= tree
-          pos = tree.pos
-        }
-        noKeep(superTransform(tree))
+            if (clazz.get.constructor) (d.symbol.enclClass.pos, None)
+            else (d.pos, endPos(d.rhs))
+          } else (d.pos, endPos(d.rhs))
+        addMethod(d, commentText(lookat, end))
+        tree
+      case _: ValDef     ⇒ { track(tree) }
+      case _: PackageDef ⇒ { track(tree); superTransform(tree) }
+      case _: Template   ⇒ { track(tree); superTransform(tree) }
+      case _: TypeTree   ⇒ { track(tree) }
+      case _             ⇒ { track(tree); noKeep(superTransform(tree)) }
     }
   }
 
@@ -77,7 +87,8 @@ trait BasicTransform { this: TransformCake =>
     clazz = Some(ClassInfo(c, comment))
     val ret = block
     clazz = old match {
-      case None     ⇒ classes :+= clazz.get; None
+      case None ⇒
+        classes :+= clazz.get; None
       case Some(oc) ⇒ Some(oc.addMember(clazz.get))
     }
     ret
