@@ -71,7 +71,7 @@ trait AST { this: TransformCake ⇒
         case _                       ⇒ ""
       }
       val args = d.vparamss.head map (p ⇒ s"${js(d.symbol, p.tpt.tpe)} ${p.name}") mkString ("(", ", ", ")")
-      val pattern = (n: String) ⇒ s"$acc $tp $n $args"
+      val pattern = (n: String) ⇒ s"$acc $tp $n $args { throw new RuntimeException(); }"
       MethodInfo(pattern, ret, name, comment)
     }
   }

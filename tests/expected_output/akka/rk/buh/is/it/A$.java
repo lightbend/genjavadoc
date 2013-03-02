@@ -1,9 +1,12 @@
 package akka.rk.buh.is.it;
-// no position
+/**
+ * object A
+ */
 public  class A$ {
   /**
-   * object A
+   * Static reference to the singleton instance of this Scala object.
    */
+  public static final A$ MODULE$ = null;
   public   A$ () { throw new RuntimeException(); }
   /**
    * def IAmStatic: Int

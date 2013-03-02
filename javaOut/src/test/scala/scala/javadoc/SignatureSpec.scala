@@ -63,7 +63,9 @@ class SignatureSpec extends WordSpec with MustMatchers {
         Map() ++ c.getDeclaredClasses.filterNot(_.getName contains "anon").map(x ⇒ x.getName -> x)
       }
 
-      check(classOf[akka.rk.buh.is.it.A])
+      check(Class.forName("akka.rk.buh.is.it.A"))
+      check(Class.forName("akka.rk.buh.is.it.A$"))
+      check(Class.forName("akka.rk.buh.is.it.X"))
     }
 
   }

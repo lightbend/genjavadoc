@@ -22,7 +22,7 @@ trait Output { this: TransformCake ⇒
 
   def write(out: Out, m: MethodInfo) {
     m.comment foreach (out(_))
-    out(m.sig + " { throw new RuntimeException(); }")
+    out(m.sig)
   }
 
   trait Out {
@@ -62,29 +62,42 @@ trait Output { this: TransformCake ⇒
       p match {
         case (Some(o), Some(c))            ⇒ merge(o, c, forwarders)
         case (Some(o), None) if forwarders ⇒ merge(o, o.copy(comment = Seq(), module = false, members = Vector.empty), forwarders)
-        case (Some(o), None)               ⇒ Vector(o.copy(name = o.name + '$', members = o.members collect addDollar(o)))
+        case (Some(o), None)               ⇒ Vector(mangleModule(o, addMODULE = forwarders, pruneClasses = false))
         case (None, Some(c))               ⇒ Vector(c)
         case (None, None)                  ⇒ ???
       }
     }
   }
 
-  private def addDollar(obj: ClassInfo): PartialFunction[Templ, Templ] = {
-    case x: MethodInfo if x.name == obj.name ⇒ x.copy(name = x.name + '$')
-    case x                                   ⇒ x
+  private def mangleModule(obj: ClassInfo, addMODULE: Boolean, pruneClasses: Boolean): ClassInfo = {
+    val moduleInstance =
+      if (addMODULE)
+        Some(MethodInfo(x ⇒ x, "public static final", s"${obj.name}$$ MODULE$$ = null;",
+          Seq("/**", " * Static reference to the singleton instance of this Scala object.", " */")))
+      else None
+    val members = (moduleInstance ++: obj.members) filter (!pruneClasses || _.isInstanceOf[MethodInfo])
+    val (com, moduleMembers) = ((obj.comment, Vector.empty[Templ]) /: members)((p, mem) ⇒ mem match {
+      case x: MethodInfo if x.name == obj.name ⇒ (p._1 ++ x.comment, p._2 :+ x.copy(name = x.name + '$', comment = Seq()))
+      case x                                   ⇒ (p._1, p._2 :+ x)
+    })
+    obj.copy(name = obj.name + '$', comment = com, members = moduleMembers)
   }
 
   private def merge(obj: ClassInfo, cls: ClassInfo, forwarders: Boolean): Vector[ClassInfo] = {
     val classes = cls.members collect { case c: ClassInfo ⇒ c }
-    val methods = cls.members collect { case m: MethodInfo ⇒ m }
+    val methods = cls.members collect {
+      case m: MethodInfo ⇒
+        if (m.ret.endsWith("$") && classes.exists(_.name == m.name))
+          m.copy(comment = Seq("/**", " * Accessor for nested Scala object", " */"))
+        else m
+    }
     val staticClasses = obj.members collect { case c: ClassInfo ⇒ c.copy(pattern = n ⇒ "static " + c.pattern(n)) }
     val staticMethods =
       if (!forwarders) Vector.empty
       else obj.members collect { case m: MethodInfo if !cls.members.exists(_.name == m.name) ⇒ m.copy(pattern = n ⇒ "static " + m.pattern(n)) }
     val allClasses = flatten(classes ++ staticClasses, forwarders = false)
     val base = cls.copy(members = allClasses ++ staticMethods ++ methods)
-    val module = obj.copy(name = obj.name + '$', members = obj.members filterNot (_.isInstanceOf[ClassInfo]) collect addDollar(obj))
-    Vector(base, module)
+    Vector(base, mangleModule(obj, addMODULE = forwarders, pruneClasses = true))
   }
 
 }

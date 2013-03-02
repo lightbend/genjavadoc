@@ -52,8 +52,17 @@ class A {
   }
 
   class C extends { val i = 1 } with X
-  class D extends { val i = 1 } with B
+  /**
+   * class A.D
+   */
+  class D extends { /** val i */ val i = 1 } with B
+  /**
+   * object A.D
+   */
   object D {
+    /**
+     * def A.D.math
+     */
     def math = 0l
   }
 }
@@ -95,6 +104,9 @@ object A {
     def method = ()
   }
 
+  /**
+   * object A.NoComment
+   */
   private object NoComment
 
   /**
