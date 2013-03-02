@@ -12,7 +12,7 @@ object B extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "0.1-SNAPSHOT",
-    scalaVersion := "2.10.0-M7"
+    scalaVersion := "2.10.0"
   )
 
   lazy val top = Project(
@@ -35,7 +35,7 @@ object B extends Build {
     base = file("tests"),
     settings = Project.defaultSettings ++ Seq(
       libraryDependencies ++= Seq(
-        "org.scalatest" % "scalatest" % "1.9-2.10.0-M7-B1" % "test" cross CrossVersion.full
+        "org.scalatest" %% "scalatest" % "1.9.1" % "test"
       ),
       browse := false,
       scalacOptions in Compile <<= (packageBin in plugin in Compile, scalacOptions in Compile, clean, browse) map (
@@ -49,7 +49,7 @@ object B extends Build {
     base = file("javaOut"),
     settings = Project.defaultSettings ++ Seq(
       libraryDependencies ++= Seq(
-        "org.scalatest" % "scalatest" % "1.9-2.10.0-M7-B1" % "test" cross CrossVersion.full
+        "org.scalatest" %% "scalatest" % "1.9.1" % "test"
       ),
       unmanagedSources in Compile <<= (baseDirectory in tests, compile in tests in Test) map ((b, c) => (b / "target/java/akka" ** "*.java").get)
     )
