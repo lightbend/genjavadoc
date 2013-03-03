@@ -14,12 +14,13 @@ public  class A {
   /**
    * object A.D
    */
-  public  class D$ {
+  public  class D$ implements scala.Serializable {
     public   D$ () { throw new RuntimeException(); }
     /**
      * def A.D.math
      */
     public  long math () { throw new RuntimeException(); }
+    private  java.lang.Object readResolve () { throw new RuntimeException(); }
   }
   /**
    * class A.C

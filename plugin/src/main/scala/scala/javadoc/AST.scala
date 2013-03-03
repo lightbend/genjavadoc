@@ -47,7 +47,7 @@ trait AST { this: TransformCake ⇒
             }
           }
           val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
-          val interfaces = if (!intf.isEmpty) " implements " + intf else ""
+          val interfaces = if (!intf.isEmpty) (if (mods.isInterface) " extends " else " implements ") + intf else ""
           val sig = (n: String) ⇒ s"$acc $fl $kind $n$parent$interfaces"
           val file = (n: String) ⇒ s"${c.symbol.enclosingPackage.fullName('/')}/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName

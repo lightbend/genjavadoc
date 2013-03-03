@@ -5,7 +5,8 @@
 package akka.rk
 package buh.is.it
 
-trait X
+trait Y
+trait X extends Serializable with Y
 
 /**
  * class A
