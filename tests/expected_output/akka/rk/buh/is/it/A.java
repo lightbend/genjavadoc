@@ -96,6 +96,14 @@ public  class A {
    */
   public  scala.collection.immutable.Map<java.lang.Object, java.lang.String> map () { throw new RuntimeException(); }
   /**
+   * blarb
+   */
+  public  akka.rk.buh.is.it.Blarb.Fuz blarb () { throw new RuntimeException(); }
+  /**
+   * refined
+   */
+  public  akka.rk.buh.is.it.Z refined () { throw new RuntimeException(); }
+  /**
    * Accessor for nested Scala object
    */
   public  akka.rk.buh.is.it.A.D$ D () { throw new RuntimeException(); }

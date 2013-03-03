@@ -132,7 +132,12 @@ trait JavaSig { this: TransformCake ⇒
       case FloatClass   ⇒ "float"
       case DoubleClass  ⇒ "double"
       case ArrayClass   ⇒ jsig(info)
-      case _            ⇒ fullNameInSig(info.typeSymbol)
+      case AnyClass     ⇒ "Object"
+      case _ ⇒
+        info.dealias match {
+          case RefinedType(head :: tail, _) ⇒ fullNameInSig(head.typeSymbol)
+          case _                            ⇒ fullNameInSig(info.typeSymbol)
+        }
     }
     val _info = removeThis(info)
     if (needsJavaSig(info)) {

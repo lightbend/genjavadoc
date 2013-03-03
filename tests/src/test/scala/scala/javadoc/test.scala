@@ -14,6 +14,12 @@ abstract class Z {
   def pi: Double
 }
 
+object Blarb {
+  sealed trait Fuz
+  case object A extends Fuz
+  case class B(x: String) extends Fuz
+}
+
 /**
  * class A
  */
@@ -34,6 +40,16 @@ class A {
   def map = Map(1 -> "1")
   
   def default = 0 // this shall not be emitted
+
+  /**
+   * blarb
+   */
+  def blarb: Blarb.Fuz = Blarb.A
+  
+  /**
+   * refined
+   */
+  def refined: Z with Y = null
 
   /**
    * extra comment

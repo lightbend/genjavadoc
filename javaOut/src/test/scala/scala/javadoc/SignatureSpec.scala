@@ -43,7 +43,9 @@ class SignatureSpec extends WordSpec with MustMatchers {
           (js.getModifiers & ~7) must beEqual(ss.getModifiers & ~7)
           accProtLvl(js.getModifiers & 7) must beAtLeast(accProtLvl(ss.getModifiers & 7))
           js.getInterfaces.toList.map(_.getName) must beEqual(ss.getInterfaces.toList.map(_.getName))
-          js.getSuperclass.getName must beEqual(ss.getSuperclass.getName)
+          js.isInterface must beEqual(ss.isInterface)
+          if (!js.isInterface())
+            js.getSuperclass.getName must beEqual(ss.getSuperclass.getName)
           check(js)
         }
       }
@@ -65,6 +67,8 @@ class SignatureSpec extends WordSpec with MustMatchers {
 
       check(Class.forName("akka.rk.buh.is.it.A"))
       check(Class.forName("akka.rk.buh.is.it.A$"))
+      check(Class.forName("akka.rk.buh.is.it.Blarb"))
+      check(Class.forName("akka.rk.buh.is.it.Blarb$"))
       check(Class.forName("akka.rk.buh.is.it.X"))
       check(Class.forName("akka.rk.buh.is.it.Y"))
       check(Class.forName("akka.rk.buh.is.it.Z"))

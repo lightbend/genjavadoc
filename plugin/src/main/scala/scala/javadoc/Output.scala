@@ -68,9 +68,9 @@ trait Output { this: TransformCake ⇒
       }
     }
   }
-  
+
   val PreFilter: PartialFunction[ClassInfo, ClassInfo] = {
-    case c =>
+    case c ⇒
       val nm = c.members filterNot (_.name == "default")
       if (nm == c.members) c
       else c.copy(members = nm)
@@ -101,7 +101,10 @@ trait Output { this: TransformCake ⇒
     val staticClasses = obj.members collect { case c: ClassInfo ⇒ c.copy(pattern = n ⇒ "static " + c.pattern(n)) }
     val staticMethods =
       if (!forwarders) Vector.empty
-      else obj.members collect { case m: MethodInfo if !cls.members.exists(_.name == m.name) ⇒ m.copy(pattern = n ⇒ "static " + m.pattern(n)) }
+      else obj.members collect {
+        case m: MethodInfo if !(m.name == obj.name) && !cls.members.exists(_.name == m.name) ⇒
+          m.copy(pattern = n ⇒ "static " + m.pattern(n))
+      }
     val allClasses = flatten(classes ++ staticClasses, forwarders = false)
     val base = cls.copy(members = allClasses ++ staticMethods ++ methods)
     Vector(base, mangleModule(obj, addMODULE = forwarders, pruneClasses = true))

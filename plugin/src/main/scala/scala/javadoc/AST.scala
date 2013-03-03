@@ -62,7 +62,7 @@ trait AST { this: TransformCake ⇒
   }
   object MethodInfo {
     def apply(d: DefDef, dummyImpl: Boolean, comment: Seq[String]): MethodInfo = {
-      val acc = access(d.mods) + (if (d.mods.isDeferred) " abstract" else "")
+      val acc = access(d.mods) + methodFlags(d.mods)
       val (ret, name) =
         if (d.name == nme.CONSTRUCTOR) {
           ("", d.symbol.enclClass.name.toString)
@@ -79,7 +79,6 @@ trait AST { this: TransformCake ⇒
   }
 
   def access(m: Modifiers): String = {
-    import Flags._
     if (m.isPublic) "public"
     else if (m.isProtected) "protected"
     else if (m.isPrivate) "private"
@@ -87,11 +86,17 @@ trait AST { this: TransformCake ⇒
   }
 
   def flags(m: Modifiers): String = {
-    import Flags._
     var f: List[String] = Nil
     if (m.isFinal) f ::= "final"
     if (m.hasAbstractFlag && !m.isInterface) f ::= "abstract"
     f mkString " "
+  }
+  
+  def methodFlags(m: Modifiers): String = {
+    var f: List[String] = Nil
+    if (m.isFinal) f ::= "final"
+    if (m.isDeferred) f ::= "abstract"
+    (if (f.nonEmpty) " " else "") + f.mkString(" ")
   }
 
 }
