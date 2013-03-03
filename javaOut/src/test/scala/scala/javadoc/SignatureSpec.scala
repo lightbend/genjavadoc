@@ -55,7 +55,7 @@ class SignatureSpec extends WordSpec with MustMatchers {
 
       def getMethods(c: Class[_]): Set[String] = {
         import language.postfixOps
-        c.getDeclaredMethods filterNot (_.getName contains '$') map (_.toGenericString) toSet
+        c.getDeclaredMethods filterNot (x ⇒ x.getName.contains('$') || x.getName == "default") map (_.toGenericString) toSet
       }
 
       def getClasses(c: Class[_]): Map[String, Class[_]] = {

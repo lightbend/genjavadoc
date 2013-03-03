@@ -26,6 +26,8 @@ class A {
    * def map
    */
   def map = Map(1 -> "1")
+  
+  def default = 0 // this shall not be emitted
 
   /**
    * extra comment

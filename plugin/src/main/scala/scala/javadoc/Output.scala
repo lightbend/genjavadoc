@@ -53,7 +53,7 @@ trait Output { this: TransformCake ⇒
    * The first two parts are to be applied recursively to nested objects.
    */
   def flatten(c: Vector[ClassInfo], forwarders: Boolean = true): Vector[ClassInfo] = {
-    val (obj: Vector[ClassInfo], cls: Vector[ClassInfo]) = c partition (_.module)
+    val (obj: Vector[ClassInfo], cls: Vector[ClassInfo]) = c collect PreFilter partition (_.module)
     val classes = cls.map(c ⇒ c.name -> c).toMap
     val objects = obj.map(o ⇒ o.name -> o).toMap
     val pairs = obj.map(o ⇒ Some(o) -> (classes get o.name)) ++
@@ -67,6 +67,13 @@ trait Output { this: TransformCake ⇒
         case (None, None)                  ⇒ ???
       }
     }
+  }
+  
+  val PreFilter: PartialFunction[ClassInfo, ClassInfo] = {
+    case c =>
+      val nm = c.members filterNot (_.name == "default")
+      if (nm == c.members) c
+      else c.copy(members = nm)
   }
 
   private def mangleModule(obj: ClassInfo, addMODULE: Boolean, pruneClasses: Boolean): ClassInfo = {
