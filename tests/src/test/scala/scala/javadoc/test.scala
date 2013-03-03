@@ -5,8 +5,14 @@
 package akka.rk
 package buh.is.it
 
-trait Y
+trait Y {
+  // def pi = 3.14
+}
 trait X extends Serializable with Y
+
+abstract class Z {
+  def pi: Double
+}
 
 /**
  * class A

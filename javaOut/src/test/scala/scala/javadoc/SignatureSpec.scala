@@ -66,6 +66,8 @@ class SignatureSpec extends WordSpec with MustMatchers {
       check(Class.forName("akka.rk.buh.is.it.A"))
       check(Class.forName("akka.rk.buh.is.it.A$"))
       check(Class.forName("akka.rk.buh.is.it.X"))
+      check(Class.forName("akka.rk.buh.is.it.Y"))
+      check(Class.forName("akka.rk.buh.is.it.Z"))
     }
 
   }

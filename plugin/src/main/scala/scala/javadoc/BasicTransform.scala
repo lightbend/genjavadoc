@@ -95,7 +95,7 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   def addMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (_.addMember(MethodInfo(d, comment)))
+    clazz = clazz map (c => c.addMember(MethodInfo(d, !c.interface, comment)))
   }
 
 }

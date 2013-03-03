@@ -19,6 +19,7 @@ trait AST { this: TransformCake ⇒
     pckg: String,
     filepattern: String ⇒ String,
     members: Vector[Templ],
+    interface: Boolean,
     var firstConstructor: Boolean) extends Templ {
 
     def sig = pattern(name)
@@ -37,7 +38,7 @@ trait AST { this: TransformCake ⇒
         case ClassDef(mods, name, tparams, impl) ⇒
           val acc = access(mods)
           val fl = flags(mods)
-          val kind = if (mods.isInterface) "interface" else "class"
+          val kind = if (mods.isInterface || mods.isTrait) "interface" else "class"
           val name = c.name.toString
           val parent = {
             val p = impl.parents.head
@@ -51,7 +52,7 @@ trait AST { this: TransformCake ⇒
           val sig = (n: String) ⇒ s"$acc $fl $kind $n$parent$interfaces"
           val file = (n: String) ⇒ s"${c.symbol.enclosingPackage.fullName('/')}/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
-          ClassInfo(name, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, true)
+          ClassInfo(name, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", true)
       }
     }
   }
@@ -60,8 +61,8 @@ trait AST { this: TransformCake ⇒
     def sig = pattern(s"$ret $name")
   }
   object MethodInfo {
-    def apply(d: DefDef, comment: Seq[String]): MethodInfo = {
-      val acc = access(d.mods)
+    def apply(d: DefDef, dummyImpl: Boolean, comment: Seq[String]): MethodInfo = {
+      val acc = access(d.mods) + (if (d.mods.isDeferred) " abstract" else "")
       val (ret, name) =
         if (d.name == nme.CONSTRUCTOR) {
           ("", d.symbol.enclClass.name.toString)
@@ -71,7 +72,8 @@ trait AST { this: TransformCake ⇒
         case _                       ⇒ ""
       }
       val args = d.vparamss.head map (p ⇒ s"${js(d.symbol, p.tpt.tpe)} ${p.name}") mkString ("(", ", ", ")")
-      val pattern = (n: String) ⇒ s"$acc $tp $n $args { throw new RuntimeException(); }"
+      val impl = if (d.mods.isDeferred || !dummyImpl) ";" else "{ throw new RuntimeException(); }"
+      val pattern = (n: String) ⇒ s"$acc $tp $n $args $impl"
       MethodInfo(pattern, ret, name, comment)
     }
   }

@@ -4,3 +4,6 @@
 .target/
 .*.swp
 target/
+/*.scala
+/*.icode
+/*.class
