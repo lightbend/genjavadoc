@@ -37,7 +37,7 @@ trait Output { this: TransformCake ⇒
   def file(name: String): Out = {
     val f = new File(outputBase, name)
     f.getParentFile.mkdirs
-    val w = new PrintStream(f)
+    val w = new PrintStream(f, "UTF-8")
     new Out {
       def println(s: String) { w.println(s) }
     }

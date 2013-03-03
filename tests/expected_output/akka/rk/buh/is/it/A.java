@@ -91,6 +91,10 @@ public  class A {
    */
   public <T extends akka.rk.buh.is.it.A.B> scala.collection.immutable.List<T> params (T b) { throw new RuntimeException(); }
   /**
+   * def map
+   */
+  public  scala.collection.immutable.Map<java.lang.Object, java.lang.String> map () { throw new RuntimeException(); }
+  /**
    * Accessor for nested Scala object
    */
   public  akka.rk.buh.is.it.A.D$ D () { throw new RuntimeException(); }

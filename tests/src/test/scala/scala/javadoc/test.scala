@@ -20,6 +20,11 @@ class A {
    * def params[T <: B](b: T): T
    */
   def params[T >: D <: B](b: T): List[T] = b :: Nil
+  
+  /**
+   * def map
+   */
+  def map = Map(1 -> "1")
 
   /**
    * extra comment

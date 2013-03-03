@@ -81,7 +81,7 @@ trait AST { this: TransformCake ⇒
     if (m.isPublic) "public"
     else if (m.isProtected) "protected"
     else if (m.isPrivate) "private"
-    else sys.error("unknown visibility: " + m)
+    else "private" // this is the case for “private[xy]”
   }
 
   def flags(m: Modifiers): String = {

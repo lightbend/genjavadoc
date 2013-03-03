@@ -37,7 +37,7 @@ trait JavaSig { this: TransformCake ⇒
         case Nil    ⇒ "" // + boxedSig(ObjectClass.tpe)
         case x :: _ ⇒ " extends " + boxedSig(x)
       }
-      classPart :: (isTrait map boxedSig) mkString " implements "
+      classPart :: (isTrait map boxedSig) mkString " extends "
     }
     def paramSig(tsym: Symbol) = tsym.name + boundsSig(hiBounds(tsym.info.bounds))
     def polyParamSig(tparams: List[Symbol]) = (
@@ -95,7 +95,7 @@ trait JavaSig { this: TransformCake ⇒
               } else fullNameInSig(sym)
             val generics =
               if (args.isEmpty) "" else
-                "<" + (args map argSig).mkString + ">"
+                "<" + (args map argSig).mkString(", ") + ">"
             name + generics
           } else jsig(erasure.erasure(sym0)(tp), existentiallyBound, toplevel, primitiveOK)
         case PolyType(tparams, restpe) ⇒

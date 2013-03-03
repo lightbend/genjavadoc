@@ -18,14 +18,18 @@ object B extends Build {
   lazy val top = Project(
     id = "top",
     base = file("."),
-    aggregate = Seq(plugin, tests, javaOut)
+    aggregate = Seq(plugin, tests, javaOut),
+    settings = Project.defaultSettings ++ Seq(
+      publishArtifact := false
+    )
   )
 
   lazy val plugin = Project(
-    id = "plugin",
+    id = "genjavadoc-plugin",
     base = file("plugin"),
     settings = Project.defaultSettings ++ Seq(
       libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _),
+      crossVersion := CrossVersion.full,
       exportJars := true
     )
   )
@@ -34,6 +38,7 @@ object B extends Build {
     id = "tests",
     base = file("tests"),
     settings = Project.defaultSettings ++ Seq(
+      publishArtifact := false,
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % "1.9.1" % "test"
       ),
@@ -48,6 +53,7 @@ object B extends Build {
     id = "javaOut",
     base = file("javaOut"),
     settings = Project.defaultSettings ++ Seq(
+      publishArtifact := false,
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % "1.9.1" % "test"
       ),
