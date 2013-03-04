@@ -46,7 +46,7 @@ trait AST { this: TransformCake ⇒
           }
           val parent = {
             val p = impl.parents.head
-            if (p.isEmpty || p.symbol == definitions.ObjectClass) ""
+            if (p.isEmpty || p.symbol == definitions.ObjectClass || mods.isTrait) ""
             else {
               s" extends ${js(c.symbol, p.tpe)}"
             }
@@ -82,7 +82,7 @@ trait AST { this: TransformCake ⇒
     }
   }
   
-  private val keywords = Set("default", "goto", "interface")
+  val keywords = Set("default", "goto", "interface", "switch", "package")
   
   def mangleMethodName(p: ValDef): String = {
     if (keywords contains p.name) s"${p.name}_" else p.name

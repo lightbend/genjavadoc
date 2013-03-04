@@ -71,7 +71,7 @@ trait Output { this: TransformCake ⇒
 
   val PreFilter: PartialFunction[ClassInfo, ClassInfo] = {
     case c if c.name != "package" ⇒
-      val nm = c.members filterNot (m => m.name == "default" || m.name == "goto" || m.name == "package" || m.name == "interface")
+      val nm = c.members filterNot (keywords contains _.name)
       if (nm == c.members) c
       else c.copy(members = nm)
   }
