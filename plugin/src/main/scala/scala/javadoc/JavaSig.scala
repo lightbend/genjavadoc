@@ -30,14 +30,12 @@ trait JavaSig { this: TransformCake ⇒
         } else parents)
       (ps map boxedSig).mkString
     }
-    def boxedSig(tp: Type) = jsig(tp, primitiveOK = false)
+    def boxedSig(tp: Type) = tp match {
+      case PolyType(tparams, restpe) ⇒ jsig(restpe, primitiveOK = false)
+      case _                         ⇒ jsig(tp, primitiveOK = false)
+    }
     def boundsSig(bounds: List[Type]) = {
-      val (isTrait, isClass) = bounds partition (_.typeSymbol.isTrait)
-      val classPart = isClass match {
-        case Nil    ⇒ "" // + boxedSig(ObjectClass.tpe)
-        case x :: _ ⇒ " extends " + boxedSig(x)
-      }
-      classPart :: (isTrait map boxedSig) mkString " extends "
+      bounds.headOption map (" extends " + boxedSig(_)) getOrElse ""
     }
     def paramSig(tsym: Symbol) = tsym.name + boundsSig(hiBounds(tsym.info.bounds))
     def polyParamSig(tparams: List[Symbol]) = (

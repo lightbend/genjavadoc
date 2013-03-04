@@ -40,6 +40,10 @@ trait AST { this: TransformCake ⇒
           val fl = flags(mods)
           val kind = if (mods.isInterface || mods.isTrait) "interface" else "class"
           val name = c.name.toString
+          val tp = c.symbol.owner.thisType.memberInfo(c.symbol) match {
+            case p @ PolyType(params, _) ⇒ js(c.symbol, p)
+            case _                       ⇒ ""
+          }
           val parent = {
             val p = impl.parents.head
             if (p.isEmpty || p.symbol == definitions.ObjectClass) ""
@@ -48,8 +52,8 @@ trait AST { this: TransformCake ⇒
             }
           }
           val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
-          val interfaces = if (!intf.isEmpty) (if (mods.isInterface) " extends " else " implements ") + intf else ""
-          val sig = (n: String) ⇒ s"$acc $fl $kind $n$parent$interfaces"
+          val interfaces = if (!intf.isEmpty) (if (mods.isInterface || mods.isTrait) " extends " else " implements ") + intf else ""
+          val sig = (n: String) ⇒ s"$acc $fl $kind $n$tp$parent$interfaces"
           val file = (n: String) ⇒ s"${c.symbol.enclosingPackage.fullName('/')}/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
           ClassInfo(name, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", true)
@@ -91,7 +95,7 @@ trait AST { this: TransformCake ⇒
     if (m.hasAbstractFlag && !m.isInterface) f ::= "abstract"
     f mkString " "
   }
-  
+
   def methodFlags(m: Modifiers): String = {
     var f: List[String] = Nil
     if (m.isFinal) f ::= "final"

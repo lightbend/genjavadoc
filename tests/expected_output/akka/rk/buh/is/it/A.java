@@ -104,6 +104,10 @@ public  class A {
    */
   public  akka.rk.buh.is.it.Z refined () { throw new RuntimeException(); }
   /**
+   * poly
+   */
+  public <A extends java.lang.Object, M extends akka.rk.buh.is.it.Y<java.lang.Object>> int poly () { throw new RuntimeException(); }
+  /**
    * Accessor for nested Scala object
    */
   public  akka.rk.buh.is.it.A.D$ D () { throw new RuntimeException(); }

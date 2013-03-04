@@ -5,10 +5,10 @@
 package akka.rk
 package buh.is.it
 
-trait Y {
+trait Y[A] {
   // def pi = 3.14
 }
-trait X extends Serializable with Y
+trait X extends Serializable with Y[A]
 
 abstract class Z {
   def pi: Double
@@ -49,7 +49,12 @@ class A {
   /**
    * refined
    */
-  def refined: Z with Y = null
+  def refined: Z with Y[Unit] = null
+  
+  /**
+   * poly
+   */
+  def poly[A, M[A] <: Y[A]] = 42
 
   /**
    * extra comment
