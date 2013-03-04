@@ -15,6 +15,13 @@ trait Comments { this: TransformCake ⇒
   } with SyntaxAnalyzer
 
   case class Comment(pos: Position, text: Seq[String])
+  object Comment {
+    def apply(pos: Position, text: String) = {
+      val lines = text.replaceAll("\n[ \t]*", "\n ").split("\n")
+        .map(_.replace("{{{", "<pre><code>").replace("}}}", "</code></pre>"))
+      new Comment(pos, lines)
+    }
+  }
   var pos: Position = rangePos(unit.source, 0, 0, 0)
 
   implicit val positionOrdering: Ordering[Position] = new Ordering[Position] {
@@ -29,9 +36,8 @@ trait Comments { this: TransformCake ⇒
     override def newScanner = new parser.UnitScanner(unit) {
       override def foundComment(text: String, start: Int, end: Int) {
         val pos = global.rangePos(source, start, start, end)
-        comments += pos -> Comment(pos, cleanup(text))
+        comments += pos -> Comment(pos, text)
       }
-      private def cleanup(s: String) = s.replaceAll("\n[ \t]*", "\n ").split("\n")
     }
   }.parse()
 
