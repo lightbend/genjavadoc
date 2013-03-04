@@ -121,6 +121,11 @@ public  class A {
   public  scala.collection.immutable.Map<java.lang.Object, java.lang.String> map () { throw new RuntimeException(); }
   /**
    * <p>
+   * Unitparam</p>
+   */
+  public  int unitParam (scala.runtime.BoxedUnit unit) { throw new RuntimeException(); }
+  /**
+   * <p>
    * mangledNames</p>
    */
   public  int mangledNames (java.lang.String default_, java.lang.String goto_, java.lang.String interface_) { throw new RuntimeException(); }

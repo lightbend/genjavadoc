@@ -6,7 +6,7 @@ trait JavaSig { this: TransformCake ⇒
   import global._
   import definitions._
 
-  def js(sym0: Symbol, info: Type): String = {
+  def js(sym0: Symbol, info: Type, voidOK: Boolean = true): String = {
     val isTraitSignature = sym0.enclClass.isTrait
 
     def removeThis(in: Type): Type = {
@@ -120,7 +120,7 @@ trait JavaSig { this: TransformCake ⇒
       }
     }
     def toJava(info: Type): String = info.dealias.typeSymbol match {
-      case UnitClass    ⇒ "void"
+      case UnitClass    ⇒ if (voidOK) "void" else "scala.runtime.BoxedUnit"
       case BooleanClass ⇒ "boolean"
       case ByteClass    ⇒ "byte"
       case ShortClass   ⇒ "short"

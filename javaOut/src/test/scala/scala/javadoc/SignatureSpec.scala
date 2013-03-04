@@ -14,7 +14,7 @@ class SignatureSpec extends WordSpec with MustMatchers {
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
 
-      val keywords = Set("default", "goto", "interface")
+      val keywords = Set("default", "goto", "interface", "switch")
 
       def check(jc: Class[_]) {
         val sc = scalaCL.loadClass(jc.getName)

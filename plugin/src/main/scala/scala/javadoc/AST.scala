@@ -75,7 +75,7 @@ trait AST { this: TransformCake ⇒
         case p @ PolyType(params, _) ⇒ js(d.symbol, p)
         case _                       ⇒ ""
       }
-      val args = d.vparamss.head map (p ⇒ s"${js(d.symbol, p.tpt.tpe)} ${mangleMethodName(p)}") mkString ("(", ", ", ")")
+      val args = d.vparamss.head map (p ⇒ s"${js(d.symbol, p.tpt.tpe, voidOK = false)} ${mangleMethodName(p)}") mkString ("(", ", ", ")")
       val impl = if (d.mods.isDeferred || !dummyImpl) ";" else "{ throw new RuntimeException(); }"
       val pattern = (n: String) ⇒ s"$acc $tp $n $args $impl"
       MethodInfo(pattern, ret, name, comment)

@@ -42,6 +42,12 @@ class A {
   def default = 0 // this shall not be emitted
   def goto = 0 // this shall not be emitted
   def interface = 0 // this shall not be emitted
+  def switch = 0 // this shall not be emitted
+  
+  /**
+   * Unitparam
+   */
+  def unitParam(unit: Unit) = 42
   
   /**
    * mangledNames
