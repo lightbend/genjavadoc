@@ -70,7 +70,7 @@ trait BasicTransform { this: TransformCake ⇒
           } else (d.pos, endPos(d.rhs))
         // must be called for keeping the “current” position right
         val text = commentText(lookat, end)
-        if (!(suppressSynthetic && d.mods.isSynthetic))
+        if (!(suppressSynthetic && (d.mods.isSynthetic || d.name == nme.MIXIN_CONSTRUCTOR)))
           addMethod(d, text)
         tree
       case _: ValDef     ⇒ { track(tree) }

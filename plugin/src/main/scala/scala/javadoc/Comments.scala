@@ -2,6 +2,7 @@ package scala.javadoc
 
 import scala.collection.immutable.TreeMap
 import scala.tools.nsc.ast.parser.SyntaxAnalyzer
+import scala.annotation.tailrec
 
 trait Comments { this: TransformCake ⇒
   import global._
@@ -14,12 +15,47 @@ trait Comments { this: TransformCake ⇒
     val runsRightAfter = None
   } with SyntaxAnalyzer
 
+  val replacements = Seq(
+    "{{{" -> "<pre><code>",
+    "}}}" -> "</code></pre>",
+    "“" -> "&ldquo;",
+    "”" -> "&rdquo;",
+    "‘" -> "&lsquo;",
+    "’" -> "&rsquo;",
+    "[[" -> "{@link ",
+    "]]" -> "}")
+  val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r
+
   case class Comment(pos: Position, text: Seq[String])
   object Comment {
     def apply(pos: Position, text: String) = {
-      val lines = text.replaceAll("\n[ \t]*", "\n ").split("\n")
-        .map(_.replace("{{{", "<pre><code>").replace("}}}", "</code></pre>"))
-      new Comment(pos, lines)
+      val ll = text.replaceAll("\n[ \t]*", "\n ").split("\n")
+        .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
+      val (_, _, _, l2) = ((false, false, true, List.empty[String]) /: ll) {
+        case ((pre, code, empty, lines), line @ EmptyLine()) ⇒
+          if (!pre && !empty) (pre, false, true, line :: (lines.head + "</p>") :: lines.tail)
+          else (pre, false, true, line :: lines)
+        case ((pre, code, empty, lines), line) ⇒
+          val (nc, nl) = codeLine(code, line)
+          val np = if (line contains "<pre>") true else if (line contains "</pre>") false else pre
+          if (!pre && empty) (np, nc, false, nl :: " * <p>" :: lines)
+          else (np, nc, false, nl :: lines)
+      }
+      new Comment(pos, l2.reverse map htmlEntity)
+    }
+    @tailrec private def codeLine(code: Boolean, line: String): (Boolean, String) = {
+      val next = replace(line, "`", if (code) "</code>" else "<code>")
+      if (next eq line) (code, line)
+      else codeLine(!code, next)
+    }
+    private def replace(str: String, from: String, to: String): String = {
+      str.indexOf(from) match {
+        case -1 ⇒ str
+        case n  ⇒ str.substring(0, n) + to + str.substring(n + from.length)
+      }
+    }
+    private def htmlEntity(str: String): String = {
+      str flatMap (ch => if (ch > 127) f"&#x${ch}%04x;" else "" + ch)
     }
   }
   var pos: Position = rangePos(unit.source, 0, 0, 0)
