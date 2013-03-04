@@ -96,6 +96,10 @@ public  class A {
    */
   public  scala.collection.immutable.Map<java.lang.Object, java.lang.String> map () { throw new RuntimeException(); }
   /**
+   * mangledNames
+   */
+  public  int mangledNames (java.lang.String default_, java.lang.String goto_, java.lang.String interface_) { throw new RuntimeException(); }
+  /**
    * blarb
    */
   public  akka.rk.buh.is.it.Blarb.Fuz blarb () { throw new RuntimeException(); }

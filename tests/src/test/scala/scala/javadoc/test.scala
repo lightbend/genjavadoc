@@ -33,24 +33,31 @@ class A {
    * def params[T <: B](b: T): T
    */
   def params[T >: D <: B](b: T): List[T] = b :: Nil
-  
+
   /**
    * def map
    */
   def map = Map(1 -> "1")
-  
+
   def default = 0 // this shall not be emitted
+  def goto = 0 // this shall not be emitted
+  def interface = 0 // this shall not be emitted
+  
+  /**
+   * mangledNames
+   */
+  def mangledNames(default: String, goto: String, interface: String) = 12
 
   /**
    * blarb
    */
   def blarb: Blarb.Fuz = Blarb.A
-  
+
   /**
    * refined
    */
   def refined: Z with Y[Unit] = null
-  
+
   /**
    * poly
    */

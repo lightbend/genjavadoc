@@ -70,8 +70,8 @@ trait Output { this: TransformCake ⇒
   }
 
   val PreFilter: PartialFunction[ClassInfo, ClassInfo] = {
-    case c ⇒
-      val nm = c.members filterNot (m => m.name == "default" || m.name == "goto")
+    case c if c.name != "package" ⇒
+      val nm = c.members filterNot (m => m.name == "default" || m.name == "goto" || m.name == "package" || m.name == "interface")
       if (nm == c.members) c
       else c.copy(members = nm)
   }

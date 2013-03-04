@@ -14,6 +14,8 @@ class SignatureSpec extends WordSpec with MustMatchers {
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
 
+      val keywords = Set("default", "goto", "interface")
+
       def check(jc: Class[_]) {
         val sc = scalaCL.loadClass(jc.getName)
 
@@ -54,10 +56,10 @@ class SignatureSpec extends WordSpec with MustMatchers {
         println(msg)
         s.toList.sorted foreach println
       }
-
+      
       def getMethods(c: Class[_]): Set[String] = {
         import language.postfixOps
-        c.getDeclaredMethods filterNot (x ⇒ x.getName.contains('$') || x.getName == "default") map (_.toGenericString) toSet
+        c.getDeclaredMethods filterNot (x ⇒ x.getName.contains('$') || keywords.contains(x.getName)) map (_.toGenericString) toSet
       }
 
       def getClasses(c: Class[_]): Map[String, Class[_]] = {
