@@ -25,6 +25,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
   var options: Properties = _
 
   lazy val outputBase = new File(options.getProperty("out", "."))
+  lazy val suppressSynthetic = java.lang.Boolean.parseBoolean(options.getProperty("suppressSynthetic", "true"))
 
   private object MyComponent extends PluginComponent with Transform {
 
@@ -44,6 +45,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
 
       override lazy val global: GT = MyComponent.this.global
       override val outputBase: File = GenJavaDocPlugin.this.outputBase
+      override val suppressSynthetic: Boolean = GenJavaDocPlugin.this.suppressSynthetic
       
       override def superTransformUnit(unit: CompilationUnit) = super.transformUnit(unit)
       override def superTransform(tree: Tree) = super.transform(tree)

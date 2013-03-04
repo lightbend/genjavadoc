@@ -2,6 +2,8 @@ package scala.javadoc
 
 trait BasicTransform { this: TransformCake ⇒
   import global._
+  
+  def suppressSynthetic: Boolean
 
   def newTransformUnit(unit: CompilationUnit): Unit = {
     superTransformUnit(unit)
@@ -66,7 +68,10 @@ trait BasicTransform { this: TransformCake ⇒
             if (clazz.get.constructor) (d.symbol.enclClass.pos, None)
             else (d.pos, endPos(d.rhs))
           } else (d.pos, endPos(d.rhs))
-        addMethod(d, commentText(lookat, end))
+        // must be called for keeping the “current” position right
+        val text = commentText(lookat, end)
+        if (!(suppressSynthetic && d.mods.isSynthetic))
+          addMethod(d, text)
         tree
       case _: ValDef     ⇒ { track(tree) }
       case _: PackageDef ⇒ { track(tree); superTransform(tree) }
@@ -95,7 +100,7 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   def addMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c => c.addMember(MethodInfo(d, !c.interface, comment)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, !c.interface, comment)))
   }
 
 }

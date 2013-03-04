@@ -44,7 +44,10 @@ object B extends Build {
       ),
       browse := false,
       scalacOptions in Compile <<= (packageBin in plugin in Compile, scalacOptions in Compile, clean, browse) map (
-        (pack, opt, clean, b) => opt ++ Seq("-Xplugin:" + pack.getAbsolutePath, "-P:genjavadoc:out=tests/target/java") ++ (if (b) Seq("-Ybrowse:uncurry") else Nil)
+        (pack, opt, clean, b) => 
+          opt ++ 
+          Seq("-Xplugin:" + pack.getAbsolutePath, "-P:genjavadoc:out=tests/target/java", "-P:genjavadoc:suppressSynthetic=false") ++ 
+          (if (b) Seq("-Ybrowse:uncurry") else Nil)
       )
     )
   )
