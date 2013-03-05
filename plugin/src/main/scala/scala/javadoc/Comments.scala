@@ -32,14 +32,17 @@ trait Comments { this: TransformCake ⇒
       val ll = text.replaceAll("\n[ \t]*", "\n ").split("\n")
         .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
       val (_, _, _, l2) = ((false, false, true, List.empty[String]) /: ll) {
+        // insert <p> line upon transition to empty, collapse contiguous empty lines
         case ((pre, code, empty, lines), line @ EmptyLine()) ⇒
-          if (!pre && !empty) (pre, false, true, line :: (lines.head + "</p>") :: lines.tail)
-          else (pre, false, true, line :: lines)
+          val nl =
+            if (pre || line.contains("/**") || line.contains("*/")) line :: lines
+            else if (!pre && !empty) " * <p>" :: (lines.head + (if (code) "</code>" else "")) :: lines.tail
+            else lines
+          (pre, false, true, nl)
         case ((pre, code, empty, lines), line) ⇒
-          val (nc, nl) = codeLine(code, line)
+          val (nc, nl) = if (pre) (code, line) else codeLine(code, line)
           val np = if (line contains "<pre>") true else if (line contains "</pre>") false else pre
-          if (!pre && empty) (np, nc, false, nl :: " * <p>" :: lines)
-          else (np, nc, false, nl :: lines)
+          (np, nc, false, nl :: lines)
       }
       new Comment(pos, l2.reverse map htmlEntity)
     }
@@ -55,7 +58,7 @@ trait Comments { this: TransformCake ⇒
       }
     }
     private def htmlEntity(str: String): String = {
-      str flatMap (ch => if (ch > 127) f"&#x${ch}%04x;" else "" + ch)
+      str flatMap (ch ⇒ if (ch > 127) f"&#x${ch}%04x;" else "" + ch)
     }
   }
   var pos: Position = rangePos(unit.source, 0, 0, 0)

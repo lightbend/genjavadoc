@@ -22,6 +22,8 @@ object Blarb {
 
 /**
  * class A
+ * 
+ * with a second paragraph
  */
 class A {
   /**

@@ -1,8 +1,7 @@
 package akka.rk.buh.is.it;
 // no position
 /**
- * <p>
- * object A</p>
+ * object A
  */
 public  class A$ {
   /**
@@ -11,18 +10,15 @@ public  class A$ {
   public static final A$ MODULE$ = null;
   public   A$ () { throw new RuntimeException(); }
   /**
-   * <p>
-   * def IAmStatic: Int</p>
+   * def IAmStatic: Int
    */
   public  int IAmStatic () { throw new RuntimeException(); }
   /**
-   * <p>
-   * val stattic: java.lang.String</p>
+   * val stattic: java.lang.String
    */
   public  java.lang.String stattic () { throw new RuntimeException(); }
   /**
-   * <p>
-   * static p</p>
+   * static p
    */
   public  java.lang.String p () { throw new RuntimeException(); }
   public  java.lang.Object x () { throw new RuntimeException(); }
