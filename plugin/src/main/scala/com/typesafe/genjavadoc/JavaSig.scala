@@ -1,4 +1,4 @@
-package scala.javadoc
+package com.typesafe.genjavadoc
 
 import scala.reflect.internal.ClassfileConstants
 

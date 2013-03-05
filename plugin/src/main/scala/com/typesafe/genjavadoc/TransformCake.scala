@@ -1,4 +1,4 @@
-package scala.javadoc
+package com.typesafe.genjavadoc
 
 import scala.tools.nsc.Global
 import scala.tools.nsc.transform.Transform

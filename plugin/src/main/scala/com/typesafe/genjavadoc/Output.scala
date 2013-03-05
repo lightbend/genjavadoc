@@ -1,4 +1,4 @@
-package scala.javadoc
+package com.typesafe.genjavadoc
 
 import java.io.PrintStream
 import java.io.File

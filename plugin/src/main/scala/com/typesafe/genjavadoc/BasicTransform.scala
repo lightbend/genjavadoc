@@ -1,4 +1,4 @@
-package scala.javadoc
+package com.typesafe.genjavadoc
 
 trait BasicTransform { this: TransformCake ⇒
   import global._

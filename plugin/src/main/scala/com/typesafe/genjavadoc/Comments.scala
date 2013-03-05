@@ -1,4 +1,4 @@
-package scala.javadoc
+package com.typesafe.genjavadoc
 
 import scala.collection.immutable.TreeMap
 import scala.tools.nsc.ast.parser.SyntaxAnalyzer
