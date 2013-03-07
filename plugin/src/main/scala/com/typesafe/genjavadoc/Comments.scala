@@ -25,11 +25,16 @@ trait Comments { this: TransformCake ⇒
     "[[" -> "{@link ",
     "]]" -> "}")
   val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r
+  val See = """(.*@see )\[\[([^]]+)]]\s*""".r
 
   case class Comment(pos: Position, text: Seq[String])
   object Comment {
     def apply(pos: Position, text: String) = {
       val ll = text.replaceAll("\n[ \t]*", "\n ").split("\n")
+        .map {
+          case See(prefix, link) ⇒ prefix + link
+          case x                 ⇒ x
+        }
         .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
       val (_, _, _, l2) = ((false, false, true, List.empty[String]) /: ll) {
         // insert <p> line upon transition to empty, collapse contiguous empty lines
@@ -42,10 +47,13 @@ trait Comments { this: TransformCake ⇒
         case ((pre, code, empty, lines), line) ⇒
           val (nc, nl) = if (pre) (code, line) else codeLine(code, line)
           val np = if (line contains "<pre>") true else if (line contains "</pre>") false else pre
-          (np, nc, false, nl :: lines)
+          val nl2 = if (pre && np) preLine(line) else line
+          (np, nc, false, nl2 :: lines)
       }
       new Comment(pos, l2.reverse map htmlEntity)
     }
+    private def preLine(line: String): String =
+      line.replace("@", "&#64;").replace("<", "&lt;").replace(">", "&gt;")
     @tailrec private def codeLine(code: Boolean, line: String): (Boolean, String) = {
       val next = replace(line, "`", if (code) "</code>" else "<code>")
       if (next eq line) (code, line)

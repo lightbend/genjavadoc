@@ -24,6 +24,10 @@ object Blarb {
  * class A
  * 
  * with a second paragraph
+ * 
+ * {{{
+ * and some code<with angle brackets>
+ * }}}
  */
 class A {
   /**

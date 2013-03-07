@@ -3,6 +3,10 @@ package akka.rk.buh.is.it;
  * class A
  * <p>
  * with a second paragraph
+ * <p>
+ * <pre><code>
+ * and some code&lt;with angle brackets&gt;
+ * </code></pre>
  */
 public  class A {
   /**
