@@ -6,21 +6,23 @@ This project’s goal is the creation of real JavaDoc for Scala projects. While 
 
 GenJavaDoc is a Scala compiler plugin which emits structurally equivalent Java code for all Scala sources of a project, keeping the ScalaDoc comments (with a few format adaptions). Integration into an SBT build is quite simple:
 
-    val JavaDoc = config("genjavadoc") extend Compile
+~~~ scala
+val JavaDoc = config("genjavadoc") extend Compile
 
-    val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
-      libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %%
-        "genjavadoc-plugin" % "0.1-SNAPSHOT" cross CrossVersion.full),
-      scalacOptions <+= target map (t => "-P:genjavadoc:out=" + t + "/java"),
-      packageDoc in Compile <<= packageDoc in JavaDoc,
-      sources in JavaDoc <<=
-        (target, compile in Compile, sources in Compile) map ((t, c, s) =>
-          (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))),
-      javacOptions in JavaDoc := Seq(),
-      artifactName in packageDoc in JavaDoc :=
-        ((sv, mod, art) =>
-          "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar")
-    )
+val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
+  libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %%
+    "genjavadoc-plugin" % "0.1-SNAPSHOT" cross CrossVersion.full),
+  scalacOptions <+= target map (t => "-P:genjavadoc:out=" + t + "/java"),
+  packageDoc in Compile <<= packageDoc in JavaDoc,
+  sources in JavaDoc <<=
+    (target, compile in Compile, sources in Compile) map ((t, c, s) =>
+      (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))),
+  javacOptions in JavaDoc := Seq(),
+  artifactName in packageDoc in JavaDoc :=
+    ((sv, mod, art) =>
+      "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar")
+)
+~~~
 
 Adding `javadocSettings` to a `Project` will replace the packaging of the API docs to use the JavaDoc instead of the ScalaDoc (i.e. the `XY-java.jar` will then contain JavaDoc). The ScalaDoc can still be generated using the normal `doc` task, whereas the JavaDoc can be generated using `genjavadoc:doc`.
 
