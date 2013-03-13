@@ -16,11 +16,15 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
   val name = "genjavadoc"
   val description = ""
   val components = List[PluginComponent](MyComponent)
- 
-  override def processOptions(options: List[String], error: String => Unit): Unit = {
-    val stream = new StringReader(options mkString "\n")
+
+  override def processOptions(options: List[String], error: String ⇒ Unit): Unit = {
     this.options = new Properties()
-    this.options.load(stream)
+    options foreach { str ⇒
+      str.indexOf('=') match {
+        case -1 ⇒ this.options.setProperty(str, "true")
+        case n  ⇒ this.options.setProperty(str.substring(0, n), str.substring(n + 1))
+      }
+    }
   }
   var options: Properties = _
 
@@ -46,7 +50,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
       override lazy val global: GT = MyComponent.this.global
       override val outputBase: File = GenJavaDocPlugin.this.outputBase
       override val suppressSynthetic: Boolean = GenJavaDocPlugin.this.suppressSynthetic
-      
+
       override def superTransformUnit(unit: CompilationUnit) = super.transformUnit(unit)
       override def superTransform(tree: Tree) = super.transform(tree)
       override def transform(tree: Tree) = newTransform(tree)
