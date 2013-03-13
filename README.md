@@ -26,6 +26,17 @@ val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
 
 Adding `javadocSettings` to a `Project` will replace the packaging of the API docs to use the JavaDoc instead of the ScalaDoc (i.e. the `XY-java.jar` will then contain JavaDoc). The ScalaDoc can still be generated using the normal `doc` task, whereas the JavaDoc can be generated using `genjavadoc:doc`.
 
+### Translation of ScalaDoc comments
+
+Comments found within the Scala sources are transferred to the corresponding Java sources including some modifications. These are necessary since ScalaDoc supports different mark-up elements than JavaDoc. The modifications are:
+
+ * `{{{ ... }}}` is translated to `<pre><code> ... </code></pre>`, where within the pre-formatted text the following are represented by their HTML entities: `@`, `<`, `>`
+ * typographic quotes (double as well as single) are translated to `&rdquo;` and friends
+ * `@see [[ ... ]]` is translated to `@see ...`, but only if on a line on its own
+ * `[[ ... ]]` is translated to `{@link ... }`
+ * `<p>` tokens are placed between paragraphs, collapsing empty lines beforehand
+ * words between backticks are placed between `<code> ... </code>` instead
+
 ## How it Works
 
 ScalaDoc generation is done by a special variant of the Scala compiler, which can in principle emit different output, but the syntax parsed by the ScalaDoc code is the Scala one: the compiler phases which adapt the AST to be more Java-like (to emit JVM byte-code in the end) are not run. On the other hand source comments cannot easily be associated with method signatures parsed from class files, and generating corresponding Java code to be fed into the `javadoc` tool is also no small task.
