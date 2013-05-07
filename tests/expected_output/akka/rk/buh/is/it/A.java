@@ -2,7 +2,10 @@ package akka.rk.buh.is.it;
 /**
  * class A
  * <p>
- * with a second paragraph
+ * with a <code>second</code> paragraph
+ * <p>
+ * and a third one <code>with
+ * a break</code> in some code.
  * <p>
  * <pre><code>
  * and some code&lt;with angle brackets&gt;

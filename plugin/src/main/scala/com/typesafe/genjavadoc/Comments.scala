@@ -47,7 +47,7 @@ trait Comments { this: TransformCake ⇒
         case ((pre, code, empty, lines), line) ⇒
           val (nc, nl) = if (pre) (code, line) else codeLine(code, line)
           val np = if (line contains "<pre>") true else if (line contains "</pre>") false else pre
-          val nl2 = if (pre && np) preLine(line) else line
+          val nl2 = if (pre && np) preLine(nl) else nl
           (np, nc, false, nl2 :: lines)
       }
       new Comment(pos, l2.reverse map htmlEntity)
