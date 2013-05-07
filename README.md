@@ -26,6 +26,71 @@ val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
 
 Adding `javadocSettings` to a `Project` will replace the packaging of the API docs to use the JavaDoc instead of the ScalaDoc (i.e. the `XY-javadoc.jar` will then contain JavaDoc). The ScalaDoc can still be generated using the normal `doc` task, whereas the JavaDoc can be generated using `genjavadoc:doc`.
 
+GenJavaDoc can also be integrated into a Maven build (inspired by [this answer on StackOverflow](http://stackoverflow.com/questions/12301620/how-to-generate-an-aggregated-scaladoc-for-a-maven-site/16288487#16288487)):
+
+~~~ xml
+<profile>
+  <id>javadoc</id>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>doc</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <args>
+            <arg>-P:genjavadoc:out=${project.build.directory}/genjavadoc</arg>
+          </args>
+          <compilerPlugins>
+            <compilerPlugin>
+              <groupId>com.typesafe.genjavadoc</groupId>
+              <artifactId>genjavadoc-plugin_${scala.binary.full.version}</artifactId>
+              <version>0.4</version>
+            </compilerPlugin>
+          </compilerPlugins>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/genjavadoc</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <minmemory>64m</minmemory>
+          <maxmemory>2g</maxmemory>
+          <outputDirectory>${project.build.directory}</outputDirectory>
+          <detectLinks>true</detectLinks>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</profile>
+~~~
+
 ### Translation of ScalaDoc comments
 
 Comments found within the Scala sources are transferred to the corresponding Java sources including some modifications. These are necessary since ScalaDoc supports different mark-up elements than JavaDoc. The modifications are:
