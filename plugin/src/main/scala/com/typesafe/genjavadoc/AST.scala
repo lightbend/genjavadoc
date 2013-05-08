@@ -1,6 +1,7 @@
 package com.typesafe.genjavadoc
 
 import scala.reflect.internal.Flags
+import scala.annotation.tailrec
 
 trait AST { this: TransformCake ⇒
 
@@ -65,7 +66,7 @@ trait AST { this: TransformCake ⇒
     def sig = pattern(s"$ret $name")
   }
   object MethodInfo {
-    def apply(d: DefDef, dummyImpl: Boolean, comment: Seq[String]): MethodInfo = {
+    def apply(d: DefDef, dummyImpl: Boolean, comment: Seq[String], hasVararg: Boolean): MethodInfo = {
       val acc = access(d.mods) + methodFlags(d.mods)
       val (ret, name) =
         if (d.name == nme.CONSTRUCTOR) {
@@ -75,15 +76,20 @@ trait AST { this: TransformCake ⇒
         case p @ PolyType(params, _) ⇒ js(d.symbol, p)
         case _                       ⇒ ""
       }
-      val args = d.vparamss.head map (p ⇒ s"${js(d.symbol, p.tpt.tpe, voidOK = false)} ${mangleMethodName(p)}") mkString ("(", ", ", ")")
+      @tailrec def rec(l: List[ValDef], acc: Vector[String] = Vector.empty): Seq[String] = l match {
+        case x :: Nil if hasVararg ⇒ acc :+ s"${js(d.symbol, x.tpt.tpe, voidOK = false).dropRight(2)}... ${mangleMethodName(x)}"
+        case x :: xs               ⇒ rec(xs, acc :+ s"${js(d.symbol, x.tpt.tpe, voidOK = false)} ${mangleMethodName(x)}")
+        case Nil                   ⇒ acc
+      }
+      val args = rec(d.vparamss.head) mkString ("(", ", ", ")")
       val impl = if (d.mods.isDeferred || !dummyImpl) ";" else "{ throw new RuntimeException(); }"
       val pattern = (n: String) ⇒ s"$acc $tp $n $args $impl"
       MethodInfo(pattern, ret, name, comment)
     }
   }
-  
+
   val keywords = Set("default", "goto", "interface", "switch", "package")
-  
+
   def mangleMethodName(p: ValDef): String = {
     if (keywords contains p.name) s"${p.name}_" else p.name
   }

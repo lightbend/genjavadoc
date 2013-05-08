@@ -1,8 +1,10 @@
 package com.typesafe.genjavadoc
 
+import scala.reflect.internal.Flags
+
 trait BasicTransform { this: TransformCake ⇒
   import global._
-  
+
   def suppressSynthetic: Boolean
 
   def newTransformUnit(unit: CompilationUnit): Unit = {
@@ -70,7 +72,8 @@ trait BasicTransform { this: TransformCake ⇒
           } else (d.pos, endPos(d.rhs))
         // must be called for keeping the “current” position right
         val text = commentText(lookat, end)
-        if (!(suppressSynthetic && (d.mods.isSynthetic || d.name == nme.MIXIN_CONSTRUCTOR)))
+        if (d.mods.hasFlag(Flags.VARARGS)) addVarargsMethod(d, text)
+        else if (!(suppressSynthetic && (d.mods.isSynthetic || d.name == nme.MIXIN_CONSTRUCTOR)))
           addMethod(d, text)
         tree
       case _: ValDef     ⇒ { track(tree) }
@@ -100,7 +103,11 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   def addMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, !c.interface, comment)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, !c.interface, comment, hasVararg = false)))
+  }
+
+  def addVarargsMethod(d: DefDef, comment: Seq[String]) {
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, !c.interface, comment, hasVararg = true)))
   }
 
 }

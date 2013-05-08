@@ -5,6 +5,8 @@
 package akka.rk
 package buh.is.it
 
+import scala.annotation.varargs
+
 trait Y[A] {
   // def pi = 3.14
 }
@@ -84,6 +86,12 @@ class A {
   /**
    * extra comment
    */
+  
+  /**
+   * varargs
+   */
+  @varargs
+  def hello(s: String*) = 0
 
   /**
    * class A.B
@@ -97,6 +105,7 @@ class A {
     /**
      * def b(args: java.lang.String*): Unit
      */
+    @varargs
     def b(args: String*) {
       /**
        * new AnyRef {}

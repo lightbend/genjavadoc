@@ -73,6 +73,10 @@ public  class A {
    * class A.B
    */
   public  class B implements akka.rk.buh.is.it.X {
+    /**
+     * def b(args: java.lang.String*): Unit
+     */
+    public  void b (java.lang.String... args) { throw new RuntimeException(); }
     public   B () { throw new RuntimeException(); }
     /**
      * secondary constructor
@@ -98,6 +102,10 @@ public  class A {
    */
   static public  java.lang.String stattic () { throw new RuntimeException(); }
   static public  java.lang.Object x () { throw new RuntimeException(); }
+  /**
+   * varargs
+   */
+  public  int hello (java.lang.String... s) { throw new RuntimeException(); }
   public   A () { throw new RuntimeException(); }
   /**
    * def p(x: Array[Int]): Predef.type
@@ -131,6 +139,10 @@ public  class A {
    * poly
    */
   public <A extends java.lang.Object, M extends akka.rk.buh.is.it.Y<java.lang.Object>> int poly () { throw new RuntimeException(); }
+  /**
+   * varargs
+   */
+  public  int hello (scala.collection.Seq<java.lang.String> s) { throw new RuntimeException(); }
   /**
    * Accessor for nested Scala object
    */
