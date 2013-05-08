@@ -14,6 +14,9 @@ abstract class Z {
   def pi: Double
 }
 
+/**
+ * I am an object. I have no class.
+ */
 object Blarb {
   sealed trait Fuz
   case object A extends Fuz

@@ -1,4 +1,7 @@
 package akka.rk.buh.is.it;
+/**
+ * I am an object. I have no class.
+ */
 public  class Blarb$ {
   /**
    * Static reference to the singleton instance of this Scala object.

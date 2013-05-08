@@ -1,4 +1,7 @@
 package akka.rk.buh.is.it;
+/**
+ * I am an object. I have no class.
+ */
 public  class Blarb {
   static public  class A$ implements akka.rk.buh.is.it.Blarb.Fuz, scala.Product, scala.Serializable {
     public   A$ () { throw new RuntimeException(); }

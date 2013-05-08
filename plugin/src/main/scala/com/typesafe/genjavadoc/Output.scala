@@ -61,12 +61,21 @@ trait Output { this: TransformCake ⇒
     pairs flatMap { p ⇒
       p match {
         case (Some(o), Some(c))            ⇒ merge(o, c, forwarders)
-        case (Some(o), None) if forwarders ⇒ merge(o, o.copy(comment = Seq(), module = false, members = Vector.empty), forwarders)
+        case (Some(o), None) if forwarders ⇒ merge(o, fabricateCompanion(o), forwarders)
         case (Some(o), None)               ⇒ Vector(mangleModule(o, addMODULE = forwarders, pruneClasses = false))
         case (None, Some(c))               ⇒ Vector(c)
         case (None, None)                  ⇒ ???
       }
     }
+  }
+
+  // goes from object to companion class (not the other way around)
+  private def fabricateCompanion(obj: ClassInfo): ClassInfo = {
+    val com = (obj.comment /: obj.members)((c, mem) ⇒ mem match {
+      case x: MethodInfo if x.name == obj.name ⇒ c ++ x.comment
+      case _                                   ⇒ c
+    })
+    obj.copy(comment = com, module = false, members = Vector.empty)
   }
 
   val PreFilter: PartialFunction[ClassInfo, ClassInfo] = {
