@@ -91,7 +91,7 @@ trait AST { this: TransformCake ⇒
   val keywords = Set("default", "goto", "interface", "switch", "package")
 
   def mangleMethodName(p: ValDef): String = {
-    if (keywords contains p.name) s"${p.name}_" else p.name
+    if (keywords contains p.name.toString) s"${p.name}_" else p.name.toString
   }
 
   def access(m: Modifiers): String = {
