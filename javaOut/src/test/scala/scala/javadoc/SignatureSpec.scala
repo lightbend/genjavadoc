@@ -10,7 +10,7 @@ class SignatureSpec extends WordSpec with MustMatchers {
   "The generated java files" must {
 
     "contain the same methods and classes as the original Scala files" in {
-      val scalaCL = new URLClassLoader(Array(new File("tests/target/scala-2.11/test-classes/").toURI.toURL), classOf[List[_]].getClassLoader)
+      val scalaCL = new URLClassLoader(Array(new File("tests/target/scala-2.11.0-M5/test-classes/").toURI.toURL), classOf[List[_]].getClassLoader)
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
 
@@ -39,7 +39,7 @@ class SignatureSpec extends WordSpec with MustMatchers {
           val js = jsub(n)
           val ss = ssub(n)
 
-          def beEqual[T](t: T) = Matcher { (u: T) ⇒ MatchResult(u == t, s"$u was not equal $t (in $n)", s"$u was equal $t (in $n)") }
+          def beEqual[T: Manifest](t: T) = Matcher { (u: T) ⇒ MatchResult(u == t, s"$u was not equal $t (in $n)", s"$u was equal $t (in $n)") }
           def beAtLeast(t: Int) = Matcher { (u: Int) ⇒ MatchResult(u >= t, s"$u was < $t (in $n)", s"$u was >= $t (in $n)") }
 
           (js.getModifiers & ~7) must beEqual(ss.getModifiers & ~7)
