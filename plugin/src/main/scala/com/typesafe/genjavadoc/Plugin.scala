@@ -18,18 +18,18 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
   val components = List[PluginComponent](MyComponent)
 
   override def processOptions(options: List[String], error: String ⇒ Unit): Unit = {
-    this.options = new Properties()
+    myOptions = new Properties()
     options foreach { str ⇒
       str.indexOf('=') match {
-        case -1 ⇒ this.options.setProperty(str, "true")
-        case n  ⇒ this.options.setProperty(str.substring(0, n), str.substring(n + 1))
+        case -1 ⇒ myOptions.setProperty(str, "true")
+        case n  ⇒ myOptions.setProperty(str.substring(0, n), str.substring(n + 1))
       }
     }
   }
-  var options: Properties = _
+  private var myOptions: Properties = _
 
-  lazy val outputBase = new File(options.getProperty("out", "."))
-  lazy val suppressSynthetic = java.lang.Boolean.parseBoolean(options.getProperty("suppressSynthetic", "true"))
+  lazy val outputBase = new File(myOptions.getProperty("out", "."))
+  lazy val suppressSynthetic = java.lang.Boolean.parseBoolean(myOptions.getProperty("suppressSynthetic", "true"))
 
   private object MyComponent extends PluginComponent with Transform {
 
