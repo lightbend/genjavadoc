@@ -67,7 +67,8 @@ trait Comments { this: TransformCake ⇒
       }
     }
     private def htmlEntity(str: String): String = {
-      str flatMap (ch ⇒ if (ch > 127) f"&#x${ch}%04x;" else "" + ch)
+      // Workaround for SI-8091
+      str flatMap (ch ⇒ if (ch > 127) "&#x%04x;".format(ch.toInt) else "" + ch)
     }
   }
   var pos: Position = rangePos(unit.source, 0, 0, 0)
