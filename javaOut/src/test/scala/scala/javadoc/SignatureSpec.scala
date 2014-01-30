@@ -10,7 +10,7 @@ class SignatureSpec extends WordSpec with MustMatchers {
   "The generated java files" must {
 
     "contain the same methods and classes as the original Scala files" in {
-      val scalaCL = new URLClassLoader(Array(new File("tests/target/scala-2.11.0-M5/test-classes/").toURI.toURL), classOf[List[_]].getClassLoader)
+      val scalaCL = new URLClassLoader(Array(new File("tests/target/scala-2.11.0-M8/test-classes/").toURI.toURL), classOf[List[_]].getClassLoader)
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
 
