@@ -18,7 +18,7 @@ object B extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "0.5",
-    scalaVersion := "2.11.0-M8",
+    scalaVersion := "2.11.0-RC1",
     scalaTestVersion := "2.1.RC1",
     resolvers += Resolver.mavenLocal)
 
@@ -66,6 +66,8 @@ object B extends Build {
     publishTo <<= (version)(v ⇒
       if (v endsWith "-SNAPSHOT") Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
       else Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")),
+    resolvers += "scala-release-temp" at "http://private-repo.typesafe.com/typesafe/scala-release-temp/",
+    pomIncludeRepository := (_ => false),
     pomExtra :=
       (<inceptionYear>2012</inceptionYear>
        <url>http://github.com/typesafehub/genjavadoc</url>
