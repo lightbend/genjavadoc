@@ -11,8 +11,12 @@ trait BasicTransform { this: TransformCake ⇒
     superTransformUnit(unit)
     for (c ← flatten(classes)) {
       val out = file(c.file)
-      out.println(s"package ${c.pckg};")
-      write(out, c)
+      try {
+        out.println(s"package ${c.pckg};")
+        write(out, c)
+      } finally {
+        out.close()
+      }
     }
   }
 

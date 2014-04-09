@@ -12,19 +12,12 @@ object B extends Build {
 
   // so we can set this from automated builds
   lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.")
-  lazy val scalaXmlVersion = settingKey[String]("The version of scala xml to use.")
-  lazy val scalaParserCombinatorsVersion = settingKey[String]("The version of scala parser combinators to use.")
-
-  // TODO: this will be resolved in M8
-  def excludeOldModules(m: ModuleID) = m.exclude("org.scala-lang.modules", "scala-parser-combinators_2.11.0-M6").exclude("org.scala-lang.modules", "scala-xml_2.11.0-M6")
 
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "0.7-SNAPSHOT",
-    scalaVersion := "2.11.0-M7",
-    scalaTestVersion := "2.0.1-SNAP4",
-    scalaXmlVersion := "1.0.0-RC7",
-    scalaParserCombinatorsVersion := "1.0.0-RC5",
+    scalaVersion := "2.10.3",
+    scalaTestVersion := "2.1.3",
     resolvers += Resolver.mavenLocal)
 
   lazy val top = Project(
@@ -39,7 +32,7 @@ object B extends Build {
     base = file("plugin"),
     settings = defaults ++ Seq(
       libraryDependencies ++= Seq(
-        excludeOldModules("org.scala-lang" % "scala-compiler" % scalaVersion.value)
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value
       ),
       crossVersion := CrossVersion.full,
       exportJars := true))
@@ -50,7 +43,7 @@ object B extends Build {
     settings = defaults ++ Seq(
       publishArtifact := false,
       libraryDependencies ++= Seq(
-        excludeOldModules("org.scalatest" %% "scalatest" % scalaTestVersion.value % "test")),
+        "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"),
       browse := false,
       scalacOptions in Compile <<= (packageBin in plugin in Compile, scalacOptions in Compile, clean, browse) map (
         (pack, opt, clean, b) ⇒
@@ -64,7 +57,7 @@ object B extends Build {
     settings = defaults ++ Seq(
       publishArtifact := false,
       libraryDependencies ++= Seq(
-        excludeOldModules("org.scalatest" %% "scalatest" % scalaTestVersion.value % "test")),
+        "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"),
       unmanagedSources in Compile <<= (baseDirectory in tests, compile in tests in Test) map ((b, c) ⇒ (b / "target/java/akka" ** "*.java").get)))
 
   lazy val defaults = Project.defaultSettings ++ Seq(

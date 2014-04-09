@@ -11,7 +11,7 @@ val JavaDoc = config("genjavadoc") extend Compile
 
 val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
   libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %%
-    "genjavadoc-plugin" % "0.5" cross CrossVersion.full),
+    "genjavadoc-plugin" % "0.7" cross CrossVersion.full),
   scalacOptions <+= target map (t => "-P:genjavadoc:out=" + (t / "java")),
   packageDoc in Compile <<= packageDoc in JavaDoc,
   sources in JavaDoc <<=
@@ -53,7 +53,7 @@ GenJavaDoc can also be integrated into a Maven build (inspired by [this answer o
             <compilerPlugin>
               <groupId>com.typesafe.genjavadoc</groupId>
               <artifactId>genjavadoc-plugin_${scala.binary.full.version}</artifactId>
-              <version>0.5</version>
+              <version>0.7</version>
             </compilerPlugin>
           </compilerPlugins>
         </configuration>
