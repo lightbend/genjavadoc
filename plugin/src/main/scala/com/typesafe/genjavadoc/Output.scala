@@ -32,6 +32,7 @@ trait Output { this: TransformCake ⇒
     def apply(s: String) { println(" " * ind + s) }
     def indent() { ind += 2 }
     def outdent() { ind -= 2 }
+    def close(): Unit
   }
 
   def file(name: String): Out = {
@@ -40,6 +41,7 @@ trait Output { this: TransformCake ⇒
     val w = new PrintStream(f, "UTF-8")
     new Out {
       def println(s: String) { w.println(s) }
+      def close() { w.close() }
     }
   }
 

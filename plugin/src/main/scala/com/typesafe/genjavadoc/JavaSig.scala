@@ -108,8 +108,8 @@ trait JavaSig { this: TransformCake ⇒
           boxedSig(parent)
         case ClassInfoType(parents, _, _) ⇒
           superSig(parents)
-        case AnnotatedType(_, atp, _) ⇒
-          jsig(atp, existentiallyBound, toplevel, primitiveOK)
+        case at: AnnotatedType ⇒
+          jsig(at.underlying, existentiallyBound, toplevel, primitiveOK)
         case BoundedWildcardType(bounds) ⇒
           println("something's wrong: " + sym0 + ":" + sym0.tpe + " has a bounded wildcard type")
           jsig(bounds.hi, existentiallyBound, toplevel, primitiveOK)
@@ -161,8 +161,8 @@ trait JavaSig { this: TransformCake ⇒
             parents foreach traverse
           case ClassInfoType(parents, _, _) ⇒
             parents foreach traverse
-          case AnnotatedType(_, atp, _) ⇒
-            traverse(atp)
+          case at: AnnotatedType ⇒
+            traverse(at.underlying)
           case _ ⇒
             mapOver(tp)
         }

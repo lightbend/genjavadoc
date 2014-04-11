@@ -67,8 +67,7 @@ trait Comments { this: TransformCake ⇒
       }
     }
     private def htmlEntity(str: String): String = {
-      // Workaround for SI-8091
-      str flatMap (ch ⇒ if (ch > 127) "&#x%04x;".format(ch.toInt) else "" + ch)
+      str flatMap (ch ⇒ if (ch > 127) f"&#x${ch}%04x;" else "" + ch)
     }
   }
   var pos: Position = rangePos(unit.source, 0, 0, 0)
@@ -83,38 +82,45 @@ trait Comments { this: TransformCake ⇒
 
   new parser.UnitParser(unit) {
     override def newScanner = new parser.UnitScanner(unit) {
-      private var docBuffer: StringBuilder = null // buffer for comments (non-null while scanning)
-      private var inDocComment = false // if buffer contains double-star doc comment
+      // This is for 2.10
+      override def foundComment(text: String, start: Int, end: Int) {
+        val pos = global.rangePos(source, start, start, end)
+        comments += pos -> Comment(pos, text)
+      }
 
-      override protected def putCommentChar() {
-        if (inDocComment)
-          docBuffer append ch
-
-        nextChar()
-      }
-      override def skipDocComment(): Unit = {
-        inDocComment = true
-        docBuffer = new StringBuilder("/**")
-        super.skipDocComment()
-      }
-      override def skipBlockComment(): Unit = {
-        inDocComment = false
-        docBuffer = new StringBuilder("/*")
-        super.skipBlockComment()
-      }
-      override def skipComment(): Boolean = {
-        // emit a block comment; if it's double-star, make Doc at this pos
-        def foundStarComment(start: Int, end: Int) = try {
-          val str = docBuffer.toString
-          val pos = new RangePosition(unit.source, start, start, end)
-          comments += pos -> Comment(pos, str)
-          true
-        } finally {
-          docBuffer = null
-          inDocComment = false
-        }
-        super.skipComment() && ((docBuffer eq null) || foundStarComment(offset, charOffset - 2))
-      }
+      // This is for 2.11
+//      private var docBuffer: StringBuilder = null // buffer for comments (non-null while scanning)
+//      private var inDocComment = false // if buffer contains double-star doc comment
+//
+//      override protected def putCommentChar() {
+//        if (inDocComment)
+//          docBuffer append ch
+//
+//        nextChar()
+//      }
+//      override def skipDocComment(): Unit = {
+//        inDocComment = true
+//        docBuffer = new StringBuilder("/**")
+//        super.skipDocComment()
+//      }
+//      override def skipBlockComment(): Unit = {
+//        inDocComment = false
+//        docBuffer = new StringBuilder("/*")
+//        super.skipBlockComment()
+//      }
+//      override def skipComment(): Boolean = {
+//        // emit a block comment; if it's double-star, make Doc at this pos
+//        def foundStarComment(start: Int, end: Int) = try {
+//          val str = docBuffer.toString
+//          val pos = new RangePosition(unit.source, start, start, end)
+//          comments += pos -> Comment(pos, str)
+//          true
+//        } finally {
+//          docBuffer = null
+//          inDocComment = false
+//        }
+//        super.skipComment() && ((docBuffer eq null) || foundStarComment(offset, charOffset - 2))
+//      }
     }
   }.parse()
 

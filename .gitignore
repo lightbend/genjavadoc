@@ -7,3 +7,5 @@ target/
 /*.scala
 /*.icode
 /*.class
+.idea/
+.idea_modules/
