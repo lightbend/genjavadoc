@@ -15,7 +15,7 @@ object B extends Build {
 
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
-    version := "0.7",
+    version := "0.8-SNAPSHOT",
     scalaVersion := "2.10.4",
     crossScalaVersions := (0 to 4).map(i => s"2.10.$i") ++ Seq("2.11.0-RC4"),
     scalaTestVersion := "2.1.3",
