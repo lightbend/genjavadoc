@@ -16,7 +16,8 @@ object B extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "0.7-SNAPSHOT",
-    scalaVersion := "2.10.3",
+    scalaVersion := "2.10.4",
+    crossScalaVersions := (0 to 4).map(i => s"2.10.$i") ++ Seq("2.11.0-RC4"),
     scalaTestVersion := "2.1.3",
     resolvers += Resolver.mavenLocal)
 
@@ -34,6 +35,7 @@ object B extends Build {
       libraryDependencies ++= Seq(
         "org.scala-lang" % "scala-compiler" % scalaVersion.value
       ),
+      unmanagedSourceDirectories in Compile += (sourceDirectory in Compile).value / sourceDirName(scalaVersion.value),
       crossVersion := CrossVersion.full,
       exportJars := true))
 
@@ -89,4 +91,14 @@ object B extends Build {
           yield <developer><id>{ id }</id><name>{ user }</name></developer>
       }
     </developers>
+
+  def sourceDirName(version: String): String = {
+    val parts = version.split("\\.").toList
+    // this is here to make it easy to compensate for changes in minor versions
+    parts match {
+      case "2" :: "10" :: _ => "scala-2.10"
+      case "2" :: "11" :: _ => "scala-2.11"
+      case _ => "unknow-scala-version"
+    }
+  }
 }
