@@ -39,6 +39,7 @@ object Blarb {
  *
  * @see [[Blarb]]
  * @see [[http://some.url.here]]
+ * @see [[https://some.other.url.here]]
  */
 class A {
   /**

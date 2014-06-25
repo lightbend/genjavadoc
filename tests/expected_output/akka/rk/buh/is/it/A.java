@@ -13,6 +13,7 @@ package akka.rk.buh.is.it;
  * <p>
  * @see Blarb
  * @see <a href="http://some.url.here"/>
+ * @see <a href="https://some.other.url.here"/>
  */
 public  class A {
   /**

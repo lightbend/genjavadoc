@@ -26,6 +26,7 @@ trait BaseComments { this: TransformCake ⇒
     "]]" -> "}")
   val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r
   val See = """(.*@see )\[\[([^]]+)]]\s*""".r
+  val HttpLink = "^https?://.*".r
 
   case class Comment(pos: Position, text: Seq[String])
   object Comment {
@@ -33,7 +34,7 @@ trait BaseComments { this: TransformCake ⇒
       val ll = text.replaceAll("\n[ \t]*", "\n ").split("\n")
         .map {
           case See(prefix, link) ⇒
-            if (link.startsWith("http://"))
+            if (HttpLink.findFirstIn(link).isDefined)
               s"""$prefix<a href="$link"/>"""
             else
               s"$prefix$link"
