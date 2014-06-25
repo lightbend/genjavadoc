@@ -10,8 +10,24 @@ import java.io.File
 import java.util.Properties
 import java.io.StringReader
 
+object GenJavaDocPlugin {
+
+  val javaKeywords = Set("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
+    "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if",
+    "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "package", "private",
+    "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
+    "throw", "throws", "transient", "try", "void", "volatile", "while")
+
+  private val defaultFilterString = "$$"
+
+  def stringToFilter(s: String): Set[String] = s.split(",").toSet
+
+  val defaultFilteredStrings = stringToFilter(defaultFilterString)
+}
+
 class GenJavaDocPlugin(val global: Global) extends Plugin {
   import global._
+  import GenJavaDocPlugin._
 
   val name = "genjavadoc"
   val description = ""
@@ -30,6 +46,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
 
   lazy val outputBase = new File(myOptions.getProperty("out", "."))
   lazy val suppressSynthetic = java.lang.Boolean.parseBoolean(myOptions.getProperty("suppressSynthetic", "true"))
+  lazy val filteredStrings: Set[String] = stringToFilter(myOptions.getProperty("filter", defaultFilterString))
 
   private object MyComponent extends PluginComponent with Transform {
 
@@ -55,7 +72,8 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
       override def superTransform(tree: Tree) = super.transform(tree)
       override def transform(tree: Tree) = newTransform(tree)
       override def transformUnit(unit: CompilationUnit) = newTransformUnit(unit)
-
+      override def javaKeywords = GenJavaDocPlugin.javaKeywords
+      override def filteredStrings = GenJavaDocPlugin.this.filteredStrings
     }
   }
 }

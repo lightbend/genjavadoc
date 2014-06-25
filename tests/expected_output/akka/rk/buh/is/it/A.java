@@ -10,6 +10,9 @@ package akka.rk.buh.is.it;
  * <pre><code>
  * and some code&lt;with angle brackets&gt;
  * </code></pre>
+ * <p>
+ * @see Blarb
+ * @see <a href="http://some.url.here"/>
  */
 public  class A {
   /**
@@ -56,6 +59,10 @@ public  class A {
    * object C1
    */
   static public  class C1$ {
+    /**
+     * Static reference to the singleton instance of this Scala object.
+     */
+    public static final C1$ MODULE$ = null;
     public   C1$ () { throw new RuntimeException(); }
     /**
      * A.C1.method
@@ -67,6 +74,10 @@ public  class A {
    * object A.NoComment
    */
   static private  class NoComment$ {
+    /**
+     * Static reference to the singleton instance of this Scala object.
+     */
+    public static final NoComment$ MODULE$ = null;
     public   NoComment$ () { throw new RuntimeException(); }
   }
   /**
@@ -77,6 +88,7 @@ public  class A {
      * def b(args: java.lang.String*): Unit
      */
     public  void b (java.lang.String... args) { throw new RuntimeException(); }
+    // not preceding
     public   B () { throw new RuntimeException(); }
     /**
      * secondary constructor
@@ -106,6 +118,7 @@ public  class A {
    * varargs
    */
   public  int hello (java.lang.String... s) { throw new RuntimeException(); }
+  // not preceding
   public   A () { throw new RuntimeException(); }
   /**
    * def p(x: Array[Int]): Predef.type
@@ -119,6 +132,10 @@ public  class A {
    * def map
    */
   public  scala.collection.immutable.Map<java.lang.Object, java.lang.String> map () { throw new RuntimeException(); }
+  /**
+   * scala.Nothing should be converted to scala.runtime.Nothing$.
+   */
+  public  scala.runtime.Nothing$ nothing (java.lang.String msg) { throw new RuntimeException(); }
   /**
    * Unitparam
    */

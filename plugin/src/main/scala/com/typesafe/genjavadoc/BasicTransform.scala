@@ -1,9 +1,18 @@
 package com.typesafe.genjavadoc
 
 import scala.reflect.internal.Flags
+import java.util.regex.Pattern
 
 trait BasicTransform { this: TransformCake ⇒
   import global._
+
+  def skippedName(name: String): Boolean = {
+    val startsWithNumber = "^\\d".r
+    (this.filteredStrings.exists(s => name.contains(s))
+      || this.javaKeywords.contains(name)
+      || startsWithNumber.findFirstIn(name).isDefined
+      || name.equals("$init$"))
+  }
 
   def suppressSynthetic: Boolean
 
@@ -76,9 +85,12 @@ trait BasicTransform { this: TransformCake ⇒
           } else (d.pos, endPos(d.rhs))
         // must be called for keeping the “current” position right
         val text = commentText(lookat, end)
-        if (d.mods.hasFlag(Flags.VARARGS)) addVarargsMethod(d, text)
-        else if (!(suppressSynthetic && (d.mods.isSynthetic || d.name == nme.MIXIN_CONSTRUCTOR || d.name.toString.contains('$'))))
-          addMethod(d, text)
+        val name = d.name.toString
+        if (!skippedName(name)) {
+          if (d.mods.hasFlag(Flags.VARARGS)) addVarargsMethod(d, text)
+          else if (!(suppressSynthetic && (d.mods.isSynthetic || d.name == nme.MIXIN_CONSTRUCTOR || name.contains('$'))))
+            addMethod(d, text)
+        }
         tree
       case _: ValDef     ⇒ { track(tree) }
       case _: PackageDef ⇒ { track(tree); superTransform(tree) }
@@ -96,7 +108,7 @@ trait BasicTransform { this: TransformCake ⇒
 
   def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
     val old = clazz
-    clazz = Some(ClassInfo(c, comment))
+    clazz = Some(ClassInfo(c, comment, old.isEmpty))
     val ret = block
     clazz = old match {
       case None ⇒
@@ -107,11 +119,11 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   def addMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, !c.interface, comment, hasVararg = false)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false)))
   }
 
   def addVarargsMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, !c.interface, comment, hasVararg = true)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true)))
   }
 
 }

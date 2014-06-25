@@ -5,7 +5,25 @@ import org.scalatest.matchers.{ MustMatchers, Matcher, MatchResult }
 import java.net.URLClassLoader
 import java.io.File
 
+object SignatureSpec {
+  // this should match up against the definition in GenJavaDocPlugin
+  val javaKeywords = Set("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
+    "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if",
+    "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "package", "private",
+    "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
+    "throw", "throws", "transient", "try", "void", "volatile", "while")
+
+  // this should match up against the definition in GenJavaDocPlugin
+  // with the addition of "$lzycompute", which is special
+  val defaultFilteredStrings = Set("$$", "$lzycompute")
+
+  // they can't start with numbers either
+  val startsWithNumber = "^\\d".r
+}
+
 class SignatureSpec extends WordSpec with MustMatchers {
+
+  import SignatureSpec._
 
   "The generated java files" must {
 
@@ -16,8 +34,6 @@ class SignatureSpec extends WordSpec with MustMatchers {
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
 
-      val keywords = Set("default", "goto", "interface", "switch")
-
       def check(jc: Class[_]) {
         val sc = scalaCL.loadClass(jc.getName)
 
@@ -25,14 +41,14 @@ class SignatureSpec extends WordSpec with MustMatchers {
           MatchResult(s == j, s"$s did not match $j (in $jc)", s"$s matched $j (in $jc)")
         }
 
-        val jm = getMethods(jc)
-        val sm = getMethods(sc)
+        val jm = getMethods(jc, filter = false)
+        val sm = getMethods(sc, filter = true)
         printIfNotEmpty(sm -- jm, "missing methods:")
         printIfNotEmpty(jm -- sm, "extraneous methods:")
         sm must matchJava(jm)
 
-        val jsub = getClasses(jc)
-        val ssub = getClasses(sc)
+        val jsub = getClasses(jc, filter = false)
+        val ssub = getClasses(sc, filter = true)
         printIfNotEmpty(ssub.keySet -- jsub.keySet, "missing classes:")
         printIfNotEmpty(jsub.keySet -- ssub.keySet, "extraneous classes:")
         ssub.keySet must matchJava(jsub.keySet)
@@ -59,14 +75,16 @@ class SignatureSpec extends WordSpec with MustMatchers {
         s.toList.sorted foreach println
       }
       
-      def getMethods(c: Class[_]): Set[String] = {
+      def getMethods(c: Class[_], filter: Boolean): Set[String] = {
         import language.postfixOps
-        c.getDeclaredMethods filterNot (x ⇒ x.getName.contains('$') || keywords.contains(x.getName)) map (_.toGenericString) toSet
+        c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists {s => x.getName.contains(s) }
+          || javaKeywords.contains(x.getName)
+          || startsWithNumber.findFirstIn(x.getName).isDefined)).map(_.toGenericString).toSet
       }
 
-      def getClasses(c: Class[_]): Map[String, Class[_]] = {
+      def getClasses(c: Class[_], filter: Boolean): Map[String, Class[_]] = {
         import language.postfixOps
-        Map() ++ c.getDeclaredClasses.filterNot(_.getName contains "anon").map(x ⇒ x.getName -> x)
+        c.getDeclaredClasses.collect { case x if(!filter || !(x.getName contains "anon")) => x.getName -> x }.toMap
       }
 
       check(Class.forName("akka.rk.buh.is.it.A"))
@@ -76,6 +94,14 @@ class SignatureSpec extends WordSpec with MustMatchers {
       check(Class.forName("akka.rk.buh.is.it.X"))
       check(Class.forName("akka.rk.buh.is.it.Y"))
       check(Class.forName("akka.rk.buh.is.it.Z"))
+      check(Class.forName("akka.rk.buh.is.it.PPrivate"))
+      check(Class.forName("akka.rk.buh.is.it.PPrivate$"))
+      check(Class.forName("akka.rk.buh.is.it.Private"))
+      check(Class.forName("akka.rk.buh.is.it.Private$"))
+      check(Class.forName("akka.rk.buh.is.it.PProtected"))
+      check(Class.forName("akka.rk.buh.is.it.PProtected$"))
+      check(Class.forName("akka.rk.buh.is.it.PTrait"))
+      check(Class.forName("akka.rk.buh.is.it.AnAbstractTypeRef"))
     }
 
   }

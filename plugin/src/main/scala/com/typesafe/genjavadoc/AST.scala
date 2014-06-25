@@ -21,6 +21,7 @@ trait AST { this: TransformCake ⇒
     filepattern: String ⇒ String,
     members: Vector[Templ],
     interface: Boolean,
+    static: Boolean,
     var firstConstructor: Boolean) extends Templ {
 
     def sig = pattern(name)
@@ -34,10 +35,10 @@ trait AST { this: TransformCake ⇒
     }
   }
   object ClassInfo {
-    def apply(c: ImplDef, comment: Seq[String]): ClassInfo = {
+    def apply(c: ImplDef, comment: Seq[String], topLevel: Boolean): ClassInfo = {
       c match {
         case ClassDef(mods, name, tparams, impl) ⇒
-          val acc = access(mods)
+          val acc = access(mods, topLevel)
           val fl = flags(mods)
           val kind = if (mods.isInterface || mods.isTrait) "interface" else "class"
           val name = c.name.toString
@@ -57,7 +58,7 @@ trait AST { this: TransformCake ⇒
           val sig = (n: String) ⇒ s"$acc $fl $kind $n$tp$parent$interfaces"
           val file = (n: String) ⇒ s"${c.symbol.enclosingPackage.fullName('/')}/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
-          ClassInfo(name, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", true)
+          ClassInfo(name, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", false, true)
       }
     }
   }
@@ -66,8 +67,8 @@ trait AST { this: TransformCake ⇒
     def sig = pattern(s"$ret $name")
   }
   object MethodInfo {
-    def apply(d: DefDef, dummyImpl: Boolean, comment: Seq[String], hasVararg: Boolean): MethodInfo = {
-      val acc = access(d.mods) + methodFlags(d.mods)
+    def apply(d: DefDef, interface: Boolean, comment: Seq[String], hasVararg: Boolean): MethodInfo = {
+      val acc = methodAccess(d.mods, interface) + methodFlags(d.mods, interface)
       val (ret, name) =
         if (d.name == nme.CONSTRUCTOR) {
           ("", d.symbol.enclClass.name.toString)
@@ -82,36 +83,41 @@ trait AST { this: TransformCake ⇒
         case Nil                   ⇒ acc
       }
       val args = rec(d.vparamss.head) mkString ("(", ", ", ")")
-      val impl = if (d.mods.isDeferred || !dummyImpl) ";" else "{ throw new RuntimeException(); }"
+      val impl = if (d.mods.isDeferred || interface) ";" else "{ throw new RuntimeException(); }"
       val pattern = (n: String) ⇒ s"$acc $tp $n $args $impl"
       MethodInfo(pattern, ret, name, comment)
     }
   }
 
-  val keywords = Set("default", "goto", "interface", "switch", "package")
-
   def mangleMethodName(p: ValDef): String = {
-    if (keywords contains p.name.toString) s"${p.name}_" else p.name.toString
+    if (this.javaKeywords contains p.name.toString) s"${p.name}_" else p.name.toString
   }
 
-  def access(m: Modifiers): String = {
+  def access(m: Modifiers, topLevel: Boolean): String = {
     if (m.isPublic) "public"
-    else if (m.isProtected) "protected"
-    else if (m.isPrivate) "private"
-    else "private" // this is the case for “private[xy]”
+    else if (m.isProtected && !topLevel) "protected"
+    else if (m.isPrivate && !topLevel) "private"
+    else "public" // this is the case for “private[xy]” and top level classes
+  }
+
+  def methodAccess(m: Modifiers, interface: Boolean): String = {
+    if (m.isPublic) "public"
+    else if (m.isProtected && !interface) "protected"
+    else if (m.isPrivate && !interface) "private"
+    else "public" // this is the case for “private[xy]” and interfaces
   }
 
   def flags(m: Modifiers): String = {
     var f: List[String] = Nil
     if (m.isFinal) f ::= "final"
-    if (m.hasAbstractFlag && !m.isInterface) f ::= "abstract"
+    if (m.hasAbstractFlag && !(m.isInterface || m.isTrait)) f ::= "abstract"
     f mkString " "
   }
 
-  def methodFlags(m: Modifiers): String = {
+  def methodFlags(m: Modifiers, interface: Boolean): String = {
     var f: List[String] = Nil
-    if (m.isFinal) f ::= "final"
-    if (m.isDeferred) f ::= "abstract"
+    if (m.isFinal && !interface) f ::= "final"
+    if (m.isDeferred && !interface) f ::= "abstract"
     (if (f.nonEmpty) " " else "") + f.mkString(" ")
   }
 

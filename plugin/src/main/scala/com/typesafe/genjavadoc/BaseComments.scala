@@ -32,7 +32,11 @@ trait BaseComments { this: TransformCake ⇒
     def apply(pos: Position, text: String) = {
       val ll = text.replaceAll("\n[ \t]*", "\n ").split("\n")
         .map {
-          case See(prefix, link) ⇒ prefix + link
+          case See(prefix, link) ⇒
+            if (link.startsWith("http://"))
+              s"""$prefix<a href="$link"/>"""
+            else
+              s"$prefix$link"
           case x                 ⇒ x
         }
         .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
