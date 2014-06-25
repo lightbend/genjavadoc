@@ -36,6 +36,9 @@ object Blarb {
  * {{{
  * and some code<with angle brackets>
  * }}}
+ *
+ * @see [[Blarb]]
+ * @see [[http://some.url.here]]
  */
 class A {
   /**
@@ -57,7 +60,20 @@ class A {
   def goto = 0 // this shall not be emitted
   def interface = 0 // this shall not be emitted
   def switch = 0 // this shall not be emitted
-  
+
+  val `public` = 0 // this shall not be emitted
+  val `private` = 0 // this shall not be emitted
+  val `package` = 0 // this shall not be emitted
+  val `static` = 0 // this shall not be emitted
+  val `class` = 0 // this shall not be emitted
+
+  val `4711-whatever` = 0 // this shall not be emitted
+
+  /**
+   * scala.Nothing should be converted to scala.runtime.Nothing$.
+   */
+  def nothing(msg: String) = throw new IllegalArgumentException(msg)
+
   /**
    * Unitparam
    */
@@ -183,4 +199,47 @@ object A {
    */
   p
   val x = new AnyRef
+}
+
+/**
+ * Privacy is an illusion.
+ */
+private[it] object PPrivate {
+  def method = ()
+}
+
+/**
+ * Privacy is an illusion.
+ */
+private object Private {
+  def method = ()
+}
+
+/**
+ * Use protection.
+ */
+protected[it] object PProtected {
+  def method = ()
+}
+
+/**
+ * Privacy is an illusion.
+ */
+private[it] trait PTrait {
+  def method = ()
+  protected final def protectedMethod = ()
+}
+
+/**
+ * AbstractTypeRef
+ */
+trait AnAbstractTypeRef {
+  type Self <: AnAbstractTypeRef
+
+  def someMethod(): Self = this.asInstanceOf[Self]
+
+  /**
+   * And a parameter type ref.
+   */
+  def otherMethod(t: PTrait, string: String): t.type = t
 }

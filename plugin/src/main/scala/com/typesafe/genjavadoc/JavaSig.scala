@@ -119,23 +119,33 @@ trait JavaSig { this: TransformCake ⇒
           else jsig(etp)
       }
     }
-    def toJava(info: Type): String = info.dealias.typeSymbol match {
-      case UnitClass    ⇒ if (voidOK) "void" else "scala.runtime.BoxedUnit"
-      case BooleanClass ⇒ "boolean"
-      case ByteClass    ⇒ "byte"
-      case ShortClass   ⇒ "short"
-      case CharClass    ⇒ "char"
-      case IntClass     ⇒ "int"
-      case LongClass    ⇒ "long"
-      case FloatClass   ⇒ "float"
-      case DoubleClass  ⇒ "double"
-      case ArrayClass   ⇒ jsig(info)
-      case AnyClass     ⇒ "Object"
-      case _ ⇒
-        info.dealias match {
-          case RefinedType(head :: tail, _) ⇒ fullNameInSig(head.typeSymbol)
-          case _                            ⇒ fullNameInSig(info.typeSymbol)
-        }
+    def toJava(info0: Type): String = {
+      val info = info0.dealias
+      info.typeSymbol match {
+        case UnitClass ⇒ if (voidOK) "void" else "scala.runtime.BoxedUnit"
+        case NothingClass ⇒ "scala.runtime.Nothing$"
+        case BooleanClass ⇒ "boolean"
+        case ByteClass ⇒ "byte"
+        case ShortClass ⇒ "short"
+        case CharClass ⇒ "char"
+        case IntClass ⇒ "int"
+        case LongClass ⇒ "long"
+        case FloatClass ⇒ "float"
+        case DoubleClass ⇒ "double"
+        case ArrayClass ⇒ jsig(info)
+        case AnyClass ⇒ "Object"
+        case _ ⇒
+          info match {
+            case r @ RefinedType(head :: tail, _) ⇒
+              fullNameInSig(head.typeSymbol)
+            case TypeRef(pre, sym, _) if sym.isAbstractType ⇒
+              fullNameInSig(pre.typeSymbol)
+            case TypeRef(pre, sym, _) if sym.isValueParameter ⇒
+              fullNameInSig(info0.memberType(sym).typeSymbol)
+            case _ ⇒
+              fullNameInSig(info0.typeSymbol)
+          }
+      }
     }
     val _info = removeThis(info)
     if (needsJavaSig(info)) {

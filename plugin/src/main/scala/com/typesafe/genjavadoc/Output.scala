@@ -82,14 +82,14 @@ trait Output { this: TransformCake ⇒
 
   val PreFilter: PartialFunction[ClassInfo, ClassInfo] = {
     case c if c.name != "package" ⇒
-      val nm = c.members filterNot (keywords contains _.name)
+      val nm = c.members filterNot (this.javaKeywords contains _.name)
       if (nm == c.members) c
       else c.copy(members = nm)
   }
 
   private def mangleModule(obj: ClassInfo, addMODULE: Boolean, pruneClasses: Boolean): ClassInfo = {
     val moduleInstance =
-      if (addMODULE)
+      if (addMODULE || (obj.module && obj.static))
         Some(MethodInfo(x ⇒ x, "public static final", s"${obj.name}$$ MODULE$$ = null;",
           Seq("/**", " * Static reference to the singleton instance of this Scala object.", " */")))
       else None
@@ -109,9 +109,9 @@ trait Output { this: TransformCake ⇒
           m.copy(comment = Seq("/**", " * Accessor for nested Scala object", " */"))
         else m
     }
-    val staticClasses = obj.members collect { case c: ClassInfo ⇒ c.copy(pattern = n ⇒ "static " + c.pattern(n)) }
+    val staticClasses = obj.members collect { case c: ClassInfo ⇒ c.copy(pattern = n ⇒ "static " + c.pattern(n), static = true) }
     val staticMethods =
-      if (!forwarders) Vector.empty
+      if (!forwarders || cls.interface) Vector.empty
       else obj.members collect {
         case m: MethodInfo if !(m.name == obj.name) && !cls.members.exists(_.name == m.name) ⇒
           m.copy(pattern = n ⇒ "static " + m.pattern(n))
