@@ -54,17 +54,17 @@ class SignatureSpec extends WordSpec with Matchers {
       val doc = IO.tempDir("java")
       val docPath = doc.getAbsolutePath
 
-      val scalac = new GenJavaDocCompiler(
+      val scalac = new GenJavaDocCompiler(Seq(
         s"genjavadoc:out=$docPath",
         "genjavadoc:suppressSynthetic=false"
-      )
+      ))
 
       val javaSources = expectedClasses.map{cls =>
         docPath + "/" + cls.replace(".", "/") + ".java"
       }
       val javac = new JavaCompiler
 
-      scalac.compile(BasicSpec.scalaSources)
+      scalac.compile(BasicSpec.sources)
       javac.compile(javaSources)
 
       val scalaCL = new URLClassLoader(Array(scalac.target.getAbsoluteFile.toURI.toURL), classOf[List[_]].getClassLoader)

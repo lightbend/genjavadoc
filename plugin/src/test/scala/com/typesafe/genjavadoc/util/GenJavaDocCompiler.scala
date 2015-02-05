@@ -9,7 +9,7 @@ import scala.tools.nsc.{Global, Settings}
 /** An instance of the Scala compiler with the genjavadoc plugin enabled
   * @param params additional parameters to pass to the compiler
   */
-class GenJavaDocCompiler(params: String*) {
+class GenJavaDocCompiler(params: Seq[String]) {
 
   private val settings = new Settings
   val reporter = new ConsoleReporter(settings)
