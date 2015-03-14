@@ -97,7 +97,7 @@ trait AST { this: TransformCake ⇒
     if (m.isPublic) "public"
     else if (m.isProtected && !topLevel) "protected"
     else if (m.isPrivate && !topLevel) "private"
-    else if (m.privateWithin != tpnme.EMPTY) "private"
+    else if (m.privateWithin != tpnme.EMPTY) ""
     else "public" // this is the case for top level classes
   }
 
@@ -105,7 +105,7 @@ trait AST { this: TransformCake ⇒
     if (m.isPublic) "public"
     else if (m.isProtected && !interface) "protected"
     else if (m.isPrivate && !interface) "private"
-    else if (m.privateWithin != tpnme.EMPTY) "private"
+    else if (m.privateWithin != tpnme.EMPTY) ""
     else "public" // this is the case for interfaces
   }
 
