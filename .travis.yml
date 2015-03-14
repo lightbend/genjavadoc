@@ -1,0 +1,7 @@
+# Use Docker-based container (instead of OpenVZ)
+sudo: false
+language: scala
+jdk:
+  - openjdk6
+# Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
+script: sbt -J-XX:ReservedCodeCacheSize=128m +test
