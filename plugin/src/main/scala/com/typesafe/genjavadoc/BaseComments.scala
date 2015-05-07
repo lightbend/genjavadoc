@@ -22,6 +22,8 @@ trait BaseComments { this: TransformCake ⇒
     "”" -> "&rdquo;",
     "‘" -> "&lsquo;",
     "’" -> "&rsquo;",
+    "&" -> "&amp;",
+    "<p/>" -> "<p></p>",
     "[[" -> "{@link ",
     "]]" -> "}")
   val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r
@@ -38,7 +40,7 @@ trait BaseComments { this: TransformCake ⇒
               s"""$prefix<a href="$link"/>"""
             else
               s"$prefix$link"
-          case x                 ⇒ x
+          case x ⇒ x
         }
         .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
       val (_, _, _, l2) = ((false, false, true, List.empty[String]) /: ll) {
@@ -58,7 +60,7 @@ trait BaseComments { this: TransformCake ⇒
       new Comment(pos, l2.reverse map htmlEntity)
     }
     private def preLine(line: String): String =
-      line.replace("@", "&#64;").replace("<", "&lt;").replace(">", "&gt;")
+      line.replace("@", "&#64;").replace("<", "&lt;").replace(">", "&gt;").replace("->", "-&gt;")
     @tailrec private def codeLine(code: Boolean, line: String): (Boolean, String) = {
       val next = replace(line, "`", if (code) "</code>" else "<code>")
       if (next eq line) (code, line)

@@ -74,7 +74,7 @@ public  class A {
   /**
    * object A.NoComment
    */
-  static private  class NoComment$ {
+  static  class NoComment$ {
     /**
      * Static reference to the singleton instance of this Scala object.
      */
