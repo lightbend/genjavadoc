@@ -60,7 +60,7 @@ trait BaseComments { this: TransformCake ⇒
       new Comment(pos, l2.reverse map htmlEntity)
     }
     private def preLine(line: String): String =
-      line.replace("@", "&#64;").replace("<", "&lt;").replace(">", "&gt;").replace("->", "-&gt;")
+      line.replace("@", "&#64;").replace("<", "&lt;").replace(">", "&gt;")
     @tailrec private def codeLine(code: Boolean, line: String): (Boolean, String) = {
       val next = replace(line, "`", if (code) "</code>" else "<code>")
       if (next eq line) (code, line)
