@@ -7,9 +7,9 @@ This project’s goal is the creation of real JavaDoc for Scala projects. While 
 GenJavaDoc is a Scala compiler plugin which emits structurally equivalent Java code for all Scala sources of a project, keeping the ScalaDoc comments (with a few format adaptions). Integration into an SBT build is quite simple:
 
 ~~~ scala
-val JavaDoc = config("genjavadoc") extend Compile
+lazy val JavaDoc = config("genjavadoc") extend Compile
 
-val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
+lazy val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
   libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %%
     "genjavadoc-plugin" % "0.8" cross CrossVersion.full),
   scalacOptions <+= target map (t => "-P:genjavadoc:out=" + (t / "java")),
@@ -24,7 +24,41 @@ val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
 )
 ~~~
 
-Adding `javadocSettings` to a `Project` will replace the packaging of the API docs to use the JavaDoc instead of the ScalaDoc (i.e. the `XY-javadoc.jar` will then contain JavaDoc). The ScalaDoc can still be generated using the normal `doc` task, whereas the JavaDoc can be generated using `genjavadoc:doc`.
+If you're using an SBT version more recent than than 0.13.2, then you
+can define `javadocSettings` without using `<<=`, `<+=` and other
+similar operators:
+
+~~~ scala
+lazy val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
+  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" %
+    "0.7" cross CrossVersion.full),
+  scalacOptions += s"-P:genjavadoc:out=${target.value}/java",
+  packageDoc in Compile := (packageDoc in JavaDoc).value,
+  sources in JavaDoc := 
+    (target.value / "java" ** "*.java").get ++ (sources in Compile).value.
+      filter(_.getName.endsWith(".java")),
+  javacOptions in JavaDoc := Seq(),
+  artifactName in packageDoc in JavaDoc :=
+    ((sv, mod, art) =>
+      "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar")
+)
+~~~
+
+You might also need to specify the Typesafe repository:
+
+    resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases/"
+
+To make it work, you must to add the config and the settings to your
+project.  One way to do this is to place the following line in your
+`build.sbt` file:
+
+    lazy val root = project.in(file(".")).configs(JavaDoc).settings(javadocSettings: _*)
+
+Adding `javadocSettings` to a `Project` this way will replace the
+packaging of the API docs to use the JavaDoc instead of the ScalaDoc
+(i.e. the `XY-javadoc.jar` will then contain JavaDoc). The ScalaDoc
+can still be generated using the normal `doc` task, whereas the
+JavaDoc can now be generated using `genjavadoc:doc`.
 
 GenJavaDoc can also be integrated into a Maven build (inspired by [this answer on StackOverflow](http://stackoverflow.com/questions/12301620/how-to-generate-an-aggregated-scaladoc-for-a-maven-site/16288487#16288487)):
 
