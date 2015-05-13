@@ -8,7 +8,8 @@ trait Output { this: TransformCake ⇒
   def outputBase: File
 
   def write(out: Out, c: ClassInfo) {
-    c.comment foreach (out(_))
+    // TODO @param should be transformed to constructor comments
+    c.comment foreach (line => out(line.replace("@param", "param: ")))
     out(s"${c.sig} {")
     out.indent()
     for (m ← c.members)

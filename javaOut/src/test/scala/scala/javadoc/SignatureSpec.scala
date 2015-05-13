@@ -29,7 +29,7 @@ class SignatureSpec extends WordSpec with MustMatchers {
 
     "contain the same methods and classes as the original Scala files" in {
       val vString = scala.util.Properties.versionNumberString
-      val vPath = if(vString.contains("-")) vString else vString.split("\\.").take(2).mkString(".")
+      val vPath = if (vString.contains("-")) vString else vString.split("\\.").take(2).mkString(".")
       val scalaCL = new URLClassLoader(Array(new File(s"tests/target/scala-$vPath/test-classes/").toURI.toURL), classOf[List[_]].getClassLoader)
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
@@ -74,17 +74,17 @@ class SignatureSpec extends WordSpec with MustMatchers {
         println(msg)
         s.toList.sorted foreach println
       }
-      
+
       def getMethods(c: Class[_], filter: Boolean): Set[String] = {
         import language.postfixOps
-        c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists {s => x.getName.contains(s) }
+        c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
           || javaKeywords.contains(x.getName)
           || startsWithNumber.findFirstIn(x.getName).isDefined)).map(_.toGenericString).toSet
       }
 
       def getClasses(c: Class[_], filter: Boolean): Map[String, Class[_]] = {
         import language.postfixOps
-        c.getDeclaredClasses.collect { case x if(!filter || !(x.getName contains "anon")) => x.getName -> x }.toMap
+        c.getDeclaredClasses.collect { case x if (!filter || !(x.getName contains "anon")) => x.getName -> x }.toMap
       }
 
       check(Class.forName("akka.rk.buh.is.it.A"))

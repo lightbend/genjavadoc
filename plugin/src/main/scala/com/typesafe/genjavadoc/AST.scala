@@ -96,8 +96,9 @@ trait AST { this: TransformCake ⇒
   def access(m: Modifiers, topLevel: Boolean): String = {
     if (m.isPublic) "public"
     else if (m.isProtected && !topLevel) "protected"
-    else if (m.isPrivate && !topLevel) "private"
-    else "public" // this is the case for “private[xy]” and top level classes
+    else if (m.isPrivate && !topLevel) {
+      if (m.isInterface || m.hasStaticFlag) "" else "private"
+    } else "public" // this is the case for “private[xy]” and top level classes
   }
 
   def methodAccess(m: Modifiers, interface: Boolean): String = {
