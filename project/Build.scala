@@ -10,15 +10,15 @@ import sbt.Keys._
 object B extends Build {
   import sbt.settingKey
 
-  // so we can set this from automated builds
+  // so we can set this from automated builds and also depending on Scala version
   lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.")
 
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "0.9-SNAPSHOT",
     scalaVersion := "2.10.4",
-    crossScalaVersions := (0 to 5).map(i => s"2.10.$i") ++ (0 to 6).map(i => s"2.11.$i"),
-    scalaTestVersion := "2.1.3",
+    crossScalaVersions := (2 to 5).map(i => s"2.10.$i") ++ (0 to 6).map(i => s"2.11.$i") ++ (1 to 1).map(i => s"2.12.0-M$i"),
+    scalaTestVersion := (if (scalaVersion.value == "2.12.0-M1") "2.2.5-M1" else "2.1.3"),
     resolvers += Resolver.mavenLocal)
 
   lazy val top = Project(
@@ -98,6 +98,7 @@ object B extends Build {
     parts match {
       case "2" :: "10" :: _ => "scala-2.10"
       case "2" :: "11" :: _ => "scala-2.11"
+      case "2" :: "12" :: _ => "scala-2.12"
       case _ => "unknow-scala-version"
     }
   }

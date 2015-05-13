@@ -89,32 +89,32 @@ trait AST { this: TransformCake ⇒
     }
   }
 
-  def mangleMethodName(p: ValDef): String = {
+  private def mangleMethodName(p: ValDef): String = {
     if (this.javaKeywords contains p.name.toString) s"${p.name}_" else p.name.toString
   }
 
-  def access(m: Modifiers, topLevel: Boolean): String = {
+  private def access(m: Modifiers, topLevel: Boolean): String = {
     if (m.isPublic) "public"
     else if (m.isProtected && !topLevel) "protected"
     else if (m.isPrivate && !topLevel) "private"
     else "public" // this is the case for “private[xy]” and top level classes
   }
 
-  def methodAccess(m: Modifiers, interface: Boolean): String = {
+  private def methodAccess(m: Modifiers, interface: Boolean): String = {
     if (m.isPublic) "public"
     else if (m.isProtected && !interface) "protected"
     else if (m.isPrivate && !interface) "private"
     else "public" // this is the case for “private[xy]” and interfaces
   }
 
-  def flags(m: Modifiers): String = {
+  private def flags(m: Modifiers): String = {
     var f: List[String] = Nil
     if (m.isFinal) f ::= "final"
     if (m.hasAbstractFlag && !(m.isInterface || m.isTrait)) f ::= "abstract"
     f mkString " "
   }
 
-  def methodFlags(m: Modifiers, interface: Boolean): String = {
+  private def methodFlags(m: Modifiers, interface: Boolean): String = {
     var f: List[String] = Nil
     if (m.isFinal && !interface) f ::= "final"
     if (m.isDeferred && !interface) f ::= "abstract"

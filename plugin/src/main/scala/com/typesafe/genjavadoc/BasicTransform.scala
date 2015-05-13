@@ -6,7 +6,7 @@ import java.util.regex.Pattern
 trait BasicTransform { this: TransformCake ⇒
   import global._
 
-  def skippedName(name: String): Boolean = {
+  private def skippedName(name: String): Boolean = {
     val startsWithNumber = "^\\d".r
     (this.filteredStrings.exists(s => name.contains(s))
       || this.javaKeywords.contains(name)
@@ -29,13 +29,15 @@ trait BasicTransform { this: TransformCake ⇒
     }
   }
 
-  var visited: List[Tree] = Nil
-  var keep = true
-  def noKeep(code: ⇒ Tree): Tree = {
+  private var visited: List[Tree] = Nil
+  private var keep = true
+  private def noKeep(code: ⇒ Tree): Tree = {
     val old = keep
     keep = false
     try code finally keep = old
   }
+
+  private var pos: Position = rangePos(unit.source, 0, 0, 0)
 
   def newTransform(tree: Tree): Tree = {
     def commentText(tp: Position, endPos: Option[Position]) = {
@@ -101,12 +103,12 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   // list of top-level classes in this unit
-  var classes = Vector.empty[ClassInfo]
+  private var classes = Vector.empty[ClassInfo]
 
   // the current class, any level
-  var clazz: Option[ClassInfo] = None
+  private var clazz: Option[ClassInfo] = None
 
-  def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
+  private def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
     val old = clazz
     clazz = Some(ClassInfo(c, comment, old.isEmpty))
     val ret = block
@@ -118,11 +120,11 @@ trait BasicTransform { this: TransformCake ⇒
     ret
   }
 
-  def addMethod(d: DefDef, comment: Seq[String]) {
+  private def addMethod(d: DefDef, comment: Seq[String]) {
     clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false)))
   }
 
-  def addVarargsMethod(d: DefDef, comment: Seq[String]) {
+  private def addVarargsMethod(d: DefDef, comment: Seq[String]) {
     clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true)))
   }
 

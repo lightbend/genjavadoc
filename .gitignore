@@ -2,6 +2,7 @@
 .project
 .cache
 .target/
+.settings/
 .*.swp
 target/
 /*.scala
