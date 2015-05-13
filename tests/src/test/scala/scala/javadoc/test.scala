@@ -27,15 +27,22 @@ object Blarb {
 
 /**
  * class A
- * 
+ *
  * with a `second` paragraph
- * 
+ *
  * and a third one `with
  * a break` in some code.
- * 
+ *
+ * Some problematic things: &
+ *
+ * <p/>
+ *
  * {{{
  * and some code<with angle brackets>
  * }}}
+ *
+ * and an illegal tag:
+ * @param x buh
  *
  * @see [[Blarb]]
  * @see [[http://some.url.here]]
@@ -44,6 +51,8 @@ object Blarb {
 class A {
   /**
    * def p(x: Array[Int]): Predef.type
+   *
+   * @param x an Array
    */
   def p(x: Array[Int]) = Predef
 
@@ -79,7 +88,7 @@ class A {
    * Unitparam
    */
   def unitParam(unit: Unit) = 42
-  
+
   /**
    * mangledNames
    */
@@ -103,7 +112,7 @@ class A {
   /**
    * extra comment
    */
-  
+
   /**
    * varargs
    */

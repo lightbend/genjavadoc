@@ -22,6 +22,8 @@ trait BaseComments { this: TransformCake ⇒
     "”" -> "&rdquo;",
     "‘" -> "&lsquo;",
     "’" -> "&rsquo;",
+    "&" -> "&amp;",
+    "<p/>" -> "<p></p>",
     "[[" -> "{@link ",
     "]]" -> "}")
   private val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r
@@ -38,7 +40,7 @@ trait BaseComments { this: TransformCake ⇒
               s"""$prefix<a href="$link"/>"""
             else
               s"$prefix$link"
-          case x                 ⇒ x
+          case x ⇒ x
         }
         .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
       val (_, _, _, l2) = ((false, false, true, List.empty[String]) /: ll) {

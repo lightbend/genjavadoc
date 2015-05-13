@@ -7,9 +7,16 @@ package akka.rk.buh.is.it;
  * and a third one <code>with
  * a break</code> in some code.
  * <p>
+ * Some problematic things: &amp;
+ * <p>
+ * <p></p>
+ * <p>
  * <pre><code>
  * and some code&lt;with angle brackets&gt;
  * </code></pre>
+ * <p>
+ * and an illegal tag:
+ * param: x buh
  * <p>
  * @see Blarb
  * @see <a href="http://some.url.here"/>
@@ -123,6 +130,8 @@ public  class A {
   public   A () { throw new RuntimeException(); }
   /**
    * def p(x: Array[Int]): Predef.type
+   * <p>
+   * @param x an Array
    */
   public  scala.Predef$ p (int[] x) { throw new RuntimeException(); }
   /**
