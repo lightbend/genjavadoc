@@ -1,8 +1,9 @@
 package akka.rk.buh.is.it;
+// no position
 /**
  * Use protection.
  */
-public  class PProtected$ {
+  class PProtected$ {
   /**
    * Static reference to the singleton instance of this Scala object.
    */

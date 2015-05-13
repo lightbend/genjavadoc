@@ -1,7 +1,8 @@
 package akka.rk.buh.is.it;
+// no position
 /**
  * Use protection.
  */
-public class PProtected {
+  class PProtected {
   static public  void method () { throw new RuntimeException(); }
 }

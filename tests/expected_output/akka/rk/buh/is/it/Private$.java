@@ -1,6 +1,7 @@
 package akka.rk.buh.is.it;
+// no position
 /**
- * Privacy is an illusion.
+ * Private remains private.
  */
 public  class Private$ {
   /**

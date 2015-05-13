@@ -1,4 +1,5 @@
 package akka.rk.buh.is.it;
+// no position
 /**
  * I am an object. I have no class.
  */

@@ -1,8 +1,8 @@
 package akka.rk.buh.is.it;
 /**
- * Privacy is an illusion.
+ * Package private should be Java private.
  */
-public  interface PTrait {
+  interface PTrait {
   public  void method () ;
   public  void protectedMethod () ;
 }

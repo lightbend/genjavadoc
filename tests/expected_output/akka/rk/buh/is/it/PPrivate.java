@@ -1,7 +1,8 @@
 package akka.rk.buh.is.it;
+// no position
 /**
- * Privacy is an illusion.
+ * Package private should be Java private.
  */
-public class PPrivate {
+  class PPrivate {
   static public  void method () { throw new RuntimeException(); }
 }
