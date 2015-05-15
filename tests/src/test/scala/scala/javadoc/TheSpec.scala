@@ -11,7 +11,7 @@ class TheSpec extends WordSpec with Matchers {
   "GenJavaDoc" must {
 
     "generate the expected output" in {
-      lines(run("tests", "diff", "-wurI", "^ *//", "expected_output/akka", "target/java/akka")) foreach println
+      lines(run("tests", "diff", "-wurNI", "^ *//", "expected_output/akka", "target/java/akka")) foreach println
     }
 
   }

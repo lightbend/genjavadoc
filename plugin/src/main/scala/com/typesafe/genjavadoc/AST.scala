@@ -33,6 +33,10 @@ trait AST { this: TransformCake ⇒
       firstConstructor = false
       ret
     }
+
+    override def toString =
+      s"ClassInfo($name, ${pattern("XXXXX")}, module=$module, pckg=$pckg, ${filepattern("FFFFFF")}, interface=$interface, static=$static)" +
+        comment.mkString("\n  ", "\n  ", "\n  ") + members.mkString("\n  ")
   }
   object ClassInfo {
     def apply(c: ImplDef, comment: Seq[String], topLevel: Boolean): ClassInfo = {
@@ -63,6 +67,8 @@ trait AST { this: TransformCake ⇒
     }
   }
 
+  def fabricateParams: Boolean
+
   case class MethodInfo(pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
     def sig = pattern(s"$ret $name")
   }
@@ -85,7 +91,15 @@ trait AST { this: TransformCake ⇒
       val args = rec(d.vparamss.head) mkString ("(", ", ", ")")
       val impl = if (d.mods.isDeferred || interface) ";" else "{ throw new RuntimeException(); }"
       val pattern = (n: String) ⇒ s"$acc $tp $n $args $impl"
-      MethodInfo(pattern, ret, name, comment)
+      def hasParam(n: String) = comment.find(_.contains(s"@param $n")).isDefined
+      val commentWithParams =
+        if (fabricateParams && comment.size > 1) {
+          val p = d.vparamss.head.map(mangleMethodName).filterNot(hasParam)
+          val rev = comment.toList.reverse
+          val r = if (ret == "void" || ret == "" || comment.find(_.contains("@return")).isDefined) Nil else " * @return (undocumented)" :: Nil
+          rev.tail reverse_::: p.map(n => s" * @param $n (undocumented)") ::: r ::: rev.head :: Nil
+        } else comment
+      MethodInfo(pattern, ret, name, commentWithParams)
     }
   }
 

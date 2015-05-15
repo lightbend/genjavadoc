@@ -39,11 +39,18 @@ trait BasicTransform { this: TransformCake ⇒
 
   private var pos: Position = rangePos(unit.source, 0, 0, 0)
 
+  private var templateMaxPos: Position = pos
+  private var prevTemplateMaxPos: Position = pos
+
+  import positionOrdering._
+  private def advancePos(p: Position) =
+    if (p.isDefined && p > templateMaxPos) templateMaxPos = p
+
   def newTransform(tree: Tree): Tree = {
     def commentText(tp: Position, endPos: Option[Position]) = {
       val ret = if (tp.isDefined) {
         val old = pos
-        pos = tp
+        pos = max(tp, prevTemplateMaxPos)
         if (old.precedes(pos)) {
           (positions.from(old) intersect positions.to(pos)).toSeq map comments filter ScalaDoc lastOption match {
             case Some(c) ⇒ c.text // :+ s"// found in '${between(old, pos)}'"
@@ -53,7 +60,11 @@ trait BasicTransform { this: TransformCake ⇒
           }
         } else Seq("// not preceding") ++ visited.reverse.map(t ⇒ "// " + global.showRaw(t))
       } else Seq("// no position")
-      endPos foreach (pos = _)
+      advancePos(tp)
+      endPos foreach { p =>
+        advancePos(p)
+        pos = max(p, prevTemplateMaxPos)
+      }
       visited = Nil
       ret
     }
@@ -112,11 +123,14 @@ trait BasicTransform { this: TransformCake ⇒
     val old = clazz
     clazz = Some(ClassInfo(c, comment, old.isEmpty))
     val ret = block
-    clazz = old match {
-      case None ⇒
-        classes :+= clazz.get; None
-      case Some(oc) ⇒ Some(oc.addMember(clazz.get))
-    }
+    clazz =
+      old match {
+        case None ⇒
+          classes :+= clazz.get; None
+        case Some(oc) ⇒ Some(oc.addMember(clazz.get))
+      }
+    pos = templateMaxPos
+    prevTemplateMaxPos = templateMaxPos
     ret
   }
 

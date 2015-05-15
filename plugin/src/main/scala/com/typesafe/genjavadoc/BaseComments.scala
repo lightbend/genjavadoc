@@ -24,6 +24,7 @@ trait BaseComments { this: TransformCake ⇒
     "’" -> "&rsquo;",
     "&" -> "&amp;",
     "<p/>" -> "<p></p>",
+    "=>" -> "=&gt;",
     "[[" -> "{@link ",
     "]]" -> "}")
   private val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r

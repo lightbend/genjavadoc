@@ -11,14 +11,17 @@ public  class A$ {
   public   A$ () { throw new RuntimeException(); }
   /**
    * def IAmStatic: Int
+   * @return (undocumented)
    */
   public  int IAmStatic () { throw new RuntimeException(); }
   /**
    * val stattic: java.lang.String
+   * @return (undocumented)
    */
   public  java.lang.String stattic () { throw new RuntimeException(); }
   /**
    * static p
+   * @return (undocumented)
    */
   public  java.lang.String p () { throw new RuntimeException(); }
   public  java.lang.Object x () { throw new RuntimeException(); }

@@ -7,7 +7,7 @@ package akka.rk.buh.is.it;
  * and a third one <code>with
  * a break</code> in some code.
  * <p>
- * Some problematic things: &amp;
+ * Some problematic things: &amp; > =&gt;
  * <p>
  * <p></p>
  * <p>
@@ -40,6 +40,7 @@ public  class A {
     public   D$ () { throw new RuntimeException(); }
     /**
      * def A.D.math
+     * @return (undocumented)
      */
     public  long math () { throw new RuntimeException(); }
     // not preceding
@@ -59,6 +60,7 @@ public  class A {
     public   C1 () { throw new RuntimeException(); }
     /**
      * Accessor for nested Scala object
+     * @return (undocumented)
      */
     public  akka.rk.buh.is.it.A.C1.C1$ C1 () { throw new RuntimeException(); }
   }
@@ -94,16 +96,19 @@ public  class A {
   public  class B implements akka.rk.buh.is.it.X {
     /**
      * def b(args: java.lang.String*): Unit
+     * @param args (undocumented)
      */
     public  void b (java.lang.String... args) { throw new RuntimeException(); }
     // not preceding
     public   B () { throw new RuntimeException(); }
     /**
      * secondary constructor
+     * @param stest (undocumented)
      */
-    public   B (java.lang.String s) { throw new RuntimeException(); }
+    public   B (java.lang.String stest) { throw new RuntimeException(); }
     /**
      * def b(args: java.lang.String*): Unit
+     * @param args (undocumented)
      */
     public  void b (scala.collection.Seq<java.lang.String> args) { throw new RuntimeException(); }
     public  java.lang.String d (java.lang.String a, akka.rk.buh.is.it.X b) { throw new RuntimeException(); }
@@ -115,15 +120,19 @@ public  class A {
   }
   /**
    * def IAmStatic: Int
+   * @return (undocumented)
    */
   static public  int IAmStatic () { throw new RuntimeException(); }
   /**
    * val stattic: java.lang.String
+   * @return (undocumented)
    */
   static public  java.lang.String stattic () { throw new RuntimeException(); }
   static public  java.lang.Object x () { throw new RuntimeException(); }
   /**
    * varargs
+   * @param s (undocumented)
+   * @return (undocumented)
    */
   public  int hello (java.lang.String... s) { throw new RuntimeException(); }
   // not preceding
@@ -132,46 +141,64 @@ public  class A {
    * def p(x: Array[Int]): Predef.type
    * <p>
    * @param x an Array
+   * @return (undocumented)
    */
   public  scala.Predef$ p (int[] x) { throw new RuntimeException(); }
   /**
    * def params[T <: B](b: T): T
+   * @param b (undocumented)
+   * @return (undocumented)
    */
   public <T extends akka.rk.buh.is.it.A.B> scala.collection.immutable.List<T> params (T b) { throw new RuntimeException(); }
   /**
    * def map
+   * @return (undocumented)
    */
   public  scala.collection.immutable.Map<java.lang.Object, java.lang.String> map () { throw new RuntimeException(); }
   /**
    * scala.Nothing should be converted to scala.runtime.Nothing$.
+   * @param msg (undocumented)
+   * @return (undocumented)
    */
   public  scala.runtime.Nothing$ nothing (java.lang.String msg) { throw new RuntimeException(); }
   /**
    * Unitparam
+   * @param unit (undocumented)
+   * @return (undocumented)
    */
   public  int unitParam (scala.runtime.BoxedUnit unit) { throw new RuntimeException(); }
   /**
    * mangledNames
+   * @param default_ (undocumented)
+   * @param goto_ (undocumented)
+   * @param interface_ (undocumented)
+   * @return (undocumented)
    */
   public  int mangledNames (java.lang.String default_, java.lang.String goto_, java.lang.String interface_) { throw new RuntimeException(); }
   /**
    * blarb
+   * @return (undocumented)
    */
   public  akka.rk.buh.is.it.Blarb.Fuz blarb () { throw new RuntimeException(); }
   /**
    * refined
+   * @return (undocumented)
    */
   public  akka.rk.buh.is.it.Z refined () { throw new RuntimeException(); }
   /**
    * poly
+   * @return (undocumented)
    */
   public <A extends java.lang.Object, M extends akka.rk.buh.is.it.Y<java.lang.Object>> int poly () { throw new RuntimeException(); }
   /**
    * varargs
+   * @param s (undocumented)
+   * @return (undocumented)
    */
   public  int hello (scala.collection.Seq<java.lang.String> s) { throw new RuntimeException(); }
   /**
    * Accessor for nested Scala object
+   * @return (undocumented)
    */
   public  akka.rk.buh.is.it.A.D$ D () { throw new RuntimeException(); }
 }
