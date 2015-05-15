@@ -212,6 +212,11 @@ object A {
   val x = new AnyRef
 }
 
+trait Trait
+object Trait {
+  private final case class TraitPrivate()
+}
+
 /**
  * Privacy is an illusion.
  */

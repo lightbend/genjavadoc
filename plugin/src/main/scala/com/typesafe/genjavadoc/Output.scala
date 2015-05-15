@@ -110,7 +110,13 @@ trait Output { this: TransformCake ⇒
           m.copy(comment = Seq("/**", " * Accessor for nested Scala object", " * @return (undocumented)", " */"))
         else m
     }
-    val staticClasses = obj.members collect { case c: ClassInfo ⇒ c.copy(pattern = n ⇒ "static " + c.pattern(n), static = true) }
+    val staticClasses = obj.members collect {
+      case c: ClassInfo ⇒
+        c.copy(
+          access = if (cls.interface && c.access == "private") "" else c.access,
+          pattern = (n, a) ⇒ "static " + c.pattern(n, a),
+          static = true)
+    }
     val staticMethods =
       if (!forwarders || cls.interface) Vector.empty
       else obj.members collect {
