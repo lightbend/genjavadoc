@@ -1,7 +1,7 @@
 package scala.javadoc
 
-import org.scalatest.WordSpec
-import org.scalatest.matchers.{ MustMatchers, Matcher, MatchResult }
+import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.{ Matcher, MatchResult }
 import java.net.URLClassLoader
 import java.io.File
 
@@ -21,7 +21,7 @@ object SignatureSpec {
   val startsWithNumber = "^\\d".r
 }
 
-class SignatureSpec extends WordSpec with MustMatchers {
+class SignatureSpec extends WordSpec with Matchers {
 
   import SignatureSpec._
 
@@ -29,7 +29,7 @@ class SignatureSpec extends WordSpec with MustMatchers {
 
     "contain the same methods and classes as the original Scala files" in {
       val vString = scala.util.Properties.versionNumberString
-      val vPath = if(vString.contains("-")) vString else vString.split("\\.").take(2).mkString(".")
+      val vPath = if (vString.contains("-")) vString else vString.split("\\.").take(2).mkString(".")
       val scalaCL = new URLClassLoader(Array(new File(s"tests/target/scala-$vPath/test-classes/").toURI.toURL), classOf[List[_]].getClassLoader)
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
@@ -45,13 +45,13 @@ class SignatureSpec extends WordSpec with MustMatchers {
         val sm = getMethods(sc, filter = true)
         printIfNotEmpty(sm -- jm, "missing methods:")
         printIfNotEmpty(jm -- sm, "extraneous methods:")
-        sm must matchJava(jm)
+        sm should matchJava(jm)
 
         val jsub = getClasses(jc, filter = false)
         val ssub = getClasses(sc, filter = true)
         printIfNotEmpty(ssub.keySet -- jsub.keySet, "missing classes:")
         printIfNotEmpty(jsub.keySet -- ssub.keySet, "extraneous classes:")
-        ssub.keySet must matchJava(jsub.keySet)
+        ssub.keySet should matchJava(jsub.keySet)
 
         for (n ← ssub.keys) {
           val js = jsub(n)
@@ -60,12 +60,12 @@ class SignatureSpec extends WordSpec with MustMatchers {
           def beEqual[T: Manifest](t: T) = Matcher { (u: T) ⇒ MatchResult(u == t, s"$u was not equal $t (in $n)", s"$u was equal $t (in $n)") }
           def beAtLeast(t: Int) = Matcher { (u: Int) ⇒ MatchResult(u >= t, s"$u was < $t (in $n)", s"$u was >= $t (in $n)") }
 
-          (js.getModifiers & ~7) must beEqual(ss.getModifiers & ~7)
-          accProtLvl(js.getModifiers & 7) must beAtLeast(accProtLvl(ss.getModifiers & 7))
-          js.getInterfaces.toList.map(_.getName) must beEqual(ss.getInterfaces.toList.map(_.getName))
-          js.isInterface must beEqual(ss.isInterface)
+          (js.getModifiers & ~7) should beEqual(ss.getModifiers & ~7)
+          accProtLvl(js.getModifiers & 7) should beAtLeast(accProtLvl(ss.getModifiers & 7))
+          js.getInterfaces.toList.map(_.getName) should beEqual(ss.getInterfaces.toList.map(_.getName))
+          js.isInterface should beEqual(ss.isInterface)
           if (!js.isInterface())
-            js.getSuperclass.getName must beEqual(ss.getSuperclass.getName)
+            js.getSuperclass.getName should beEqual(ss.getSuperclass.getName)
           check(js)
         }
       }
@@ -74,17 +74,17 @@ class SignatureSpec extends WordSpec with MustMatchers {
         println(msg)
         s.toList.sorted foreach println
       }
-      
+
       def getMethods(c: Class[_], filter: Boolean): Set[String] = {
         import language.postfixOps
-        c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists {s => x.getName.contains(s) }
+        c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
           || javaKeywords.contains(x.getName)
           || startsWithNumber.findFirstIn(x.getName).isDefined)).map(_.toGenericString).toSet
       }
 
       def getClasses(c: Class[_], filter: Boolean): Map[String, Class[_]] = {
         import language.postfixOps
-        c.getDeclaredClasses.collect { case x if(!filter || !(x.getName contains "anon")) => x.getName -> x }.toMap
+        c.getDeclaredClasses.collect { case x if (!filter || !(x.getName contains "anon")) => x.getName -> x }.toMap
       }
 
       check(Class.forName("akka.rk.buh.is.it.A"))

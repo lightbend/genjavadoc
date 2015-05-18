@@ -6,7 +6,7 @@ import java.util.regex.Pattern
 trait BasicTransform { this: TransformCake ⇒
   import global._
 
-  def skippedName(name: String): Boolean = {
+  private def skippedName(name: String): Boolean = {
     val startsWithNumber = "^\\d".r
     (this.filteredStrings.exists(s => name.contains(s))
       || this.javaKeywords.contains(name)
@@ -29,19 +29,28 @@ trait BasicTransform { this: TransformCake ⇒
     }
   }
 
-  var visited: List[Tree] = Nil
-  var keep = true
-  def noKeep(code: ⇒ Tree): Tree = {
+  private var visited: List[Tree] = Nil
+  private var keep = true
+  private def noKeep(code: ⇒ Tree): Tree = {
     val old = keep
     keep = false
     try code finally keep = old
   }
 
+  private var pos: Position = rangePos(unit.source, 0, 0, 0)
+
+  private var templateMaxPos: Position = pos
+  private var prevTemplateMaxPos: Position = pos
+
+  import positionOrdering._
+  private def advancePos(p: Position) =
+    if (p.isDefined && p > templateMaxPos) templateMaxPos = p
+
   def newTransform(tree: Tree): Tree = {
     def commentText(tp: Position, endPos: Option[Position]) = {
       val ret = if (tp.isDefined) {
         val old = pos
-        pos = tp
+        pos = max(tp, prevTemplateMaxPos)
         if (old.precedes(pos)) {
           (positions.from(old) intersect positions.to(pos)).toSeq map comments filter ScalaDoc lastOption match {
             case Some(c) ⇒ c.text // :+ s"// found in '${between(old, pos)}'"
@@ -51,7 +60,11 @@ trait BasicTransform { this: TransformCake ⇒
           }
         } else Seq("// not preceding") ++ visited.reverse.map(t ⇒ "// " + global.showRaw(t))
       } else Seq("// no position")
-      endPos foreach (pos = _)
+      advancePos(tp)
+      endPos foreach { p =>
+        advancePos(p)
+        pos = max(p, prevTemplateMaxPos)
+      }
       visited = Nil
       ret
     }
@@ -101,28 +114,31 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   // list of top-level classes in this unit
-  var classes = Vector.empty[ClassInfo]
+  private var classes = Vector.empty[ClassInfo]
 
   // the current class, any level
-  var clazz: Option[ClassInfo] = None
+  private var clazz: Option[ClassInfo] = None
 
-  def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
+  private def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
     val old = clazz
     clazz = Some(ClassInfo(c, comment, old.isEmpty))
     val ret = block
-    clazz = old match {
-      case None ⇒
-        classes :+= clazz.get; None
-      case Some(oc) ⇒ Some(oc.addMember(clazz.get))
-    }
+    clazz =
+      old match {
+        case None ⇒
+          classes :+= clazz.get; None
+        case Some(oc) ⇒ Some(oc.addMember(clazz.get))
+      }
+    pos = templateMaxPos
+    prevTemplateMaxPos = templateMaxPos
     ret
   }
 
-  def addMethod(d: DefDef, comment: Seq[String]) {
+  private def addMethod(d: DefDef, comment: Seq[String]) {
     clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false)))
   }
 
-  def addVarargsMethod(d: DefDef, comment: Seq[String]) {
+  private def addVarargsMethod(d: DefDef, comment: Seq[String]) {
     clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true)))
   }
 

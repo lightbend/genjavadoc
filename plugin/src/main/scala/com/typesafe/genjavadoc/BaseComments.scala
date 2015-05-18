@@ -15,18 +15,21 @@ trait BaseComments { this: TransformCake ⇒
     val runsRightAfter = None
   } with SyntaxAnalyzer
 
-  val replacements = Seq(
+  private val replacements = Seq(
     "{{{" -> "<pre><code>",
     "}}}" -> "</code></pre>",
     "“" -> "&ldquo;",
     "”" -> "&rdquo;",
     "‘" -> "&lsquo;",
     "’" -> "&rsquo;",
+    "&" -> "&amp;",
+    "<p/>" -> "<p></p>",
+    "=>" -> "=&gt;",
     "[[" -> "{@link ",
     "]]" -> "}")
-  val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r
-  val See = """(.*@see )\[\[([^]]+)]]\s*""".r
-  val HttpLink = "^https?://.*".r
+  private val EmptyLine = """(?:/\*\*(?:.*\*/)?|\s+(?:\*/|\*?))\s*""".r
+  private val See = """(.*@see )\[\[([^]]+)]]\s*""".r
+  private val HttpLink = "^https?://.*".r
 
   case class Comment(pos: Position, text: Seq[String])
   object Comment {
@@ -38,7 +41,7 @@ trait BaseComments { this: TransformCake ⇒
               s"""$prefix<a href="$link"/>"""
             else
               s"$prefix$link"
-          case x                 ⇒ x
+          case x ⇒ x
         }
         .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
       val (_, _, _, l2) = ((false, false, true, List.empty[String]) /: ll) {
@@ -74,7 +77,6 @@ trait BaseComments { this: TransformCake ⇒
       str flatMap (ch ⇒ if (ch > 127) f"&#x${ch}%04x;" else "" + ch)
     }
   }
-  var pos: Position = rangePos(unit.source, 0, 0, 0)
 
   implicit val positionOrdering: Ordering[Position] = new Ordering[Position] {
     def compare(a: Position, b: Position) =

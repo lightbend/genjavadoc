@@ -44,10 +44,6 @@ lazy val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
 )
 ~~~
 
-You might also need to specify the Typesafe repository:
-
-    resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases/"
-
 To make it work, you must to add the config and the settings to your
 project.  One way to do this is to place the following line in your
 `build.sbt` file:

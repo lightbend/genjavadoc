@@ -191,7 +191,7 @@ trait JavaSig { this: TransformCake ⇒
 
   import erasure.GenericArray
 
-  protected def unboundedGenericArrayLevel(tp: Type): Int = tp match {
+  private def unboundedGenericArrayLevel(tp: Type): Int = tp match {
     case GenericArray(level, core) if !(core <:< AnyRefClass.tpe) ⇒ level
     case _ ⇒ 0
   }
@@ -202,7 +202,7 @@ trait JavaSig { this: TransformCake ⇒
       (initialSymbol.enclClassChain.exists(sym isNestedIn _)) ||
       (initialSymbol.isMethod && initialSymbol.typeParams.contains(sym))))
 
-  def needsJavaSig(tp: Type) = !settings.Ynogenericsig.value && NeedsSigCollector.collect(tp)
+  private def needsJavaSig(tp: Type) = !settings.Ynogenericsig.value && NeedsSigCollector.collect(tp)
 
   class UnknownSig extends Exception
 

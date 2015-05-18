@@ -14,7 +14,8 @@ trait AST { this: TransformCake ⇒
 
   case class ClassInfo(
     name: String,
-    pattern: String ⇒ String,
+    access: String,
+    pattern: (String, String) ⇒ String,
     module: Boolean,
     comment: Seq[String],
     pckg: String,
@@ -24,7 +25,7 @@ trait AST { this: TransformCake ⇒
     static: Boolean,
     var firstConstructor: Boolean) extends Templ {
 
-    def sig = pattern(name)
+    def sig = pattern(name, access)
     def file = filepattern(name)
 
     def addMember(t: Templ) = copy(members = members :+ t)
@@ -33,15 +34,19 @@ trait AST { this: TransformCake ⇒
       firstConstructor = false
       ret
     }
+
+    override def toString =
+      s"ClassInfo($name, ${pattern("XXXXX", "AAAAA")}, module=$module, pckg=$pckg, ${filepattern("FFFFFF")}, interface=$interface, static=$static)" +
+        comment.mkString("\n  ", "\n  ", "\n  ") + members.mkString("\n  ")
   }
   object ClassInfo {
     def apply(c: ImplDef, comment: Seq[String], topLevel: Boolean): ClassInfo = {
       c match {
-        case ClassDef(mods, name, tparams, impl) ⇒
+        case ClassDef(mods, _, tparams, impl) ⇒
+          val name = c.name.toString
           val acc = access(mods, topLevel)
           val fl = flags(mods)
           val kind = if (mods.isInterface || mods.isTrait) "interface" else "class"
-          val name = c.name.toString
           val tp = c.symbol.owner.thisType.memberInfo(c.symbol) match {
             case p @ PolyType(params, _) ⇒ js(c.symbol, p)
             case _                       ⇒ ""
@@ -55,13 +60,15 @@ trait AST { this: TransformCake ⇒
           }
           val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
           val interfaces = if (!intf.isEmpty) (if (mods.isInterface || mods.isTrait) " extends " else " implements ") + intf else ""
-          val sig = (n: String) ⇒ s"$acc $fl $kind $n$tp$parent$interfaces"
+          val sig = (n: String, a: String) ⇒ s"$a $fl $kind $n$tp$parent$interfaces"
           val file = (n: String) ⇒ s"${c.symbol.enclosingPackage.fullName('/')}/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
-          ClassInfo(name, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", false, true)
+          ClassInfo(name, acc, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", false, true)
       }
     }
   }
+
+  def fabricateParams: Boolean
 
   case class MethodInfo(pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
     def sig = pattern(s"$ret $name")
@@ -85,36 +92,45 @@ trait AST { this: TransformCake ⇒
       val args = rec(d.vparamss.head) mkString ("(", ", ", ")")
       val impl = if (d.mods.isDeferred || interface) ";" else "{ throw new RuntimeException(); }"
       val pattern = (n: String) ⇒ s"$acc $tp $n $args $impl"
-      MethodInfo(pattern, ret, name, comment)
+      def hasParam(n: String) = comment.find(_.contains(s"@param $n")).isDefined
+      val commentWithParams =
+        if (fabricateParams && comment.size > 1 && comment.head.startsWith("/**")) {
+          val p = d.vparamss.head.map(mangleMethodName).filterNot(hasParam)
+          val rev = comment.toList.reverse
+          val r = if (ret == "void" || ret == "" || comment.find(_.contains("@return")).isDefined) Nil else " * @return (undocumented)" :: Nil
+          rev.tail reverse_::: p.map(n => s" * @param $n (undocumented)") ::: r ::: rev.head :: Nil
+        } else comment
+      MethodInfo(pattern, ret, name, commentWithParams)
     }
   }
 
-  def mangleMethodName(p: ValDef): String = {
+  private def mangleMethodName(p: ValDef): String = {
     if (this.javaKeywords contains p.name.toString) s"${p.name}_" else p.name.toString
   }
 
-  def access(m: Modifiers, topLevel: Boolean): String = {
+  private def access(m: Modifiers, topLevel: Boolean): String = {
     if (m.isPublic) "public"
     else if (m.isProtected && !topLevel) "protected"
-    else if (m.isPrivate && !topLevel) "private"
-    else "public" // this is the case for “private[xy]” and top level classes
+    else if (m.isPrivate && !topLevel) {
+      if (m.isInterface || m.hasStaticFlag) "" else "private"
+    } else "public" // this is the case for “private[xy]” and top level classes
   }
 
-  def methodAccess(m: Modifiers, interface: Boolean): String = {
+  private def methodAccess(m: Modifiers, interface: Boolean): String = {
     if (m.isPublic) "public"
     else if (m.isProtected && !interface) "protected"
     else if (m.isPrivate && !interface) "private"
     else "public" // this is the case for “private[xy]” and interfaces
   }
 
-  def flags(m: Modifiers): String = {
+  private def flags(m: Modifiers): String = {
     var f: List[String] = Nil
     if (m.isFinal) f ::= "final"
     if (m.hasAbstractFlag && !(m.isInterface || m.isTrait)) f ::= "abstract"
     f mkString " "
   }
 
-  def methodFlags(m: Modifiers, interface: Boolean): String = {
+  private def methodFlags(m: Modifiers, interface: Boolean): String = {
     var f: List[String] = Nil
     if (m.isFinal && !interface) f ::= "final"
     if (m.isDeferred && !interface) f ::= "abstract"

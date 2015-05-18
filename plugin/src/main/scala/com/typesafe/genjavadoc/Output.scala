@@ -8,7 +8,8 @@ trait Output { this: TransformCake ⇒
   def outputBase: File
 
   def write(out: Out, c: ClassInfo) {
-    c.comment foreach (out(_))
+    // TODO @param should be transformed to constructor comments
+    c.comment foreach (line => out(line.replace("@param", "param: ")))
     out(s"${c.sig} {")
     out.indent()
     for (m ← c.members)
@@ -94,7 +95,7 @@ trait Output { this: TransformCake ⇒
           Seq("/**", " * Static reference to the singleton instance of this Scala object.", " */")))
       else None
     val members = (moduleInstance ++: obj.members) filter (!pruneClasses || _.isInstanceOf[MethodInfo])
-    val (com, moduleMembers) = ((obj.comment, Vector.empty[Templ]) /: members)((p, mem) ⇒ mem match {
+    val (com: Seq[String], moduleMembers: Vector[Templ]) = ((obj.comment, Vector.empty[Templ]) /: members)((p, mem) ⇒ mem match {
       case x: MethodInfo if x.name == obj.name ⇒ (p._1 ++ x.comment, p._2 :+ x.copy(name = x.name + '$', comment = Seq()))
       case x                                   ⇒ (p._1, p._2 :+ x)
     })
@@ -106,10 +107,16 @@ trait Output { this: TransformCake ⇒
     val methods = cls.members collect {
       case m: MethodInfo ⇒
         if (m.ret.endsWith("$") && classes.exists(_.name == m.name))
-          m.copy(comment = Seq("/**", " * Accessor for nested Scala object", " */"))
+          m.copy(comment = Seq("/**", " * Accessor for nested Scala object", " * @return (undocumented)", " */"))
         else m
     }
-    val staticClasses = obj.members collect { case c: ClassInfo ⇒ c.copy(pattern = n ⇒ "static " + c.pattern(n), static = true) }
+    val staticClasses = obj.members collect {
+      case c: ClassInfo ⇒
+        c.copy(
+          access = if (cls.interface && c.access == "private") "" else c.access,
+          pattern = (n, a) ⇒ "static " + c.pattern(n, a),
+          static = true)
+    }
     val staticMethods =
       if (!forwarders || cls.interface) Vector.empty
       else obj.members collect {
