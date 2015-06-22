@@ -121,6 +121,13 @@ class A {
   def hello(s: String*) = 0
 
   /**
+   * throws
+   */
+  @throws[IllegalArgumentException]
+  @throws(classOf[NullPointerException])
+  def testthrows = 0
+
+  /**
    * class A.B
    */
   // one line comment
