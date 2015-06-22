@@ -197,6 +197,11 @@ public  class A {
    */
   public  int hello (scala.collection.Seq<java.lang.String> s) { throw new RuntimeException(); }
   /**
+   * throws
+   * @return (undocumented)
+   */
+  public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
+  /**
    * Accessor for nested Scala object
    * @return (undocumented)
    */

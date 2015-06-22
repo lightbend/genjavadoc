@@ -90,8 +90,12 @@ trait AST { this: TransformCake ⇒
         case Nil                   ⇒ acc
       }
       val args = rec(d.vparamss.head) mkString ("(", ", ", ")")
+
+      val throwsAnnotations = d.symbol.throwsAnnotations.map(_.fullName)
+      val throws = if (throwsAnnotations.isEmpty) "" else "throws " + throwsAnnotations.mkString(", ")
+
       val impl = if (d.mods.isDeferred || interface) ";" else "{ throw new RuntimeException(); }"
-      val pattern = (n: String) ⇒ s"$acc $tp $n $args $impl"
+      val pattern = (n: String) ⇒ s"$acc $tp $n $args $throws $impl"
       def hasParam(n: String) = comment.find(_.contains(s"@param $n")).isDefined
       val commentWithParams =
         if (fabricateParams && comment.size > 1 && comment.head.startsWith("/**")) {
