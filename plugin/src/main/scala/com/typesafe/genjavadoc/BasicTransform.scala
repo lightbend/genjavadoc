@@ -21,7 +21,7 @@ trait BasicTransform { this: TransformCake ⇒
     for (c ← flatten(classes)) {
       val out = file(c.file)
       try {
-        out.println(s"package ${c.pckg};")
+        if (c.pckg != "<empty>") out.println(s"package ${c.pckg};")
         write(out, c)
       } finally {
         out.close()

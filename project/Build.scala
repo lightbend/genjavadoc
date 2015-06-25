@@ -60,7 +60,7 @@ object B extends Build {
       publishArtifact := false,
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"),
-      unmanagedSources in Compile <<= (baseDirectory in tests, compile in tests in Test) map ((b, c) ⇒ (b / "target/java/akka" ** "*.java").get)))
+      unmanagedSources in Compile <<= (baseDirectory in tests, compile in tests in Test) map ((b, c) ⇒ (b / "target/java/akka" ** "*.java").get :+ (b / "target/java/AtTheRoot.java"))))
 
   lazy val defaults = Project.defaultSettings ++ Seq(
     publishTo <<= (version)(v ⇒

@@ -87,6 +87,7 @@ class SignatureSpec extends WordSpec with Matchers {
         c.getDeclaredClasses.collect { case x if (!filter || !(x.getName contains "anon")) => x.getName -> x }.toMap
       }
 
+      check(Class.forName("AtTheRoot"))
       check(Class.forName("akka.rk.buh.is.it.A"))
       check(Class.forName("akka.rk.buh.is.it.A$"))
       check(Class.forName("akka.rk.buh.is.it.Blarb"))

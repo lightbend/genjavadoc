@@ -61,7 +61,10 @@ trait AST { this: TransformCake ⇒
           val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
           val interfaces = if (!intf.isEmpty) (if (mods.isInterface || mods.isTrait) " extends " else " implements ") + intf else ""
           val sig = (n: String, a: String) ⇒ s"$a $fl $kind $n$tp$parent$interfaces"
-          val file = (n: String) ⇒ s"${c.symbol.enclosingPackage.fullName('/')}/$n.java"
+          val encl = c.symbol.enclosingPackage
+          val file =
+            if (encl.owner.isEffectiveRoot) (n: String) => s"$n.java"
+            else (n: String) ⇒ s"${encl.fullName('/')}/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
           ClassInfo(name, acc, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", false, true)
       }
