@@ -120,20 +120,20 @@ trait JavaSig { this: TransformCake ⇒
       }
     }
     def toJava(info0: Type): String = {
-      val info = info0.dealias
+      val info = info0.dealiasWiden
       info.typeSymbol match {
-        case UnitClass ⇒ if (voidOK) "void" else "scala.runtime.BoxedUnit"
+        case UnitClass    ⇒ if (voidOK) "void" else "scala.runtime.BoxedUnit"
         case NothingClass ⇒ "scala.runtime.Nothing$"
         case BooleanClass ⇒ "boolean"
-        case ByteClass ⇒ "byte"
-        case ShortClass ⇒ "short"
-        case CharClass ⇒ "char"
-        case IntClass ⇒ "int"
-        case LongClass ⇒ "long"
-        case FloatClass ⇒ "float"
-        case DoubleClass ⇒ "double"
-        case ArrayClass ⇒ jsig(info)
-        case AnyClass ⇒ "Object"
+        case ByteClass    ⇒ "byte"
+        case ShortClass   ⇒ "short"
+        case CharClass    ⇒ "char"
+        case IntClass     ⇒ "int"
+        case LongClass    ⇒ "long"
+        case FloatClass   ⇒ "float"
+        case DoubleClass  ⇒ "double"
+        case ArrayClass   ⇒ jsig(info)
+        case AnyClass     ⇒ "Object"
         case _ ⇒
           info match {
             case r @ RefinedType(head :: tail, _) ⇒
@@ -148,10 +148,12 @@ trait JavaSig { this: TransformCake ⇒
       }
     }
     val _info = removeThis(info)
-    if (needsJavaSig(info)) {
-      try jsig(_info, toplevel = true)
-      catch { case ex: UnknownSig ⇒ toJava(_info) }
-    } else toJava(_info)
+    val result =
+      if (needsJavaSig(info)) {
+        try jsig(_info, toplevel = true)
+        catch { case ex: UnknownSig ⇒ toJava(_info) }
+      } else toJava(_info)
+    if (result == "scala.Null") "scala.runtime.Null$" else result
   }
 
   private object NeedsSigCollector extends TypeCollector(false) {

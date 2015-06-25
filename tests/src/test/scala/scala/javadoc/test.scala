@@ -127,6 +127,8 @@ class A {
   @throws(classOf[NullPointerException])
   def testthrows = 0
 
+  def getNull: Null = null
+
   /**
    * class A.B
    */

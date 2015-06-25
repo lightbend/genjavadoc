@@ -201,6 +201,7 @@ public  class A {
    * @return (undocumented)
    */
   public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
+  public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }
   /**
    * Accessor for nested Scala object
    * @return (undocumented)
