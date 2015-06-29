@@ -140,6 +140,15 @@ The approach taken here is to use the Scala compiler’s support as far as possi
 
 One drawback of this choice is that the flattening of classes and companion objects or the mixing-in of method implementations from traits into derived classes happens much later in the transformation pipeline, meaning that the compiler plugin has to do that transformation itself; for this it has the advantage that it does not need to be 100% Scala-correct since the goal is just to document method signatures, not to implement all the intricacies of access widening and so on.
 
+## Known Limitations
+
+ * Many ScalaDoc tags and features are simply not supported by the javadoc tool and genjavadoc does not reimplement them:
+ 
+     * `@note`, `@example`, `@group` etc. do not work and are errors in JavaDoc 8, so they cannot be used
+     * links to methods that use the overload disambiguation syntax will not work
+ 
+ * Classes and objects nested inside nested objects are emitted by Scalac in such a form that there is no valid Java syntax to produce the same binary names. This is due to differences in name mangling (where javac inserts more dollar signs than scalac does). This means that while JavaDoc is generated for these (in order to guarantee that JavaDoc will find all the types it needs) the precise names are neither correct nor usable in practice.
+
 ## Reporting Bugs
 
 If you find errors in the generation process or have suggestions on how to improve the quality of the emitted JavaDoc contents, please report issues on this github project’s issue tracker.

@@ -55,7 +55,7 @@ trait Output { this: TransformCake ⇒
    *
    * The first two parts are to be applied recursively to nested objects.
    */
-  def flatten(c: Vector[ClassInfo], forwarders: Boolean = true): Vector[ClassInfo] = {
+  def flatten(c: Vector[ClassInfo], forwarders: Boolean = true, staticScope: Boolean = true): Vector[ClassInfo] = {
     val (obj: Vector[ClassInfo], cls: Vector[ClassInfo]) = c collect PreFilter partition (_.module)
     val classes = cls.map(c ⇒ c.name -> c).toMap
     val objects = obj.map(o ⇒ o.name -> o).toMap
@@ -63,8 +63,8 @@ trait Output { this: TransformCake ⇒
       cls.filterNot(c ⇒ objects contains c.name).map(c ⇒ None -> Some(c))
     pairs flatMap { p ⇒
       p match {
-        case (Some(o), Some(c))            ⇒ merge(o, c, forwarders)
-        case (Some(o), None) if forwarders ⇒ merge(o, fabricateCompanion(o), forwarders)
+        case (Some(o), Some(c))            ⇒ merge(o, c, forwarders, staticScope)
+        case (Some(o), None) if forwarders ⇒ merge(o, fabricateCompanion(o), forwarders, staticScope)
         case (Some(o), None)               ⇒ Vector(mangleModule(o, addMODULE = forwarders, pruneClasses = false))
         case (None, Some(c))               ⇒ Vector(c)
         case (None, None)                  ⇒ ???
@@ -102,7 +102,7 @@ trait Output { this: TransformCake ⇒
     obj.copy(name = obj.name + '$', comment = com, members = moduleMembers)
   }
 
-  private def merge(obj: ClassInfo, cls: ClassInfo, forwarders: Boolean): Vector[ClassInfo] = {
+  private def merge(obj: ClassInfo, cls: ClassInfo, forwarders: Boolean, staticScope: Boolean): Vector[ClassInfo] = {
     val classes = cls.members collect { case c: ClassInfo ⇒ c }
     val methods = cls.members collect {
       case m: MethodInfo ⇒
@@ -114,8 +114,8 @@ trait Output { this: TransformCake ⇒
       case c: ClassInfo ⇒
         c.copy(
           access = if (cls.interface && c.access == "private") "" else c.access,
-          pattern = (n, a) ⇒ "static " + c.pattern(n, a),
-          static = true)
+          pattern = if (staticScope) (n, a) ⇒ "static " + c.pattern(n, a) else c.pattern,
+          static = staticScope)
     }
     val staticMethods =
       if (!forwarders || cls.interface) Vector.empty
@@ -123,9 +123,16 @@ trait Output { this: TransformCake ⇒
         case m: MethodInfo if !(m.name == obj.name) && !cls.members.exists(_.name == m.name) ⇒
           m.copy(pattern = n ⇒ "static " + m.pattern(n))
       }
-    val allClasses = flatten(classes ++ staticClasses, forwarders = false)
-    val base = cls.copy(members = allClasses ++ staticMethods ++ methods)
-    Vector(base, mangleModule(obj, addMODULE = forwarders, pruneClasses = true))
+    val nestedClasses = flatten(classes, forwarders = false, staticScope = false)
+    val nestedStaticClasses = flatten(staticClasses, forwarders = false, staticScope = staticScope)
+    if (forwarders) {
+      val base = cls.copy(members = nestedClasses ++ nestedStaticClasses ++ staticMethods ++ methods)
+      Vector(base, mangleModule(obj, addMODULE = forwarders, pruneClasses = true))
+    } else {
+      val base = cls.copy(members = nestedClasses ++ staticMethods ++ methods)
+      val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
+      Vector(base, mod.copy(members = nestedStaticClasses ++ mod.members))
+    }
   }
 
 }

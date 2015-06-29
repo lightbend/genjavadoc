@@ -6,7 +6,7 @@ trait JavaSig { this: TransformCake ⇒
   import global._
   import definitions._
 
-  def js(sym0: Symbol, info: Type, voidOK: Boolean = true): String = {
+  def js(sym0: Symbol, info: Type, voidOK: Boolean = true, debug: Boolean = false): String = {
     val isTraitSignature = sym0.enclClass.isTrait
 
     def removeThis(in: Type): Type = {
@@ -45,10 +45,27 @@ trait JavaSig { this: TransformCake ⇒
     // Anything which could conceivably be a module (i.e. isn't known to be
     // a type parameter or similar) must go through here or the signature is
     // likely to end up with Foo<T>.Empty where it needs Foo<T>.Empty$.
-    def fullNameInSig(sym: Symbol): String = sym.fullName + sym.moduleSuffix
+    /*
+     * Unfortunately sym.fullName is not accurate wrt. the location of objects
+     * in non-static scopes, hence we need to manually traverse the parent list
+     * and apply the moduleSuffix in these cases.
+     */
+    def fullNameInSig(sym: Symbol): String = {
+      var staticScope = true
+      def rec(s: Symbol, innermost: Boolean): String =
+        if (s.isPackageClass) s.fullName
+        else {
+          val parent = rec(s.effectiveOwner.enclClass, false)
+          staticScope &&= s.needsModuleSuffix
+          if (innermost || !staticScope) parent + "." + s.name + s.moduleSuffix
+          else parent + "." + s.name
+        }
+      rec(sym, true)
+    }
 
     def jsig(tp0: Type, existentiallyBound: List[Symbol] = Nil, toplevel: Boolean = false, primitiveOK: Boolean = true): String = {
       val tp = tp0.dealias
+      if (debug) println(s"JSIG: $tp")
       tp match {
         case st: SubType ⇒
           jsig(st.supertype, existentiallyBound, toplevel, primitiveOK)
@@ -120,6 +137,7 @@ trait JavaSig { this: TransformCake ⇒
       }
     }
     def toJava(info0: Type): String = {
+      if (debug) println(s"JSIG toJava: $info0")
       val info = info0.dealiasWiden
       info.typeSymbol match {
         case UnitClass    ⇒ if (voidOK) "void" else "scala.runtime.BoxedUnit"
@@ -148,12 +166,14 @@ trait JavaSig { this: TransformCake ⇒
       }
     }
     val _info = removeThis(info)
+    if (debug) println(s"JSIG entry: ${_info}")
     val result =
       if (needsJavaSig(info)) {
         try jsig(_info, toplevel = true)
         catch { case ex: UnknownSig ⇒ toJava(_info) }
       } else toJava(_info)
-    if (result == "scala.Null") "scala.runtime.Null$" else result
+    if (result == "scala.Null") "scala.runtime.Null$"
+    else result
   }
 
   private object NeedsSigCollector extends TypeCollector(false) {

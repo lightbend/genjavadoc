@@ -29,6 +29,7 @@ trait AST { this: TransformCake ⇒
     def file = filepattern(name)
 
     def addMember(t: Templ) = copy(members = members :+ t)
+
     def constructor: Boolean = {
       val ret = firstConstructor
       firstConstructor = false

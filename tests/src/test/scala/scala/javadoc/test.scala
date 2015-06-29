@@ -169,6 +169,16 @@ class A {
      * def A.D.math
      */
     def math = 0l
+
+    /**
+     * A nested non-static class.
+     */
+    class NonStatic
+
+    /**
+     * And a nested object.
+     */
+    object E
   }
 }
 
@@ -207,6 +217,11 @@ object A {
      * A.C1.method
      */
     def method = ()
+
+    /**
+     * And another nested object.
+     */
+    object EE
   }
 
   /**

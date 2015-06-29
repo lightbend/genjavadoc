@@ -126,8 +126,10 @@ trait BasicTransform { this: TransformCake ⇒
     clazz =
       old match {
         case None ⇒
-          classes :+= clazz.get; None
-        case Some(oc) ⇒ Some(oc.addMember(clazz.get))
+          classes :+= clazz.get
+          None
+        case Some(oc) ⇒
+          Some(oc.addMember(clazz.get))
       }
     pos = templateMaxPos
     prevTemplateMaxPos = templateMaxPos
