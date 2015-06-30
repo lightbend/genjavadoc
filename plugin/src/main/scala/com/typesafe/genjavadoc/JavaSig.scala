@@ -173,6 +173,7 @@ trait JavaSig { this: TransformCake ⇒
         catch { case ex: UnknownSig ⇒ toJava(_info) }
       } else toJava(_info)
     if (result == "scala.Null") "scala.runtime.Null$"
+    else if (result == "scala.Nothing") "scala.runtime.Nothing$"
     else result
   }
 

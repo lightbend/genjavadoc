@@ -106,6 +106,7 @@ class SignatureSpec extends WordSpec with Matchers {
       }
 
       check(Class.forName("AtTheRoot"))
+      check(Class.forName("akka.Main"))
       check(Class.forName("akka.rk.buh.is.it.A"))
       check(Class.forName("akka.rk.buh.is.it.A$"))
       check(Class.forName("akka.rk.buh.is.it.Blarb"))

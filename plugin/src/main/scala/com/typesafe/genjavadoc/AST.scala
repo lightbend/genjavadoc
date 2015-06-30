@@ -13,6 +13,7 @@ trait AST { this: TransformCake ⇒
   }
 
   case class ClassInfo(
+    sym: Symbol,
     name: String,
     access: String,
     pattern: (String, String) ⇒ String,
@@ -62,12 +63,12 @@ trait AST { this: TransformCake ⇒
           val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
           val interfaces = if (!intf.isEmpty) (if (mods.isInterface || mods.isTrait) " extends " else " implements ") + intf else ""
           val sig = (n: String, a: String) ⇒ s"$a $fl $kind $n$tp$parent$interfaces"
-          val encl = c.symbol.enclosingPackage
+          val packageName = c.symbol.enclosingPackage.fullName('/')
           val file =
-            if (encl.owner.isEffectiveRoot) (n: String) => s"$n.java"
-            else (n: String) ⇒ s"${encl.fullName('/')}/$n.java"
+            if (packageName == "<empty>") (n: String) => s"$n.java"
+            else (n: String) ⇒ s"$packageName/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
-          ClassInfo(name, acc, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", false, true)
+          ClassInfo(c.symbol, name, acc, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", false, true)
       }
     }
   }
@@ -109,6 +110,21 @@ trait AST { this: TransformCake ⇒
           rev.tail reverse_::: p.map(n => s" * @param $n (undocumented)") ::: r ::: rev.head :: Nil
         } else comment
       MethodInfo(pattern, ret, name, commentWithParams)
+    }
+
+    /**
+     * This is used only for creating the static forwarders for methods that
+     * are inherited by the Scala object in question, hence `interface=false`
+     * and the addition of `static`.
+     */
+    def apply(sym: Symbol): MethodInfo = {
+      val varargs = sym match {
+        case m: MethodSymbol => m.isVarargsMethod
+        case _               => false
+      }
+      val d = newDefDef(sym, EmptyTree)()
+      val m = MethodInfo(d, false, Nil, varargs)
+      m.copy(pattern = n ⇒ "static " + m.pattern(n))
     }
   }
 

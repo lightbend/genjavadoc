@@ -78,7 +78,8 @@ trait Output { this: TransformCake ⇒
       case x: MethodInfo if x.name == obj.name ⇒ c ++ x.comment
       case _                                   ⇒ c
     })
-    obj.copy(comment = com, module = false, members = Vector.empty)
+    val sig = (n: String, a: String) => obj.pattern(n, a).replaceAll(" extends.*", "").replaceAll(" implements.*", "")
+    obj.copy(comment = com, module = false, members = Vector.empty, pattern = sig)
   }
 
   val PreFilter: PartialFunction[ClassInfo, ClassInfo] = {
@@ -119,9 +120,13 @@ trait Output { this: TransformCake ⇒
     }
     val staticMethods =
       if (!forwarders || cls.interface) Vector.empty
-      else obj.members collect {
-        case m: MethodInfo if !(m.name == obj.name) && !cls.members.exists(_.name == m.name) ⇒
-          m.copy(pattern = n ⇒ "static " + m.pattern(n))
+      else {
+        val direct = obj.members.collect {
+          case m: MethodInfo if !(m.name == obj.name) && !cls.members.exists(_.name == m.name) ⇒
+            m.copy(pattern = n ⇒ "static " + m.pattern(n))
+        }
+        val exclude = (direct.iterator ++ methods.iterator).map(_.name).toSet
+        direct ++ inheritedMethods(cls.sym, exclude)
       }
     val nestedClasses = flatten(classes, forwarders = false, staticScope = false)
     val nestedStaticClasses = flatten(staticClasses, forwarders = false, staticScope = staticScope)
@@ -133,6 +138,16 @@ trait Output { this: TransformCake ⇒
       val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
       Vector(base, mod.copy(members = nestedStaticClasses ++ mod.members))
     }
+  }
+
+  private def inheritedMethods(sym: global.Symbol, exclude: Set[String]): Seq[MethodInfo] = {
+    import global._
+    sym.ancestors.reverse
+      .filter(s => s.name != typeNames.Object && s.name != typeNames.Any)
+      .flatMap(_.info.nonPrivateDecls)
+      .collect { case m: MethodSymbol if !m.isConstructor && !exclude.contains(m.name.toString) => m }
+      .foldLeft(Vector.empty[Symbol])((s, m) => s.filterNot(m.overrides.contains) :+ m)
+      .map(MethodInfo(_))
   }
 
 }
