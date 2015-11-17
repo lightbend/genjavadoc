@@ -75,11 +75,17 @@ trait AST { this: TransformCake ⇒
 
   def fabricateParams: Boolean
 
+  final case class DeprecationInfo(msg: String, since: String) {
+    def maybeDot = if (msg.endsWith(".")) " " else ". "
+    def maybeSinceDot = if (since.endsWith(".")) " " else ". "
+    def render = s" * @deprecated ${msg}${maybeDot}Since $since${maybeSinceDot}"
+  }
+
   case class MethodInfo(pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
     def sig = pattern(s"$ret $name")
   }
   object MethodInfo {
-    def apply(d: DefDef, interface: Boolean, comment: Seq[String], hasVararg: Boolean): MethodInfo = {
+    def apply(d: DefDef, interface: Boolean, comment: Seq[String], hasVararg: Boolean, deprecation: Option[DeprecationInfo]): MethodInfo = {
       val acc = methodAccess(d.mods, interface) + methodFlags(d.mods, interface)
       val (ret, name) =
         if (d.name == nme.CONSTRUCTOR) {
@@ -109,7 +115,19 @@ trait AST { this: TransformCake ⇒
           val r = if (ret == "void" || ret == "" || comment.find(_.contains("@return")).isDefined) Nil else " * @return (undocumented)" :: Nil
           rev.tail reverse_::: p.map(n => s" * @param $n (undocumented)") ::: r ::: rev.head :: Nil
         } else comment
-      MethodInfo(pattern, ret, name, commentWithParams)
+
+      if (d.toString() contains "orNotSoMuch") {
+        println("commentWithParams = " + commentWithParams)
+      }
+
+      val commentWithParamsAndDeprec =
+        if (comment.exists(_ contains "* @deprecated ")) commentWithParams // skip adding deprecated javadoc if already there
+        else deprecation match {
+          case Some(deprec) if comment == Nil => List("/**", deprec.render, "*/")
+          case Some(deprec) => comment.dropRight(1) ++ List(" *", deprec.render, "*/")
+          case _ => commentWithParams
+        }
+      MethodInfo(pattern, ret, name, commentWithParamsAndDeprec)
     }
 
     /**

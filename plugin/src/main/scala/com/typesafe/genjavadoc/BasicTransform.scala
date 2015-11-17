@@ -137,11 +137,17 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   private def addMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false, deprecation = deprecationInfo(d))))
   }
 
   private def addVarargsMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true, deprecation = deprecationInfo(d))))
   }
+
+  private def deprecationInfo(d: DefDef): Option[DeprecationInfo] =
+    if (d.symbol.isDeprecated) {
+      val deprec = d.symbol.annotations.find(_.toString contains "deprecated(").get
+      Some(DeprecationInfo(deprec.stringArg(0).getOrElse(""), deprec.stringArg(1).getOrElse("")))
+    } else None
 
 }
