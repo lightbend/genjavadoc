@@ -2,14 +2,10 @@ package akka.rk.buh.is.it;
 /**
  * Don't touch this!
  *
- * @deprecated This is replaced by TouchThisInstead; Since now.
+ * @deprecated This is replaced by TouchThisInstead. Since now.
  */
 public class DontTouchThis {
   public   DontTouchThis () { throw new RuntimeException(); }
-  /**
-   * @deprecated This is replaced by touchThisInstead. Since now.
-   */
-  public  void oldMethod () { throw new RuntimeException(); }
   /**
    * Some methods are forever.
    *

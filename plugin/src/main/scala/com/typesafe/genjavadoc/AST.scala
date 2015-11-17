@@ -79,6 +79,11 @@ trait AST { this: TransformCake ⇒
     def maybeDot = if (msg.endsWith(".")) " " else ". "
     def maybeSinceDot = if (since.endsWith(".")) " " else ". "
     def render = s" * @deprecated ${msg}${maybeDot}Since $since${maybeSinceDot}"
+
+    def appendToComment(comment: Seq[String]): Seq[String] = comment match {
+      case Nil => List("/**", render, "*/")
+      case c => c.dropRight(1) ++ List(" *", render, "*/")
+    }
   }
 
   case class MethodInfo(pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
@@ -108,6 +113,7 @@ trait AST { this: TransformCake ⇒
       val impl = if (d.mods.isDeferred || interface) ";" else "{ throw new RuntimeException(); }"
       val pattern = (n: String) ⇒ s"$acc $tp $n $args $throws $impl"
       def hasParam(n: String) = comment.find(_.contains(s"@param $n")).isDefined
+
       val commentWithParams =
         if (fabricateParams && comment.size > 1 && comment.head.startsWith("/**")) {
           val p = d.vparamss.head.map(mangleMethodName).filterNot(hasParam)
@@ -115,16 +121,10 @@ trait AST { this: TransformCake ⇒
           val r = if (ret == "void" || ret == "" || comment.find(_.contains("@return")).isDefined) Nil else " * @return (undocumented)" :: Nil
           rev.tail reverse_::: p.map(n => s" * @param $n (undocumented)") ::: r ::: rev.head :: Nil
         } else comment
-
-      if (d.toString() contains "orNotSoMuch") {
-        println("commentWithParams = " + commentWithParams)
-      }
-
       val commentWithParamsAndDeprec =
         if (comment.exists(_ contains "* @deprecated ")) commentWithParams // skip adding deprecated javadoc if already there
         else deprecation match {
-          case Some(deprec) if comment == Nil => List("/**", deprec.render, "*/")
-          case Some(deprec) => comment.dropRight(1) ++ List(" *", deprec.render, "*/")
+          case Some(deprec) => deprec.appendToComment(commentWithParams)
           case _ => commentWithParams
         }
       MethodInfo(pattern, ret, name, commentWithParamsAndDeprec)
