@@ -120,8 +120,14 @@ trait BasicTransform { this: TransformCake ⇒
   private var clazz: Option[ClassInfo] = None
 
   private def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
+    val deprecation = deprecationInfo(c)
+    val commentWithDeprecation = deprecation match {
+      case Some(deprec) => deprec.appendToComment(comment)
+      case _ => comment
+    }
+
     val old = clazz
-    clazz = Some(ClassInfo(c, comment, old.isEmpty))
+    clazz = Some(ClassInfo(c, commentWithDeprecation, old.isEmpty))
     val ret = block
     clazz =
       old match {
@@ -137,11 +143,19 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   private def addMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false, deprecation = deprecationInfo(d))))
   }
 
   private def addVarargsMethod(d: DefDef, comment: Seq[String]) {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true)))
+    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true, deprecation = deprecationInfo(d))))
   }
+
+  private def deprecationInfo(d: DefDef): Option[DeprecationInfo] = deprecationInfo(d.symbol)
+  private def deprecationInfo(d: ImplDef): Option[DeprecationInfo] = deprecationInfo(d.symbol)
+  private def deprecationInfo(symbol: Symbol): Option[DeprecationInfo] =
+    if (symbol.isDeprecated) {
+      val deprec = symbol.annotations.find(_.toString contains "deprecated(").get
+      Some(DeprecationInfo(deprec.stringArg(0).getOrElse(""), deprec.stringArg(1).getOrElse("")))
+    } else None
 
 }

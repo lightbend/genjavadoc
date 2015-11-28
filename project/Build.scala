@@ -17,7 +17,7 @@ object B extends Build {
     organization := "com.typesafe.genjavadoc",
     version := "1.0",
     scalaVersion := "2.11.6",
-    crossScalaVersions := (2 to 5).map(i => s"2.10.$i") ++ (0 to 7).map(i => s"2.11.$i") ++ (1 to 1).map(i => s"2.12.0-M$i"),
+    crossScalaVersions := (0 to 7).map(i => s"2.11.$i") ++ (1 to 1).map(i => s"2.12.0-M$i"),
     scalaTestVersion := (if (scalaVersion.value == "2.12.0-M1") "2.2.5-M1" else "2.1.3"),
     resolvers += Resolver.mavenLocal)
 

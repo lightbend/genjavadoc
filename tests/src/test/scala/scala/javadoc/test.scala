@@ -249,6 +249,31 @@ private[it] object PPrivate {
 }
 
 /**
+ * Don't touch this!
+ */
+@deprecated("This is replaced by TouchThisInstead", since = "now")
+private[it] class DontTouchThis {
+  /**
+   * Some methods are forever.
+   */
+  @deprecated("This is replaced by someDiamondsAre", since = "now")
+  def orNotSoMuch = ()
+
+  /**
+   * @deprecated This is already deprecated. Since now.
+   */
+  @deprecated("This will be ignored", since = "ever")
+  def alreadyDeprecatedInComment = ()
+}
+
+@deprecated("Les Scalac Voyages Extraordinaire", since = "now")
+class DeprecatedNoComment {
+  @deprecated("This is replaced by theShinyNewMethod", since = "now")
+  def oldMethod = ()
+}
+
+
+/**
  * Privacy is an illusion.
  */
 private object Private {
