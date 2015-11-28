@@ -132,6 +132,12 @@ Comments found within the Scala sources are transferred to the corresponding Jav
  * `<p>` tokens are placed between paragraphs, collapsing empty lines beforehand
  * words between backticks are placed between `<code> ... </code>` instead
 
+### Additional transformations
+
+Some additional transformations are applied in order to make the generated JavaDoc more useful:
+
+* if a Scala method or class was marked `@scala.annotation.deprecated` an equivalent JavaDoc `@deprecated` comment line will be inserted to the resulting JavaDoc comment.
+
 ## How it Works
 
 ScalaDoc generation is done by a special variant of the Scala compiler, which can in principle emit different output, but the syntax parsed by the ScalaDoc code is the Scala one: the compiler phases which adapt the AST to be more Java-like (to emit JVM byte-code in the end) are not run. On the other hand source comments cannot easily be associated with method signatures parsed from class files, and generating corresponding Java code to be fed into the `javadoc` tool is also no small task.
