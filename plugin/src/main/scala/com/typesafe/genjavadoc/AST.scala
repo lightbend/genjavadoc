@@ -140,8 +140,8 @@ trait AST { this: TransformCake ⇒
         case m: MethodSymbol => m.isVarargsMethod
         case _               => false
       }
-      val d = newDefDef(sym, EmptyTree)()
-      val m = MethodInfo(d, false, Nil, varargs)
+      val d = DefDef(sym, EmptyTree)
+      val m = MethodInfo(d, false, Nil, varargs, None)
       m.copy(pattern = n ⇒ "static " + m.pattern(n))
     }
   }

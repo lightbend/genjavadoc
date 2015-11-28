@@ -262,7 +262,7 @@ private[it] class DontTouchThis {
   /**
    * @deprecated This is already deprecated. Since now.
    */
-  @deprecated("This is already deprecated", since = "now")
+  @deprecated("This will be ignored", since = "ever")
   def alreadyDeprecatedInComment = ()
 }
 
