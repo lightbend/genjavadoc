@@ -6,6 +6,8 @@ package genjavadoc
 
 import sbt._
 import sbt.Keys._
+import com.typesafe.sbt.GitVersioning
+import com.typesafe.sbt.SbtGit._
 
 object B extends Build {
   import sbt.settingKey
@@ -16,9 +18,23 @@ object B extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "1.0",
-    scalaVersion := "2.11.6",
-    crossScalaVersions := (0 to 7).map(i => s"2.11.$i") ++ (1 to 1).map(i => s"2.12.0-M$i"),
-    scalaTestVersion := (if (scalaVersion.value == "2.12.0-M1") "2.2.5-M1" else "2.1.3"),
+    scalaVersion := crossScalaVersions.value.last,
+    crossScalaVersions := {
+      val scala210and211Versions = (2 to 5).map(i => s"2.10.$i") ++ (0 to 7).map(i => s"2.11.$i")
+      ifJavaVersion(_ < 8) {
+        scala210and211Versions
+      } {
+        scala210and211Versions ++ (1 to 3).map(i => s"2.12.0-M$i")
+      }
+    },
+    scalaTestVersion := {
+      scalaVersion.value match {
+        case "2.12.0-M1" => "2.2.5-M1"
+        case "2.12.0-M2" => "2.2.5-M2"
+        case "2.12.0-M3" => "2.2.5-M3"
+        case _ => "2.1.3"
+      }
+    },
     resolvers += Resolver.mavenLocal)
 
   lazy val top = Project(
@@ -26,7 +42,9 @@ object B extends Build {
     base = file("."),
     aggregate = Seq(plugin, tests, javaOut),
     settings = defaults ++ Seq(
-      publishArtifact := false))
+      publishArtifact := false,
+      git.useGitDescribe := true
+    )).enablePlugins(GitVersioning)
 
   lazy val plugin = Project(
     id = "genjavadoc-plugin",
@@ -100,6 +118,13 @@ object B extends Build {
       case "2" :: "11" :: _ => "scala-2.11"
       case "2" :: "12" :: _ => "scala-2.12"
       case _ => "unknow-scala-version"
+    }
+  }
+
+  def ifJavaVersion[T](predicate: Int => Boolean)(yes: => T)(no: => T): T = {
+    System.getProperty("java.version").split("\\.").toList match {
+      case "1" :: v :: _ if predicate(v.toInt)  => yes
+      case _ => no
     }
   }
 }

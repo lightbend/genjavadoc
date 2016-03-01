@@ -3,5 +3,6 @@ sudo: false
 language: scala
 jdk:
   - openjdk6
+  - oraclejdk8
 # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script: sbt -J-XX:ReservedCodeCacheSize=128m +test

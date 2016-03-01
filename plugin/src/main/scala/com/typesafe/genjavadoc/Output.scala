@@ -143,10 +143,10 @@ trait Output { this: TransformCake ⇒
   private def inheritedMethods(sym: global.Symbol, exclude: Set[String]): Seq[MethodInfo] = {
     import global._
     sym.ancestors.reverse
-      .filter(s => s.name != typeNames.Object && s.name != typeNames.Any)
+      .filter(s => s.name != tpnme.Object && s.name != tpnme.Any)
       .flatMap(_.info.nonPrivateDecls)
       .collect { case m: MethodSymbol if !m.isConstructor && !exclude.contains(m.name.toString) => m }
-      .foldLeft(Vector.empty[Symbol])((s, m) => s.filterNot(m.overrides.contains) :+ m)
+      .foldLeft(Vector.empty[Symbol])((s, m) => s.filterNot(m.allOverriddenSymbols.contains) :+ m)
       .map(MethodInfo(_))
   }
 
