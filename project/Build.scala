@@ -20,7 +20,7 @@ object B extends Build {
     version := "1.0",
     scalaVersion := crossScalaVersions.value.last,
     crossScalaVersions := {
-      val scala210and211Versions = (2 to 6).map(i => s"2.10.$i") ++ (0 to 7).map(i => s"2.11.$i")
+      val scala210and211Versions = (2 to 6).map(i => s"2.10.$i") ++ (0 to 8).map(i => s"2.11.$i")
       ifJavaVersion(_ < 8) {
         scala210and211Versions
       } {
