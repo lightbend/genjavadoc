@@ -15,6 +15,10 @@ object B extends Build {
   // so we can set this from automated builds and also depending on Scala version
   lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.")
 
+  // copied from Roman Janusz's Silencer plugin (https://github.com/ghik/silencer/)
+  val saveTestClasspath = taskKey[File](
+    "Saves test classpath to a file so that it can be used by embedded scalac in tests")
+
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "1.0",
@@ -40,7 +44,7 @@ object B extends Build {
   lazy val top = Project(
     id = "top",
     base = file("."),
-    aggregate = Seq(plugin, tests, javaOut),
+    aggregate = Seq(plugin),
     settings = defaults ++ Seq(
       publishArtifact := false,
       git.useGitDescribe := true
@@ -51,34 +55,25 @@ object B extends Build {
     base = file("plugin"),
     settings = defaults ++ Seq(
       libraryDependencies ++= Seq(
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+        "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"
       ),
+      saveTestClasspath := {
+        val result = (classDirectory in Test).value / "embeddedcp"
+        IO.write(result, (fullClasspath in Test).value.map(_.data.getAbsolutePath).mkString("\n"))
+        result
+      },
+      (test in Test) := {
+        // since we are building for different Scala patch versions, a clean
+        // is required to avoid conflicts in class files
+        clean.value
+        saveTestClasspath.value
+        (test in Test).value
+      },
+      fork in Test := true,
       unmanagedSourceDirectories in Compile += (sourceDirectory in Compile).value / sourceDirName(scalaVersion.value),
       crossVersion := CrossVersion.full,
       exportJars := true))
-
-  lazy val tests = Project(
-    id = "tests",
-    base = file("tests"),
-    settings = defaults ++ Seq(
-      publishArtifact := false,
-      libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"),
-      browse := false,
-      scalacOptions in Compile <<= (packageBin in plugin in Compile, scalacOptions in Compile, clean, browse) map (
-        (pack, opt, clean, b) ⇒
-          opt ++
-            Seq("-Xplugin:" + pack.getAbsolutePath, "-P:genjavadoc:out=tests/target/java", "-P:genjavadoc:suppressSynthetic=false") ++
-            (if (b) Seq("-Ybrowse:uncurry") else Nil))))
-
-  lazy val javaOut = Project(
-    id = "javaOut",
-    base = file("javaOut"),
-    settings = defaults ++ Seq(
-      publishArtifact := false,
-      libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"),
-      unmanagedSources in Compile <<= (baseDirectory in tests, compile in tests in Test) map ((b, c) ⇒ (b / "target/java/akka" ** "*.java").get :+ (b / "target/java/AtTheRoot.java"))))
 
   lazy val defaults = Project.defaultSettings ++ Seq(
     publishTo <<= (version)(v ⇒
