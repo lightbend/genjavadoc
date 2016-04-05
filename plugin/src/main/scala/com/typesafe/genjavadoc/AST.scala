@@ -93,7 +93,7 @@ trait AST { this: TransformCake ⇒
   }
   object MethodInfo {
     def apply(d: DefDef, interface: Boolean, comment: Seq[String], hasVararg: Boolean, deprecation: Option[DeprecationInfo]): MethodInfo = {
-      val acc = methodAccess(d.mods, interface) + methodFlags(d.mods, interface)
+      val acc = methodAccess(d.symbol, interface) + methodFlags(d.mods, interface)
       val (ret, name) =
         if (d.name == nme.CONSTRUCTOR) {
           ("", d.symbol.enclClass.name.toString)
@@ -167,11 +167,11 @@ trait AST { this: TransformCake ⇒
     else "public" // this is the case for top level classes
   }
 
-  private def methodAccess(m: Modifiers, interface: Boolean): String = {
-    if (m.isPublic) "public"
-    else if (m.isProtected && !interface) "protected"
-    else if (m.isPrivate && !interface) "private"
-    else if (strictVisibility && m.privateWithin != tpnme.EMPTY) ""
+  private def methodAccess(sym: Symbol, interface: Boolean): String = {
+    if (sym.isPublic) "public"
+    else if (sym.isProtected && !interface) "protected"
+    else if (sym.isPrivate && !interface) "private"
+    else if (strictVisibility && sym.privateWithin != NoSymbol) ""
     else "public" // this is the case for interfaces
   }
 
