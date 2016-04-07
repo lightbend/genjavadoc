@@ -1,5 +1,7 @@
 # GenJavaDoc
 
+[![Build Status](https://travis-ci.org/typesafehub/genjavadoc.svg?branch=master)](https://travis-ci.org/typesafehub/genjavadoc)
+
 This project’s goal is the creation of real JavaDoc for Scala projects. While ScalaDoc—the native API documentation format of Scala—has several benefits over JavaDoc, Java programmers are very much used to having access to API documentation in a syntax matching their programming language of choice. Another motivating factor may be that javadoc-JARs are supported within IDE, e.g. showing tooltip help texts.
 
 ## How to Use It
