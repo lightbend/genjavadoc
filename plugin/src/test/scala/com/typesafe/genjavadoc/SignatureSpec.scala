@@ -1,9 +1,11 @@
-package scala.javadoc
+package com.typesafe.genjavadoc
 
 import org.scalatest.{ Matchers, WordSpec }
 import org.scalatest.matchers.{ Matcher, MatchResult }
 import java.net.URLClassLoader
 import java.io.File
+
+import util._
 
 object SignatureSpec {
   // this should match up against the definition in GenJavaDocPlugin
@@ -19,6 +21,27 @@ object SignatureSpec {
 
   // they can't start with numbers either
   val startsWithNumber = "^\\d".r
+
+  val expectedClasses = Seq(
+    "AtTheRoot",
+    "akka.Main",
+    "akka.rk.buh.is.it.A",
+    "akka.rk.buh.is.it.A$",
+    "akka.rk.buh.is.it.Blarb",
+    "akka.rk.buh.is.it.Blarb$",
+    "akka.rk.buh.is.it.X",
+    "akka.rk.buh.is.it.Y",
+    "akka.rk.buh.is.it.Z",
+    "akka.rk.buh.is.it.PPrivate",
+    "akka.rk.buh.is.it.PPrivate$",
+    "akka.rk.buh.is.it.Private",
+    "akka.rk.buh.is.it.Private$",
+    "akka.rk.buh.is.it.PProtected",
+    "akka.rk.buh.is.it.PProtected$",
+    "akka.rk.buh.is.it.PTrait",
+    "akka.rk.buh.is.it.AnAbstractTypeRef"
+  )
+
 }
 
 class SignatureSpec extends WordSpec with Matchers {
@@ -28,9 +51,24 @@ class SignatureSpec extends WordSpec with Matchers {
   "The generated java files" must {
 
     "contain the same methods and classes as the original Scala files" in {
-      val vString = scala.util.Properties.versionNumberString
-      val vPath = if (vString.contains("-")) vString else vString.split("\\.").take(2).mkString(".")
-      val scalaCL = new URLClassLoader(Array(new File(s"tests/target/scala-$vPath/test-classes/").toURI.toURL), classOf[List[_]].getClassLoader)
+      val doc = IO.tempDir("java")
+      val docPath = doc.getAbsolutePath
+
+      val scalac = new GenJavaDocCompiler(
+        s"genjavadoc:out=$docPath",
+        "genjavadoc:suppressSynthetic=false"
+      )
+
+      val javaSources = expectedClasses.map{cls =>
+        docPath + "/" + cls.replace(".", "/") + ".java"
+      }
+      val javac = new JavaCompiler
+
+      scalac.compile(BasicSpec.scalaSources)
+      javac.compile(javaSources)
+
+      val scalaCL = new URLClassLoader(Array(scalac.target.getAbsoluteFile.toURI.toURL), classOf[List[_]].getClassLoader)
+      val javaCL = new URLClassLoader(Array(javac.target.getAbsoluteFile.toURI.toURL), classOf[List[_]].getClassLoader)
 
       val accProtLvl = Map(1 -> 1, 2 -> 3, 4 -> 2)
 
@@ -46,8 +84,9 @@ class SignatureSpec extends WordSpec with Matchers {
       val exception = "(akka.rk.buh.is.it.A\\$[C1D]+\\$)\\$"
       val replacemnt = "$1"
 
-      def check(jc: Class[_]) {
-        val sc = scalaCL.loadClass(jc.getName.replaceAll(exception, replacemnt))
+      def check(jn: String) {
+        val jc: Class[_] = javaCL.loadClass(jn)
+        val sc: Class[_] = scalaCL.loadClass(jn.replaceAll(exception, replacemnt))
 
         def matchJava(j: Set[String]) = Matcher { (s: Traversable[String]) ⇒
           MatchResult(s == j, s"$s did not match $j (in $jc)", s"$s matched $j (in $jc)")
@@ -79,7 +118,7 @@ class SignatureSpec extends WordSpec with Matchers {
           js.isInterface should beEqual(ss.isInterface)
           if (!js.isInterface())
             js.getSuperclass.getName should beEqual(ss.getSuperclass.getName)
-          check(js)
+          check(js.getName)
         }
       }
 
@@ -105,23 +144,10 @@ class SignatureSpec extends WordSpec with Matchers {
         }.toMap
       }
 
-      check(Class.forName("AtTheRoot"))
-      check(Class.forName("akka.Main"))
-      check(Class.forName("akka.rk.buh.is.it.A"))
-      check(Class.forName("akka.rk.buh.is.it.A$"))
-      check(Class.forName("akka.rk.buh.is.it.Blarb"))
-      check(Class.forName("akka.rk.buh.is.it.Blarb$"))
-      check(Class.forName("akka.rk.buh.is.it.X"))
-      check(Class.forName("akka.rk.buh.is.it.Y"))
-      check(Class.forName("akka.rk.buh.is.it.Z"))
-      check(Class.forName("akka.rk.buh.is.it.PPrivate"))
-      check(Class.forName("akka.rk.buh.is.it.PPrivate$"))
-      check(Class.forName("akka.rk.buh.is.it.Private"))
-      check(Class.forName("akka.rk.buh.is.it.Private$"))
-      check(Class.forName("akka.rk.buh.is.it.PProtected"))
-      check(Class.forName("akka.rk.buh.is.it.PProtected$"))
-      check(Class.forName("akka.rk.buh.is.it.PTrait"))
-      check(Class.forName("akka.rk.buh.is.it.AnAbstractTypeRef"))
+
+      for (className <- expectedClasses) {
+        check(className)
+      }
     }
 
   }
