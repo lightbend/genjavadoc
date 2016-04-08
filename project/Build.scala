@@ -16,9 +16,9 @@ object B extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
     version := "0.9",
-    scalaVersion := "2.11.6",
+    scalaVersion := "2.12.0-M4",
     crossScalaVersions := (2 to 5).map(i => s"2.10.$i") ++ (0 to 6).map(i => s"2.11.$i") ++ (1 to 1).map(i => s"2.12.0-M$i"),
-    scalaTestVersion := (if (scalaVersion.value == "2.12.0-M1") "2.2.5-M1" else "2.1.3"),
+    scalaTestVersion := (if (scalaVersion.value == "2.12.0-M4") "2.2.6" else "2.1.3"),
     resolvers += Resolver.mavenLocal)
 
   lazy val top = Project(

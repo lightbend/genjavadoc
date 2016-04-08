@@ -11,7 +11,10 @@ class TheSpec extends WordSpec with Matchers {
   "GenJavaDoc" must {
 
     "generate the expected output" in {
-      lines(run("tests", "diff", "-wurNI", "^ *//", "expected_output/akka", "target/java/akka")) foreach println
+      lines(run("tests", "diff", "-wurN",
+        "-I", "^ *//", // comment lines
+        "-I", "^ *private  java\\.lang\\.Object readResolve", // since Scala 2.12.0-M3, these methods are emitted in a later compiler phase
+        "expected_output/akka", "target/java/akka")) foreach println
     }
 
   }
