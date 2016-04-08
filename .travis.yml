@@ -31,6 +31,7 @@ env:
   - SCALA_VERSION=2.12.0-M1
   - SCALA_VERSION=2.12.0-M2
   - SCALA_VERSION=2.12.0-M3
+  - SCALA_VERSION=2.12.0-M4
 
 matrix:
   exclude:
@@ -41,6 +42,8 @@ matrix:
       env: SCALA_VERSION=2.12.0-M2
     - jdk: openjdk6
       env: SCALA_VERSION=2.12.0-M3
+    - jdk: openjdk6
+      env: SCALA_VERSION=2.12.0-M4
 
 # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script:
