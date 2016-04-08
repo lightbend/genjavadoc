@@ -92,8 +92,10 @@ class SignatureSpec extends WordSpec with Matchers {
         import language.postfixOps
         c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
           || javaKeywords.contains(x.getName)
+          || x.getName == "$init$" // These synthetic methods show up in 2.12.0-M4+ even though they are not in the generated Java sources
           || startsWithNumber.findFirstIn(x.getName).isDefined))
           .map(_.toGenericString)
+          .map(_.replace("default ", "abstract ")) // Scala 2.12.0-M4+ creates default methods for trait method implementations. We treat them as abstract for now.
           .map(_.replaceAll(exception, replacemnt))
           .toSet
       }

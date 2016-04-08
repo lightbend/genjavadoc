@@ -107,7 +107,12 @@ trait AST { this: TransformCake ⇒
       }
       val args = rec(d.vparamss.head) mkString ("(", ", ", ")")
 
-      val throwsAnnotations = d.symbol.throwsAnnotations.map(_.fullName)
+      val throwsAnnotations = d.symbol.annotations.collect {
+        case ThrownException(exc) => (exc: Any) match {
+          case s: Symbol => s.fullName
+          case t: Type => t.typeSymbol.fullName // 2.12.0-M4+ has a Type instead of a TypeSymbol in ThrownException
+        }
+      }
       val throws = if (throwsAnnotations.isEmpty) "" else "throws " + throwsAnnotations.mkString(", ")
 
       val impl = if (d.mods.isDeferred || interface) ";" else "{ throw new RuntimeException(); }"
