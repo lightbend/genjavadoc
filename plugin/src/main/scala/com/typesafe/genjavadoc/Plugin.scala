@@ -48,6 +48,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
   lazy val suppressSynthetic = java.lang.Boolean.parseBoolean(myOptions.getProperty("suppressSynthetic", "true"))
   lazy val filteredStrings: Set[String] = stringToFilter(myOptions.getProperty("filter", defaultFilterString))
   lazy val fabricateParams = java.lang.Boolean.parseBoolean(myOptions.getProperty("fabricateParams", "true"))
+  lazy val strictVisibility = java.lang.Boolean.parseBoolean(myOptions.getProperty("strictVisibility", "false"))
 
   private object MyComponent extends PluginComponent with Transform {
 
@@ -69,6 +70,7 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
       override val outputBase: File = GenJavaDocPlugin.this.outputBase
       override val suppressSynthetic: Boolean = GenJavaDocPlugin.this.suppressSynthetic
       override val fabricateParams: Boolean = GenJavaDocPlugin.this.fabricateParams
+      override val strictVisibility: Boolean = GenJavaDocPlugin.this.strictVisibility
 
       override def superTransformUnit(unit: CompilationUnit) = super.transformUnit(unit)
       override def superTransform(tree: Tree) = super.transform(tree)
