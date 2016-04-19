@@ -21,7 +21,6 @@ object B extends Build {
 
   override lazy val settings = super.settings ++ Seq(
     organization := "com.typesafe.genjavadoc",
-    version := "1.0",
     scalaVersion := crossScalaVersions.value.last,
     crossScalaVersions := {
       val scala210and211Versions = (2 to 6).map(i => s"2.10.$i") ++ (0 to 8).map(i => s"2.11.$i")
@@ -42,19 +41,18 @@ object B extends Build {
     },
     resolvers += Resolver.mavenLocal)
 
-  lazy val top = Project(
-    id = "top",
-    base = file("."),
-    aggregate = Seq(plugin),
-    settings = defaults ++ Seq(
+  lazy val top = (project in file("."))
+    .aggregate(`genjavadoc-plugin`)
+    .settings(defaults)
+    .settings(
       publishArtifact := false,
       git.useGitDescribe := true
-    )).enablePlugins(GitVersioning)
+    )
+    .enablePlugins(GitVersioning)
 
-  lazy val plugin = Project(
-    id = "genjavadoc-plugin",
-    base = file("plugin"),
-    settings = defaults ++ Seq(
+  lazy val `genjavadoc-plugin` = (project in file("plugin"))
+    .settings(defaults)
+    .settings(
       libraryDependencies ++= Seq(
         "org.scala-lang" % "scala-compiler" % scalaVersion.value,
         "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"
@@ -74,9 +72,10 @@ object B extends Build {
       fork in Test := true,
       unmanagedSourceDirectories in Compile += (sourceDirectory in Compile).value / sourceDirName(scalaVersion.value),
       crossVersion := CrossVersion.full,
-      exportJars := true))
+      exportJars := true
+    )
 
-  lazy val defaults = Project.defaultSettings ++ Seq(
+  lazy val defaults = Seq(
     publishTo <<= (version)(v ⇒
       if (v endsWith "-SNAPSHOT") Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
       else Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")),

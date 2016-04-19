@@ -9,48 +9,26 @@ This project’s goal is the creation of real JavaDoc for Scala projects. While 
 GenJavaDoc is a Scala compiler plugin which emits structurally equivalent Java code for all Scala sources of a project, keeping the ScalaDoc comments (with a few format adaptions). Integration into an SBT build is quite simple:
 
 ~~~ scala
-lazy val JavaDoc = config("genjavadoc") extend Compile
-
 lazy val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
-  libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %%
-    "genjavadoc-plugin" % "0.9" cross CrossVersion.full),
-  scalacOptions <+= target map (t => "-P:genjavadoc:out=" + (t / "java")),
-  packageDoc in Compile <<= packageDoc in JavaDoc,
-  sources in JavaDoc <<=
-    (target, compile in Compile, sources in Compile) map ((t, c, s) =>
-      (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))),
-  javacOptions in JavaDoc := Seq(),
-  artifactName in packageDoc in JavaDoc :=
-    ((sv, mod, art) =>
-      "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar")
-)
-~~~
-
-If you're using an SBT version more recent than than 0.13.2, then you
-can define `javadocSettings` without using `<<=`, `<+=` and other
-similar operators:
-
-~~~ scala
-lazy val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
-  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" %
-    "0.7" cross CrossVersion.full),
+  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.9" cross CrossVersion.full),
   scalacOptions += s"-P:genjavadoc:out=${target.value}/java",
   packageDoc in Compile := (packageDoc in JavaDoc).value,
-  sources in JavaDoc := 
-    (target.value / "java" ** "*.java").get ++ (sources in Compile).value.
-      filter(_.getName.endsWith(".java")),
+  sources in JavaDoc :=
+    (target.value / "java" ** "*.java").get ++
+    (sources in Compile).value.filter(_.getName.endsWith(".java")),
   javacOptions in JavaDoc := Seq(),
-  artifactName in packageDoc in JavaDoc :=
-    ((sv, mod, art) =>
-      "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar")
+  artifactName in packageDoc in JavaDoc := ((sv, mod, art) =>
+    "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar")
 )
 ~~~
 
-To make it work, you must to add the config and the settings to your
+To make it work, you must add the config and the settings to your
 project.  One way to do this is to place the following line in your
 `build.sbt` file:
 
-    lazy val root = project.in(file(".")).configs(JavaDoc).settings(javadocSettings: _*)
+~~~ scala
+lazy val root = project.in(file(".")).configs(JavaDoc).settings(javadocSettings: _*)
+~~~
 
 Adding `javadocSettings` to a `Project` this way will replace the
 packaging of the API docs to use the JavaDoc instead of the ScalaDoc
@@ -151,10 +129,10 @@ One drawback of this choice is that the flattening of classes and companion obje
 ## Known Limitations
 
  * Many ScalaDoc tags and features are simply not supported by the javadoc tool and genjavadoc does not reimplement them:
- 
+
      * `@note`, `@example`, `@group` etc. do not work and are errors in JavaDoc 8, so they cannot be used
      * links to methods that use the overload disambiguation syntax will not work
- 
+
  * Classes and objects nested inside nested objects are emitted by Scalac in such a form that there is no valid Java syntax to produce the same binary names. This is due to differences in name mangling (where javac inserts more dollar signs than scalac does). This means that while JavaDoc is generated for these (in order to guarantee that JavaDoc will find all the types it needs) the precise names are neither correct nor usable in practice.
 
 ## Reporting Bugs
