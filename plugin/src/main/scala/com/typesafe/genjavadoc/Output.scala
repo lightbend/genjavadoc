@@ -132,11 +132,11 @@ trait Output { this: TransformCake ⇒
     val nestedStaticClasses = flatten(staticClasses, forwarders = false, staticScope = staticScope)
     if (forwarders) {
       val base = cls.copy(members = nestedClasses ++ nestedStaticClasses ++ staticMethods ++ methods)
-      Vector(base, mangleModule(obj, addMODULE = forwarders, pruneClasses = true))
+      flatten(Vector(base)) ++ Vector(mangleModule(obj, addMODULE = forwarders, pruneClasses = true))
     } else {
       val base = cls.copy(members = nestedClasses ++ staticMethods ++ methods)
       val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
-      Vector(base, mod.copy(members = nestedStaticClasses ++ mod.members))
+      flatten(Vector(base)) ++ Vector(mod.copy(members = nestedStaticClasses ++ mod.members))
     }
   }
 

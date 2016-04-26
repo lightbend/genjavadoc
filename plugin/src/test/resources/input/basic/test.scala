@@ -369,3 +369,10 @@ object EWMA {
     1 - math.exp(-decayRate * collectInterval.toMillis)
   }
 }
+
+abstract class Reserved {
+  //reserved keyword in java, should not be generated
+  final def goto(x: String): String = x
+}
+
+object ReservedImpl extends Reserved
