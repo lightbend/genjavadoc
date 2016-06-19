@@ -143,6 +143,6 @@ If you find errors in the generation process or have suggestions on how to impro
 
 This software is licensed under the Apache 2 license.
 
-### Sponsored by Typesafe
+### Sponsored by Lightbend
 
 Responsible: Dr. Roland Kuhn
