@@ -1,9 +1,10 @@
 package com.typesafe.genjavadoc
 
-import org.scalatest.{ Matchers, WordSpec }
-import org.scalatest.matchers.{ Matcher, MatchResult }
+import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.{MatchResult, Matcher}
 import java.net.URLClassLoader
 import java.io.File
+import java.lang.reflect.Modifier
 
 import util._
 
@@ -89,7 +90,13 @@ class SignatureSpec extends WordSpec with Matchers {
         val sc: Class[_] = scalaCL.loadClass(jn.replaceAll(exception, replacemnt))
 
         def matchJava(j: Set[String]) = Matcher { (s: Traversable[String]) ⇒
-          MatchResult(s == j, s"$s did not match $j (in $jc)", s"$s matched $j (in $jc)")
+          MatchResult(s == j, 
+            s"Scala: \n" + 
+            s"  ${s.mkString("\n  ")} \n" +
+            s"did not match Java: \n" +
+            s"  ${j.mkString("\n  ")}\n" +
+            s"(in $jc)", 
+            s"$s matched $j (in $jc)")
         }
 
         val jm = getMethods(jc, filter = false)
@@ -132,6 +139,7 @@ class SignatureSpec extends WordSpec with Matchers {
         c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
           || javaKeywords.contains(x.getName)
           || x.getName == "$init$" // These synthetic methods show up in 2.12.0-M4+ even though they are not in the generated Java sources
+          || (filter && Modifier.isStatic(x.getModifiers) && x.getName.endsWith("$")) // These synthetic static methods appear since 2.12.0-M5+ as companions to default methods
           || startsWithNumber.findFirstIn(x.getName).isDefined))
           .map(_.toGenericString)
           .map(_.replace("default ", "abstract ")) // Scala 2.12.0-M4+ creates default methods for trait method implementations. We treat them as abstract for now.
