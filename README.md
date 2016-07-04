@@ -145,4 +145,8 @@ This software is licensed under the Apache 2 license.
 
 ### Sponsored by Lightbend
 
-Responsible: Dr. Roland Kuhn
+Responsible: Dr. Roland Kuhn (@rkuhn)
+Maintained mostly by @akka team (@2m, @ktoso)
+
+Feel free to ping above maintainers for code review or discussions. 
+Pull requests are very welcome–thanks in advance!
