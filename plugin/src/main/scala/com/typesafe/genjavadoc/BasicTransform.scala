@@ -91,13 +91,19 @@ trait BasicTransform { this: TransformCake ⇒
           superTransform(tree)
         }
       case d: DefDef if keep ⇒
-        val (lookat, end) =
-          if (d.name == nme.CONSTRUCTOR) {
-            if (clazz.get.constructor) (d.symbol.enclClass.pos, None)
-            else (d.pos, endPos(d.rhs))
-          } else (d.pos, endPos(d.rhs))
-        // must be called for keeping the “current” position right
-        val text = commentText(lookat, end)
+        val text =
+          if (d.mods.hasModuleFlag) { // accessor for an object
+            // the accessor occurs out of order; we must not advance the position
+            Nil
+          } else {
+            val (lookat, end) =
+              if (d.name == nme.CONSTRUCTOR) {
+                if (clazz.get.constructor) (d.symbol.enclClass.pos, None)
+                else (d.pos, endPos(d.rhs))
+              } else (d.pos, endPos(d.rhs))
+            // must be called for keeping the “current” position right
+            commentText(lookat, end)
+          }
         val name = d.name.toString
         if (!skippedName(name)) {
           if (d.mods.hasFlag(Flags.VARARGS)) addVarargsMethod(d, text)
