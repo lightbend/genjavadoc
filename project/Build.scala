@@ -27,16 +27,12 @@ object B extends Build {
       ifJavaVersion(_ < 8) {
         scala210and211Versions
       } {
-        scala210and211Versions ++ (1 to 5).map(i => s"2.12.0-M$i")
+        scala210and211Versions ++ (1 to 1).map(i => s"2.12.0-RC$i")
       }
     },
     scalaTestVersion := {
       scalaVersion.value match {
-        case "2.12.0-M1" => "2.2.5-M1"
-        case "2.12.0-M2" => "2.2.5-M2"
-        case "2.12.0-M3" => "2.2.5-M3"
-        case "2.12.0-M4" => "2.2.6"
-        case "2.12.0-M5" => "3.0.0-RC4"
+        case "2.12.0-RC1" => "3.0.0"
         case _ => "2.1.3"
       }
     },

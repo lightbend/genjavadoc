@@ -55,7 +55,6 @@ public  class A {
      */
     public  long math ()  { throw new RuntimeException(); }
     public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
-    private  java.lang.Object readResolve ()  { throw new RuntimeException(); }
   }
   /**
    * class A.B
