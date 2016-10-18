@@ -28,13 +28,13 @@ env:
   - SCALA_VERSION=2.11.6
   - SCALA_VERSION=2.11.7
   - SCALA_VERSION=2.11.8
-  - SCALA_VERSION=2.12.0-RC1
+  - SCALA_VERSION=2.12.0-RC2
 
 matrix:
   exclude:
     # scala 2.12.x requires jdk8
     - jdk: openjdk6
-      env: SCALA_VERSION=2.12.0-RC1
+      env: SCALA_VERSION=2.12.0-RC2
 
 # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script:

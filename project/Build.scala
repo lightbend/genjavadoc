@@ -32,7 +32,7 @@ object B extends Build {
     },
     scalaTestVersion := {
       scalaVersion.value match {
-        case "2.12.0-RC1" => "3.0.0"
+        case "2.12.0-RC2" => "3.0.0"
         case _ => "2.1.3"
       }
     },
