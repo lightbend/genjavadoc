@@ -145,4 +145,9 @@ This software is licensed under the Apache 2 license.
 
 ### Sponsored by Lightbend
 
-Responsible: Dr. Roland Kuhn
+Responsible: Dr. Roland Kuhn ([@rkuhn](https://github.com/rkuhn))
+
+Maintained by [Akka Team](https://github.com/orgs/akka/teams/akka-team) (mostly by [@2m](https://github.com/2m), [@ktoso](https://github.com/ktoso))
+
+Feel free to ping above maintainers for code review or discussions. 
+Pull requests are very welcome–thanks in advance!
