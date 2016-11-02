@@ -14,6 +14,11 @@ jdk:
   - oraclejdk8
 
 env:
+  - SCALA_VERSION=2.10.2
+  - SCALA_VERSION=2.10.3
+  - SCALA_VERSION=2.10.4
+  - SCALA_VERSION=2.10.5
+  - SCALA_VERSION=2.10.6
   - SCALA_VERSION=2.11.0
   - SCALA_VERSION=2.11.1
   - SCALA_VERSION=2.11.2
@@ -29,7 +34,7 @@ matrix:
   exclude:
     # scala 2.12.x requires jdk8
     - jdk: openjdk6
-      env: SCALA_VERSION=2.12.0-RC2
+      env: SCALA_VERSION=2.12.0
 
 # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script:

@@ -31,10 +31,9 @@ object B extends Build {
       }
     },
     scalaTestVersion := {
-      scalaVersion.value match {
-        case "2.12.0-RC2" => "3.0.0"
-        case _ => "2.1.3"
-      }
+      val scalaV = scalaVersion.value
+      if (scalaV startsWith "2.12") "3.0.0"
+      else "2.1.3"
     },
     resolvers += Resolver.mavenLocal)
 
