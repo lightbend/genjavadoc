@@ -27,7 +27,7 @@ object B extends Build {
       ifJavaVersion(_ < 8) {
         scala210and211Versions
       } {
-        scala210and211Versions ++ (1 to 1).map(i => s"2.12.0-RC$i")
+        scala210and211Versions ++ List("2.12.0")
       }
     },
     scalaTestVersion := {
