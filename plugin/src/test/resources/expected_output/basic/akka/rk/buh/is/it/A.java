@@ -48,13 +48,13 @@ public  class A {
     public  class NonStatic {
       public   NonStatic ()  { throw new RuntimeException(); }
     }
-    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
     public   D$ ()  { throw new RuntimeException(); }
     /**
      * def A.D.math
      * @return (undocumented)
      */
     public  long math ()  { throw new RuntimeException(); }
+    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
   }
   /**
    * class A.B
@@ -94,12 +94,12 @@ public  class A {
     public  class C1$ {
       public   C1$ ()  { throw new RuntimeException(); }
     }
+    public   C1 ()  { throw new RuntimeException(); }
     /**
      * Accessor for nested Scala object
      * @return (undocumented)
      */
     public  akka.rk.buh.is.it.A.C1.C1$ C1 ()  { throw new RuntimeException(); }
-    public   C1 ()  { throw new RuntimeException(); }
   }
   /**
    * object C1
@@ -146,11 +146,6 @@ public  class A {
    */
   static public  java.lang.String stattic ()  { throw new RuntimeException(); }
   static public  java.lang.Object x ()  { throw new RuntimeException(); }
-  /**
-   * Accessor for nested Scala object
-   * @return (undocumented)
-   */
-  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
   /**
    * varargs
    * @param s (undocumented)
@@ -224,4 +219,9 @@ public  class A {
    */
   public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
   public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }
+  /**
+   * Accessor for nested Scala object
+   * @return (undocumented)
+   */
+  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
 }
