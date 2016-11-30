@@ -1,8 +1,14 @@
 package com.typesafe.genjavadoc
 
 import scala.reflect.internal.util.RangePosition
+import scala.tools.nsc.ast.parser.SyntaxAnalyzer
 
 trait Comments extends BaseComments { this: TransformCake =>
+  object parser extends {
+    val global: Comments.this.global.type = Comments.this.global
+    val runsAfter = List[String]()
+    val runsRightAfter = None
+  } with SyntaxAnalyzer
 
   override def parseComments(): Unit =
     new parser.UnitParser(unit) {
