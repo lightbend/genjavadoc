@@ -1,19 +1,12 @@
 package com.typesafe.genjavadoc
 
 import scala.collection.immutable.TreeMap
-import scala.tools.nsc.ast.parser.SyntaxAnalyzer
 import scala.annotation.tailrec
 
 trait BaseComments { this: TransformCake ⇒
   import global._
 
   def unit: CompilationUnit
-
-  object parser extends {
-    val global: BaseComments.this.global.type = BaseComments.this.global
-    val runsAfter = List[String]()
-    val runsRightAfter = None
-  } with SyntaxAnalyzer
 
   private val replacements = Seq(
     "{{{" -> "<pre><code>",

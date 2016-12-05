@@ -23,11 +23,14 @@ object B extends Build {
     organization := "com.typesafe.genjavadoc",
     scalaVersion := crossScalaVersions.value.last,
     crossScalaVersions := {
-      val scala210and211Versions = (2 to 6).map(i => s"2.10.$i") ++ (0 to 8).map(i => s"2.11.$i")
+      val latest210 = 6
+      val latest211 = 8
+      val latest212 = 0
+      val scala210and211Versions = (2 to latest210).map(i => s"2.10.$i") ++ (0 to latest211).map(i => s"2.11.$i")
       ifJavaVersion(_ < 8) {
         scala210and211Versions
       } {
-        scala210and211Versions ++ List("2.12.0")
+        scala210and211Versions ++ (0 to latest212).map(i => s"2.12.$i")
       }
     },
     scalaTestVersion := {
@@ -66,7 +69,11 @@ object B extends Build {
         (test in Test).value
       },
       fork in Test := true,
-      unmanagedSourceDirectories in Compile += (sourceDirectory in Compile).value / sourceDirName(scalaVersion.value),
+      unmanagedSourceDirectories in Compile := {
+        val default = (unmanagedSourceDirectories in Compile).value
+        if (scalaVersion.value == "2.12.0") default.map(f => new java.io.File(f.getPath.replaceAll("/scala-2.12$", "/scala-2.11")))
+        else default
+      },
       crossVersion := CrossVersion.full,
       exportJars := true
     )
@@ -101,16 +108,6 @@ object B extends Build {
       }
     </developers>
 
-  def sourceDirName(version: String): String = {
-    val parts = version.split("\\.").toList
-    // this is here to make it easy to compensate for changes in minor versions
-    parts match {
-      case "2" :: "10" :: _ => "scala-2.10"
-      case "2" :: "11" :: _ => "scala-2.11"
-      case "2" :: "12" :: _ => "scala-2.12"
-      case _ => "unknow-scala-version"
-    }
-  }
 
   def ifJavaVersion[T](predicate: Int => Boolean)(yes: => T)(no: => T): T = {
     System.getProperty("java.version").split("\\.").toList match {
