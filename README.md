@@ -9,8 +9,10 @@ This project’s goal is the creation of real JavaDoc for Scala projects. While 
 GenJavaDoc is a Scala compiler plugin which emits structurally equivalent Java code for all Scala sources of a project, keeping the ScalaDoc comments (with a few format adaptions). Integration into an SBT build is quite simple:
 
 ~~~ scala
+lazy val JavaDoc = config("genjavadoc") extend Compile
+
 lazy val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
-  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.9" cross CrossVersion.full),
+  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.10" cross CrossVersion.full),
   scalacOptions += s"-P:genjavadoc:out=${target.value}/java",
   packageDoc in Compile := (packageDoc in JavaDoc).value,
   sources in JavaDoc :=
