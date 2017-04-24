@@ -24,9 +24,11 @@ object B extends Build {
     scalaVersion := crossScalaVersions.value.last,
     crossScalaVersions := {
       val latest210 = 6
-      val latest211 = 8
+      val latest211 = 11
       val latest212 = 2
+      val skipVersions = Set("2.11.9", "2.11.10")
       val scala210and211Versions = (2 to latest210).map(i => s"2.10.$i") ++ (0 to latest211).map(i => s"2.11.$i")
+        .filterNot(skipVersions.contains(_))
       ifJavaVersion(_ < 8) {
         scala210and211Versions
       } {
