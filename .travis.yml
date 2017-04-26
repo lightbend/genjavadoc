@@ -28,9 +28,13 @@ env:
   - SCALA_VERSION=2.11.6
   - SCALA_VERSION=2.11.7
   - SCALA_VERSION=2.11.8
+  - SCALA_VERSION=2.11.11
   - SCALA_VERSION=2.12.0
   - SCALA_VERSION=2.12.1
+  - SCALA_VERSION=2.12.2
+  - SCALA_VERSION=2.13.0-M1
 
+# there's no better way it seems.. https://github.com/travis-ci/travis-ci/issues/1519
 matrix:
   exclude:
     # scala 2.12.x requires jdk8
@@ -38,6 +42,10 @@ matrix:
       env: SCALA_VERSION=2.12.0
     - jdk: openjdk6
       env: SCALA_VERSION=2.12.1
+    - jdk: openjdk6
+      env: SCALA_VERSION=2.12.2
+    - jdk: openjdk6
+      env: SCALA_VERSION=2.13.0-M1
 
 # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script:
