@@ -26,18 +26,19 @@ object B extends Build {
       val latest210 = 6
       val latest211 = 11
       val latest212 = 2
+      val pre213 = List("M1")
       val skipVersions = Set("2.11.9", "2.11.10")
       val scala210and211Versions = (2 to latest210).map(i => s"2.10.$i") ++ (0 to latest211).map(i => s"2.11.$i")
         .filterNot(skipVersions.contains(_))
       ifJavaVersion(_ < 8) {
         scala210and211Versions
       } {
-        scala210and211Versions ++ (0 to latest212).map(i => s"2.12.$i")
+        scala210and211Versions ++ (0 to latest212).map(i => s"2.12.$i") ++ pre213.map(s => s"2.13.0-$s")
       }
     },
     scalaTestVersion := {
-      val scalaV = scalaVersion.value
-      if (scalaV startsWith "2.12") "3.0.0"
+      val Some((2, scalaMajor)) = CrossVersion.partialVersion(scalaVersion.value)
+      if (scalaMajor >= 12) "3.0.3"
       else "2.1.3"
     },
     resolvers += Resolver.mavenLocal)
@@ -73,7 +74,9 @@ object B extends Build {
       fork in Test := true,
       unmanagedSourceDirectories in Compile := {
         val default = (unmanagedSourceDirectories in Compile).value
-        if (scalaVersion.value == "2.12.0") default.map(f => new java.io.File(f.getPath.replaceAll("/scala-2.12$", "/scala-2.11")))
+        def r(from: String, to: String) = default.map(f => new java.io.File(f.getPath.replaceAll(from, to)))
+        if (scalaVersion.value == "2.12.0") r("""/scala-2\.12$""", "/scala-2.11")
+        else if (scalaVersion.value.startsWith("2.13.")) r("""/scala-2\.13.*$""", "/scala-2.12")
         else default
       },
       crossVersion := CrossVersion.full,
