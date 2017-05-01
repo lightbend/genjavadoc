@@ -76,7 +76,7 @@ object B extends Build {
         val default = (unmanagedSourceDirectories in Compile).value
         def r(from: String, to: String) = default.map(f => new java.io.File(f.getPath.replaceAll(from, to)))
         if (scalaVersion.value == "2.12.0") r("""/scala-2\.12$""", "/scala-2.11")
-        else if (scalaVersion.value.startsWith("2.13.")) r("""/scala-2\.13.*$""", "/scala-2.12")
+        else if (scalaVersion.value.startsWith("2.13.")) r("""/scala-2\.13[^/]*$""", "/scala-2.12")
         else default
       },
       crossVersion := CrossVersion.full,
