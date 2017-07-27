@@ -32,6 +32,7 @@ env:
   - SCALA_VERSION=2.12.0
   - SCALA_VERSION=2.12.1
   - SCALA_VERSION=2.12.2
+  - SCALA_VERSION=2.12.3
   - SCALA_VERSION=2.13.0-M1
 
 # there's no better way it seems.. https://github.com/travis-ci/travis-ci/issues/1519

@@ -1,5 +1,5 @@
 /**
- *  Copyright (C) 2009-2011 Typesafe Inc. <http://www.typesafe.com>
+ *  Copyright (C) 2009-2017 Typesafe Inc. <http://www.typesafe.com>
  */
 
 // so we can set this from automated builds and also depending on Scala version
@@ -55,7 +55,7 @@ lazy val defaults = Seq(
   crossScalaVersions := {
     val latest210 = 6
     val latest211 = 11
-    val latest212 = 2
+    val latest212 = 3
     val pre213 = List("M1")
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala210and211Versions = (2 to latest210).map(i => s"2.10.$i") ++ (0 to latest211).map(i => s"2.11.$i")
