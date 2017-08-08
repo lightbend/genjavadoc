@@ -56,7 +56,7 @@ lazy val defaults = Seq(
     val latest210 = 6
     val latest211 = 11
     val latest212 = 3
-    val pre213 = List("M1")
+    val pre213 = List("M2")
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala210and211Versions = (2 to latest210).map(i => s"2.10.$i") ++ (0 to latest211).map(i => s"2.11.$i")
       .filterNot(skipVersions.contains(_))
@@ -68,7 +68,7 @@ lazy val defaults = Seq(
   },
   scalaTestVersion := {
     val Some((2, scalaMajor)) = CrossVersion.partialVersion(scalaVersion.value)
-    if (scalaMajor >= 12) "3.0.3"
+    if (scalaMajor >= 12) "3.0.4"
     else "2.1.3"
   },
   resolvers += Resolver.mavenLocal,
