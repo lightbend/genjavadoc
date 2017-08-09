@@ -1,7 +1,3 @@
-/**
- *  Copyright (C) 2009-2017 Typesafe Inc. <http://www.typesafe.com>
- */
-
 // so we can set this from automated builds and also depending on Scala version
 lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.")
 
