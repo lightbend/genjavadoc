@@ -12,10 +12,10 @@ trait JavaSig { this: TransformCake ⇒
     def removeThis(in: Type): Type = {
       //          println("transforming " + in)
       in match {
-        case ThisType(parent) if !parent.isPackage ⇒ removeThis(parent.tpe)
-        case SingleType(parent, name)              ⇒ typeRef(removeThis(parent), name, Nil)
-        case TypeRef(pre, sym, args)               ⇒ typeRef(removeThis(pre), sym, args)
-        case x                                     ⇒ x
+        case ThisType(parent) if !parent.hasPackageFlag ⇒ removeThis(parent.tpe)
+        case SingleType(parent, name)                   ⇒ typeRef(removeThis(parent), name, Nil)
+        case TypeRef(pre, sym, args)                    ⇒ typeRef(removeThis(pre), sym, args)
+        case x                                          ⇒ x
       }
     }
 
