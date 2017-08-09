@@ -43,7 +43,7 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
     },
     crossVersion := CrossVersion.full,
     exportJars := true,
-    scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-Xfatal-warnings")
+    scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-Xlint", "-Xfatal-warnings")
   )
 
 lazy val defaults = Seq(

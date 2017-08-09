@@ -1,7 +1,6 @@
 package com.typesafe.genjavadoc
 
 import scala.reflect.internal.Flags
-import java.util.regex.Pattern
 
 trait BasicTransform { this: TransformCake ⇒
   import global._

@@ -2,13 +2,11 @@ package com.typesafe.genjavadoc
 
 import scala.tools.nsc
 import nsc.Global
-import nsc.Phase
 import nsc.plugins.Plugin
 import nsc.plugins.PluginComponent
-import nsc.transform.{ Transform, TypingTransformers }
+import nsc.transform.Transform
 import java.io.File
 import java.util.Properties
-import java.io.StringReader
 
 object GenJavaDocPlugin {
 
@@ -26,7 +24,6 @@ object GenJavaDocPlugin {
 }
 
 class GenJavaDocPlugin(val global: Global) extends Plugin {
-  import global._
   import GenJavaDocPlugin._
 
   val name = "genjavadoc"
@@ -53,7 +50,6 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
   private object MyComponent extends PluginComponent with Transform {
 
     import global._
-    import global.definitions._
 
     type GT = GenJavaDocPlugin.this.global.type
 

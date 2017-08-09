@@ -1,6 +1,5 @@
 package com.typesafe.genjavadoc
 
-import scala.reflect.internal.Flags
 import scala.annotation.tailrec
 
 trait AST { this: TransformCake ⇒
