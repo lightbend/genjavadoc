@@ -5,11 +5,20 @@ import java.io.File
 
 trait Output { this: TransformCake ⇒
 
+  private val Tparam = "(.*@tparam )(\\S+).*".r
+
   def outputBase: File
 
   def write(out: Out, c: ClassInfo) {
     // TODO @param should be transformed to constructor comments
-    c.comment foreach (line => out(line.replace("@param", "param: ")))
+    c.comment foreach {line =>
+      val replaced = line.replace("@param", "param: ") match {
+          case Tparam(_, param) ⇒
+            s" * @param <$param>"
+          case x ⇒ x
+        }
+      out(replaced)
+    }
     out(s"${c.sig} {")
     out.indent()
     for (m ← c.members)
