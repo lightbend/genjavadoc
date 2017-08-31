@@ -8,6 +8,9 @@ package buh.is.it
 import scala.annotation.varargs
 import scala.concurrent.duration.FiniteDuration
 
+/**
+ * @tparam A I am a type parameter description
+ */
 trait Y[A] {
   // def pi = 3.14
 }
