@@ -5,7 +5,7 @@ import java.io.File
 
 trait Output { this: TransformCake ⇒
 
-  private val Tparam = "(.*@tparam )(\\S+).*".r
+  private val Tparam = "(.*@tparam )(\\S+)( .*)".r
 
   def outputBase: File
 
@@ -13,8 +13,8 @@ trait Output { this: TransformCake ⇒
     // TODO @param should be transformed to constructor comments
     c.comment foreach {line =>
       val replaced = line.replace("@param", "param: ") match {
-          case Tparam(_, param) ⇒
-            s" * @param <$param>"
+          case Tparam(_, param, desc) ⇒
+            s" * @param <$param> $desc"
           case x ⇒ x
         }
       out(replaced)
