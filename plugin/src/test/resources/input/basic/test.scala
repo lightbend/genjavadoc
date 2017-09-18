@@ -273,6 +273,9 @@ private[it] class DontTouchThis {
 class DeprecatedNoComment {
   @deprecated("This is replaced by theShinyNewMethod", since = "now")
   def oldMethod = ()
+
+  @deprecated("This is replaced by theShinyNewLazyVal", since = "now")
+  lazy val oldLazyVal= ()
 }
 
 

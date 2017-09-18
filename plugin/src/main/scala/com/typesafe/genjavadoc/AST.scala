@@ -82,9 +82,22 @@ trait AST { this: TransformCake ⇒
     def maybeSinceDot = if (since.endsWith(".")) " " else ". "
     def render = s" * @deprecated ${msg}${maybeDot}Since $since${maybeSinceDot}"
 
-    def appendToComment(comment: Seq[String]): Seq[String] = comment match {
-      case Nil => List("/**", render, "*/")
-      case c => c.dropRight(1) ++ List(" *", render, "*/")
+    def fullComment = List("/**", render, "*/")
+
+    def appendToComment(comment: Seq[String]): Seq[String] = {
+      comment match {
+        case Nil => fullComment
+        case c :: Nil if c.trim.startsWith("//") =>
+          // sometimes `comment` is just a single line of `// not preceding`. In that case, we just keep that comment line
+          // and add the deprecation as the complete thing
+          c +: fullComment
+        case cs =>
+          if (!cs.lastOption.exists(_.trim == "*/"))
+            (cs :+ "// cannot join comments, what happened here? Report at https://github.com/typesafehub/genjavadoc.") ++
+            fullComment
+          else
+            cs.dropRight(1) ++ List(" *", render, "*/")
+      }
     }
   }
 
