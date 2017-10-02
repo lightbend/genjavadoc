@@ -39,6 +39,9 @@ trait AST { this: TransformCake ⇒
       ret
     }
 
+    def classMembers = members.collect { case classInfo: ClassInfo => classInfo }
+    def methodMembers = members.collect { case methodInfo: MethodInfo => methodInfo }
+
     override def toString =
       s"ClassInfo($name, ${pattern("XXXXX", "AAAAA")}, module=$module, pckg=$pckg, ${filepattern("FFFFFF")}, interface=$interface, static=$static)" +
         comment.mkString("\n  ", "\n  ", "\n  ") + members.mkString("\n  ")

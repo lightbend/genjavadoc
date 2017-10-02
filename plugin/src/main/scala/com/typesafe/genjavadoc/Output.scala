@@ -75,7 +75,7 @@ trait Output { this: TransformCake ⇒
         case (Some(o), Some(c))            ⇒ merge(o, c, forwarders, staticScope)
         case (Some(o), None) if forwarders ⇒ merge(o, fabricateCompanion(o), forwarders, staticScope)
         case (Some(o), None)               ⇒ Vector(mangleModule(o, addMODULE = forwarders, pruneClasses = false))
-        case (None, Some(c))               ⇒ Vector(c)
+        case (None, Some(c))               ⇒ Vector(c.copy(members = flatten(c.classMembers) ++ c.methodMembers))
         case (None, None)                  ⇒ ???
       }
     }
@@ -134,18 +134,19 @@ trait Output { this: TransformCake ⇒
           case m: MethodInfo if !(m.name == obj.name) && !cls.members.exists(_.name == m.name) ⇒
             m.copy(pattern = n ⇒ "static " + m.pattern(n))
         }
-        val exclude = (direct.iterator ++ methods.iterator).map(_.name).toSet
+        val exclude = (direct.iterator ++ methods.iterator).map(_.name).toSet ++ this.javaKeywords
         direct ++ inheritedMethods(cls.sym, exclude)
       }
     val nestedClasses = flatten(classes, forwarders = false, staticScope = false)
     val nestedStaticClasses = flatten(staticClasses, forwarders = false, staticScope = staticScope)
     if (forwarders) {
       val base = cls.copy(members = nestedClasses ++ nestedStaticClasses ++ staticMethods ++ methods)
-      flatten(Vector(base)) ++ Vector(mangleModule(obj, addMODULE = forwarders, pruneClasses = true))
+      val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
+      Vector(base) ++ Vector(mod)
     } else {
       val base = cls.copy(members = nestedClasses ++ staticMethods ++ methods)
       val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
-      flatten(Vector(base)) ++ Vector(mod.copy(members = nestedStaticClasses ++ mod.members))
+      Vector(base) ++ Vector(mod.copy(members = nestedStaticClasses ++ mod.members))
     }
   }
 

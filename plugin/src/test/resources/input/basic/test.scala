@@ -379,3 +379,14 @@ abstract class Reserved {
 }
 
 object ReservedImpl extends Reserved
+
+class ClassWithInner {
+
+  class Foo {
+    def methodOfFoo(i: Int) = 42
+  }
+  object Foo {
+    val companionObjectValue = 32
+  }
+
+}
