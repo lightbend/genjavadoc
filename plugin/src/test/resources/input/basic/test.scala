@@ -390,3 +390,15 @@ class ClassWithInner {
   }
 
 }
+
+private[buh] object CompressionProtocol {
+
+  private[buh] object Events {
+
+    private[buh] sealed trait Event
+
+    final case class HeavyHitterDetected(key: Any, id: Int, count: Long) extends Event
+
+  }
+
+}

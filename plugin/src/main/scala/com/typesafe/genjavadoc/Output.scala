@@ -104,7 +104,12 @@ trait Output { this: TransformCake ⇒
         Some(MethodInfo(x ⇒ x, "public static final", s"${obj.name}$$ MODULE$$ = null;",
           Seq("/**", " * Static reference to the singleton instance of this Scala object.", " */")))
       else None
-    val members = (moduleInstance ++: obj.members) filter (!pruneClasses || _.isInstanceOf[MethodInfo])
+
+    val members = moduleInstance ++: (
+      if (pruneClasses) obj.methodMembers
+      else flatten(obj.classMembers) ++ obj.methodMembers
+      )
+
     val (com: Seq[String], moduleMembers: Vector[Templ]) = ((obj.comment, Vector.empty[Templ]) /: members)((p, mem) ⇒ mem match {
       case x: MethodInfo if x.name == obj.name ⇒ (p._1 ++ x.comment, p._2 :+ x.copy(name = x.name + '$', comment = Seq()))
       case x                                   ⇒ (p._1, p._2 :+ x)
