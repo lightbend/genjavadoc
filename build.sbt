@@ -9,7 +9,7 @@ lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.
 val saveTestClasspath = taskKey[File](
   "Saves test classpath to a file so that it can be used by embedded scalac in tests")
 
-lazy val top = (project in file("."))
+lazy val genjavadoc = (project in file("."))
   .aggregate(`genjavadoc-plugin`)
   .settings(defaults)
   .settings(
