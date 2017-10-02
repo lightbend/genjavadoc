@@ -75,7 +75,7 @@ trait Output { this: TransformCake ⇒
         case (Some(o), Some(c))            ⇒ merge(o, c, forwarders, staticScope)
         case (Some(o), None) if forwarders ⇒ merge(o, fabricateCompanion(o), forwarders, staticScope)
         case (Some(o), None)               ⇒ Vector(mangleModule(o, addMODULE = forwarders, pruneClasses = false))
-        case (None, Some(c))               ⇒ Vector(c.copy(members = flatten(c.classMembers) ++ c.methodMembers))
+        case (None, Some(c))               ⇒ Vector(c.copy(members = flatten(c.classMembers) ++ c.methodMembers.sortBy(_.name)))
         case (None, None)                  ⇒ ???
       }
     }

@@ -13,6 +13,6 @@ public  class ClassWithInner {
     public   Foo$ ()  { throw new RuntimeException(); }
     public  int companionObjectValue ()  { throw new RuntimeException(); }
   }
-  public  akka.rk.buh.is.it.ClassWithInner.Foo$ Foo ()  { throw new RuntimeException(); }
   public   ClassWithInner ()  { throw new RuntimeException(); }
+  public  akka.rk.buh.is.it.ClassWithInner.Foo$ Foo ()  { throw new RuntimeException(); }
 }
