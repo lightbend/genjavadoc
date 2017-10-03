@@ -8,6 +8,12 @@ package buh.is.it
 import scala.annotation.varargs
 import scala.concurrent.duration.FiniteDuration
 
+class Actor {
+  object Status {
+    sealed trait Status extends Serializable
+  }
+}
+
 /**
  * @tparam A I am a type parameter description
  */
