@@ -69,7 +69,10 @@ trait Output { this: TransformCake ⇒
       case Some(nestedInterface: ClassInfo) =>
         Seq(
           c.copy(members = c.classMembers.filterNot(_ == nestedInterface).flatMap(liftInterface) ++ c.methodMembers),
-          nestedInterface.copy(name = s"${nestedInterface.name}$$${nestedInterface.name}")
+          nestedInterface.copy(
+            name = s"${nestedInterface.name}$$${nestedInterface.name}",
+            static = false
+          )
         )
       case _ =>
         Seq(c.copy(members = c.classMembers.flatMap(liftInterface) ++ c.methodMembers))
