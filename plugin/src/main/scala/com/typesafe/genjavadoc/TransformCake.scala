@@ -1,7 +1,6 @@
 package com.typesafe.genjavadoc
 
 import scala.tools.nsc.Global
-import scala.tools.nsc.transform.Transform
 
 trait TransformCake extends JavaSig with Output with Comments with BasicTransform with AST {
 

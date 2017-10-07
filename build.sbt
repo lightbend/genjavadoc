@@ -1,7 +1,3 @@
-/**
- *  Copyright (C) 2009-2017 Typesafe Inc. <http://www.typesafe.com>
- */
-
 // so we can set this from automated builds and also depending on Scala version
 lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.")
 
@@ -46,29 +42,31 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
       else default
     },
     crossVersion := CrossVersion.full,
-    exportJars := true
+    exportJars := true,
+    scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-Xlint", "-Xfatal-warnings")
   )
 
 lazy val defaults = Seq(
   organization := "com.typesafe.genjavadoc",
   scalaVersion := crossScalaVersions.value.last,
   crossScalaVersions := {
-    val latest210 = 6
     val latest211 = 11
     val latest212 = 3
-    val pre213 = List("M1")
+    val pre213 = List("M2")
     val skipVersions = Set("2.11.9", "2.11.10")
-    val scala210and211Versions = (2 to latest210).map(i => s"2.10.$i") ++ (0 to latest211).map(i => s"2.11.$i")
-      .filterNot(skipVersions.contains(_))
+    val scala211Versions =
+      (0 to latest211)
+        .map(i => s"2.11.$i")
+        .filterNot(skipVersions.contains(_))
     ifJavaVersion(_ < 8) {
-      scala210and211Versions
+      scala211Versions
     } {
-      scala210and211Versions ++ (0 to latest212).map(i => s"2.12.$i") ++ pre213.map(s => s"2.13.0-$s")
+      scala211Versions ++ (0 to latest212).map(i => s"2.12.$i") ++ pre213.map(s => s"2.13.0-$s")
     }
   },
   scalaTestVersion := {
     val Some((2, scalaMajor)) = CrossVersion.partialVersion(scalaVersion.value)
-    if (scalaMajor >= 12) "3.0.3"
+    if (scalaMajor >= 12) "3.0.4"
     else "2.1.3"
   },
   resolvers += Resolver.mavenLocal,

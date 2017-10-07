@@ -14,11 +14,6 @@ jdk:
   - oraclejdk8
 
 env:
-  - SCALA_VERSION=2.10.2
-  - SCALA_VERSION=2.10.3
-  - SCALA_VERSION=2.10.4
-  - SCALA_VERSION=2.10.5
-  - SCALA_VERSION=2.10.6
   - SCALA_VERSION=2.11.0
   - SCALA_VERSION=2.11.1
   - SCALA_VERSION=2.11.2
@@ -33,7 +28,7 @@ env:
   - SCALA_VERSION=2.12.1
   - SCALA_VERSION=2.12.2
   - SCALA_VERSION=2.12.3
-  - SCALA_VERSION=2.13.0-M1
+  - SCALA_VERSION=2.13.0-M2
 
 # there's no better way it seems.. https://github.com/travis-ci/travis-ci/issues/1519
 matrix:
@@ -46,7 +41,9 @@ matrix:
     - jdk: openjdk6
       env: SCALA_VERSION=2.12.2
     - jdk: openjdk6
-      env: SCALA_VERSION=2.13.0-M1
+      env: SCALA_VERSION=2.12.3
+    - jdk: openjdk6
+      env: SCALA_VERSION=2.13.0-M2
 
 # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script:

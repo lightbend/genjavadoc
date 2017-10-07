@@ -1,6 +1,5 @@
 package com.typesafe.genjavadoc
 
-import scala.reflect.internal.Flags
 import scala.annotation.tailrec
 
 trait AST { this: TransformCake ⇒
@@ -77,7 +76,7 @@ trait AST { this: TransformCake ⇒
 
   def fabricateParams: Boolean
 
-  final case class DeprecationInfo(msg: String, since: String) {
+  case class DeprecationInfo(msg: String, since: String) {
     def maybeDot = if (msg.endsWith(".")) " " else ". "
     def maybeSinceDot = if (since.endsWith(".")) " " else ". "
     def render = s" * @deprecated ${msg}${maybeDot}Since $since${maybeSinceDot}"

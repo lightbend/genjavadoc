@@ -3,7 +3,6 @@ package com.typesafe.genjavadoc
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.matchers.{MatchResult, Matcher}
 import java.net.URLClassLoader
-import java.io.File
 import java.lang.reflect.Modifier
 
 import util._
@@ -135,7 +134,6 @@ class SignatureSpec extends WordSpec with Matchers {
       }
 
       def getMethods(c: Class[_], filter: Boolean): Set[String] = {
-        import language.postfixOps
         c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
           || javaKeywords.contains(x.getName)
           || x.getName == "$init$" // These synthetic methods show up in 2.12.0-M4+ even though they are not in the generated Java sources
@@ -148,7 +146,6 @@ class SignatureSpec extends WordSpec with Matchers {
       }
 
       def getClasses(c: Class[_], filter: Boolean): Map[String, Class[_]] = {
-        import language.postfixOps
         c.getDeclaredClasses.collect {
           case x if (!filter || !(x.getName contains "anon")) => x.getName.replaceAll(exception, replacemnt) -> x
         }.toMap

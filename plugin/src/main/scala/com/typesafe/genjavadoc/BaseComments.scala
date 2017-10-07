@@ -73,8 +73,8 @@ trait BaseComments { this: TransformCake ⇒
 
   implicit val positionOrdering: Ordering[Position] = new Ordering[Position] {
     def compare(a: Position, b: Position) =
-      if (a.endOrPoint < b.startOrPoint) -1
-      else if (a.startOrPoint > b.endOrPoint) 1
+      if (a.end < b.start) -1
+      else if (a.start > b.end) 1
       else 0
   }
   var comments = TreeMap[Position, Comment]()
@@ -86,7 +86,7 @@ trait BaseComments { this: TransformCake ⇒
 
   val positions = comments.keySet
 
-  def between(p1: Position, p2: Position) = unit.source.content.slice(p1.startOrPoint, p2.startOrPoint).filterNot(_ == '\n').mkString
+  def between(p1: Position, p2: Position) = unit.source.content.slice(p1.start, p2.start).filterNot(_ == '\n').mkString
 
   object ScalaDoc extends (Comment ⇒ Boolean) {
     def apply(c: Comment): Boolean = c.text.head.startsWith("/**")
