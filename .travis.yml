@@ -33,6 +33,7 @@ env:
   - SCALA_VERSION=2.12.1
   - SCALA_VERSION=2.12.2
   - SCALA_VERSION=2.12.3
+  - SCALA_VERSION=2.12.4
   - SCALA_VERSION=2.13.0-M2
 
 # there's no better way it seems.. https://github.com/travis-ci/travis-ci/issues/1519
@@ -47,6 +48,8 @@ matrix:
       env: SCALA_VERSION=2.12.2
     - jdk: openjdk6
       env: SCALA_VERSION=2.12.3
+    - jdk: openjdk6
+      env: SCALA_VERSION=2.12.4
     - jdk: openjdk6
       env: SCALA_VERSION=2.13.0-M2
 
