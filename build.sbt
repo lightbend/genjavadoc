@@ -76,7 +76,7 @@ lazy val defaults = Seq(
   },
   pomExtra :=
     (<inceptionYear>2012</inceptionYear>
-     <url>http://github.com/typesafehub/genjavadoc</url>
+     <url>http://github.com/lightbend/genjavadoc</url>
      <licenses>
        <license>
          <name>Apache 2</name>
@@ -85,8 +85,8 @@ lazy val defaults = Seq(
        </license>
      </licenses>
      <scm>
-       <url>git://github.com/typesafehub/genjavadoc.git</url>
-       <connection>scm:git:git@github.com:typesafehub/genjavadoc.git</connection>
+       <url>git://github.com/lightbend/genjavadoc.git</url>
+       <connection>scm:git:git@github.com:lightbend/genjavadoc.git</connection>
      </scm>) ++ makeDevelopersXml(Map(
       "rkuhn" -> "Roland Kuhn")))
 
