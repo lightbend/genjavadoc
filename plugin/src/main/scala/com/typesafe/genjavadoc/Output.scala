@@ -56,6 +56,30 @@ trait Output { this: TransformCake ⇒
   }
 
   /**
+    * Lift nested interfaces with the same name as their parent class to the parent
+    * level, as Java does not allow this, mangling their name accordingly
+    *
+    * Also applied recursively to members
+    */
+  def liftInterface(c: ClassInfo): Seq[ClassInfo] = {
+    c.members.find {
+      case member: ClassInfo => member.name == c.name && member.interface
+      case _ => false
+    } match {
+      case Some(nestedInterface: ClassInfo) =>
+        Seq(
+          c.copy(members = c.classMembers.filterNot(_ == nestedInterface).flatMap(liftInterface) ++ c.methodMembers),
+          nestedInterface.copy(
+            name = s"${nestedInterface.name}$$${nestedInterface.name}",
+            static = false
+          )
+        )
+      case _ =>
+        Seq(c.copy(members = c.classMembers.flatMap(liftInterface) ++ c.methodMembers))
+    }
+  }
+
+  /**
    * This method is supposed to do the transformation of `object` into
    *
    *  - a class with $ appended to the name

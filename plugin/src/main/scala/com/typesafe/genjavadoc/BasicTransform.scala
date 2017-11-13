@@ -17,7 +17,7 @@ trait BasicTransform { this: TransformCake ⇒
 
   def newTransformUnit(unit: CompilationUnit): Unit = {
     superTransformUnit(unit)
-    for (c ← flatten(classes)) {
+    for (c ← flatten(classes.flatMap(liftInterface))) {
       val out = file(c.file)
       try {
         if (c.pckg != "<empty>") out.println(s"package ${c.pckg};")
