@@ -60,11 +60,6 @@ public  class A {
    * class A.B
    */
   public  class B implements akka.rk.buh.is.it.X {
-    /**
-     * def b(args: java.lang.String*): Unit
-     * @param args (undocumented)
-     */
-    public  void b (java.lang.String... args)  { throw new RuntimeException(); }
     // not preceding
     public   B ()  { throw new RuntimeException(); }
     /**
@@ -76,13 +71,18 @@ public  class A {
      * def b(args: java.lang.String*): Unit
      * @param args (undocumented)
      */
+    public  void b (java.lang.String... args)  { throw new RuntimeException(); }
+    /**
+     * def b(args: java.lang.String*): Unit
+     * @param args (undocumented)
+     */
     public  void b (scala.collection.Seq<java.lang.String> args)  { throw new RuntimeException(); }
     public  java.lang.String d (java.lang.String a, akka.rk.buh.is.it.X b)  { throw new RuntimeException(); }
   }
   public  class C implements akka.rk.buh.is.it.X {
-    public  int i ()  { throw new RuntimeException(); }
     // not preceding
     public   C ()  { throw new RuntimeException(); }
+    public  int i ()  { throw new RuntimeException(); }
   }
   /**
    * class A.C
