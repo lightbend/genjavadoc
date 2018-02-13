@@ -65,9 +65,11 @@ lazy val defaults = Seq(
     }
   },
   scalaTestVersion := {
-    val Some((2, scalaMajor)) = CrossVersion.partialVersion(scalaVersion.value)
-    if (scalaMajor >= 12) "3.0.4"
-    else "2.1.3"
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, 13)) => "3.0.5-M1"  // only version available for 2.13.0-M3
+      case Some((2, 12)) => "3.0.4"
+      case _ => "2.1.3"
+    }
   },
   resolvers += Resolver.mavenLocal,
   publishTo := {
