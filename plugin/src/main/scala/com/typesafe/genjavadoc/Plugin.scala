@@ -55,10 +55,8 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
 
     override val global: GT = GenJavaDocPlugin.this.global
 
-    val isPreFields = {
-      val v = nsc.Properties.versionNumberString
-      Set("2.12.0-M1", "2.12.0-M2", "2.12.0-M3", "2.12.0-M4", "2.12.0-M5").contains(v) || v.startsWith("2.11.")
-    }
+    val isPreFields =
+      nsc.Properties.versionNumberString.startsWith("2.11.")
     override val runsAfter = List(if(isPreFields) "uncurry" else "fields")
     val phaseName = "GenJavaDoc"
 

@@ -52,7 +52,7 @@ lazy val defaults = Seq(
   crossScalaVersions := {
     val latest211 = 12
     val latest212 = 4
-    val pre213 = List("M2")
+    val pre213 = List("M3")
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala211Versions =
       (0 to latest211)

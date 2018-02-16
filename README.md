@@ -12,7 +12,7 @@ GenJavaDoc is a Scala compiler plugin which emits structurally equivalent Java c
 lazy val JavaDoc = config("genjavadoc") extend Compile
 
 lazy val javadocSettings = inConfig(JavaDoc)(Defaults.configSettings) ++ Seq(
-  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.10" cross CrossVersion.full),
+  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.11" cross CrossVersion.full),
   scalacOptions += s"-P:genjavadoc:out=${target.value}/java",
   packageDoc in Compile := (packageDoc in JavaDoc).value,
   sources in JavaDoc :=
@@ -65,7 +65,7 @@ GenJavaDoc can also be integrated into a Maven build (inspired by [this answer o
             <compilerPlugin>
               <groupId>com.typesafe.genjavadoc</groupId>
               <artifactId>genjavadoc-plugin_${scala.binary.full.version}</artifactId>
-              <version>0.9</version>
+              <version>0.11</version>
             </compilerPlugin>
           </compilerPlugins>
         </configuration>
@@ -139,7 +139,7 @@ One drawback of this choice is that the flattening of classes and companion obje
 
 ## Reporting Bugs
 
-If you find errors in the generation process or have suggestions on how to improve the quality of the emitted JavaDoc contents, please report issues on this github project’s issue tracker.
+If you find errors in the generation process or have suggestions on how to improve the quality of the emitted JavaDoc contents, please report issues on this GitHub repo’s issue tracker.
 
 ## License
 
