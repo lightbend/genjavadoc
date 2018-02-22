@@ -20,11 +20,7 @@ class BasicSpec extends WordSpec with Matchers with CompilerSpec {
 
   override def sources = BasicSpec.sources
   override def expectedPath: String = {
-
-    // nightly Scala versions have version numbers like "2.12.5-bin-3792784".
-    // we just want the "2.12.5" part
-    val scalaVersion = scala.util.Properties.versionNumberString.split("-bin-|-pre-").head
-
+    val scalaVersion = scala.util.Properties.versionNumberString.split("-").head
     val patchFile = s"src/test/resources/patches/$scalaVersion.patch"
     if (new java.io.File(patchFile).exists) { // we have a patch to apply to expected output for this scala version
       "rm -rf target/expected_output".! // cleanup from previous runs
