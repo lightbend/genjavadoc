@@ -114,7 +114,7 @@ trait JavaSig { this: TransformCake ⇒
             name + generics
           } else jsig(erasure.erasure(sym0)(tp), existentiallyBound, toplevel, primitiveOK)
         case PolyType(tparams, restpe) ⇒
-          assert(tparams.nonEmpty)
+          assert(tparams.nonEmpty, s"expected non-empty type parameters in $tp")
           if (toplevel) polyParamSig(tparams) else ""
 
         case MethodType(params, restpe) ⇒
