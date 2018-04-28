@@ -8,7 +8,7 @@ import nsc.transform.Transform
 import java.io.File
 import java.util.Properties
 
-object GenJavaDocPlugin {
+object GenJavadocPlugin {
 
   val javaKeywords = Set("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
     "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if",
@@ -23,8 +23,8 @@ object GenJavaDocPlugin {
   val defaultFilteredStrings = stringToFilter(defaultFilterString)
 }
 
-class GenJavaDocPlugin(val global: Global) extends Plugin {
-  import GenJavaDocPlugin._
+class GenJavadocPlugin(val global: Global) extends Plugin {
+  import GenJavadocPlugin._
 
   val name = "genjavadoc"
   val description = ""
@@ -51,31 +51,31 @@ class GenJavaDocPlugin(val global: Global) extends Plugin {
 
     import global._
 
-    type GT = GenJavaDocPlugin.this.global.type
+    type GT = GenJavadocPlugin.this.global.type
 
-    override val global: GT = GenJavaDocPlugin.this.global
+    override val global: GT = GenJavadocPlugin.this.global
 
     val isPreFields =
       nsc.Properties.versionNumberString.startsWith("2.11.")
     override val runsAfter = List(if(isPreFields) "uncurry" else "fields")
-    val phaseName = "GenJavaDoc"
+    val phaseName = "GenJavadoc"
 
-    def newTransformer(unit: CompilationUnit) = new GenJavaDocTransformer(unit)
+    def newTransformer(unit: CompilationUnit) = new GenJavadocTransformer(unit)
 
-    class GenJavaDocTransformer(val unit: CompilationUnit) extends Transformer with TransformCake {
+    class GenJavadocTransformer(val unit: CompilationUnit) extends Transformer with TransformCake {
 
       override lazy val global: GT = MyComponent.this.global
-      override val outputBase: File = GenJavaDocPlugin.this.outputBase
-      override val suppressSynthetic: Boolean = GenJavaDocPlugin.this.suppressSynthetic
-      override val fabricateParams: Boolean = GenJavaDocPlugin.this.fabricateParams
-      override val strictVisibility: Boolean = GenJavaDocPlugin.this.strictVisibility
+      override val outputBase: File = GenJavadocPlugin.this.outputBase
+      override val suppressSynthetic: Boolean = GenJavadocPlugin.this.suppressSynthetic
+      override val fabricateParams: Boolean = GenJavadocPlugin.this.fabricateParams
+      override val strictVisibility: Boolean = GenJavadocPlugin.this.strictVisibility
 
       override def superTransformUnit(unit: CompilationUnit) = super.transformUnit(unit)
       override def superTransform(tree: Tree) = super.transform(tree)
       override def transform(tree: Tree) = newTransform(tree)
       override def transformUnit(unit: CompilationUnit) = newTransformUnit(unit)
-      override def javaKeywords = GenJavaDocPlugin.javaKeywords
-      override def filteredStrings = GenJavaDocPlugin.this.filteredStrings
+      override def javaKeywords = GenJavadocPlugin.javaKeywords
+      override def filteredStrings = GenJavadocPlugin.this.filteredStrings
     }
   }
 }

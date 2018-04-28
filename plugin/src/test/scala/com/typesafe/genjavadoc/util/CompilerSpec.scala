@@ -27,11 +27,11 @@ trait CompilerSpec { self: WordSpec with Matchers =>
     extraSettings.mkString(",")
   }
 
-  ("GenJavaDoc with " + configInfo) must {
+  ("GenJavadoc with " + configInfo) must {
     val doc = IO.tempDir("java")
     val docPath = doc.getAbsolutePath
     val defaultSettings = Seq(s"out=$docPath", "suppressSynthetic=false")
-    val scalac = new GenJavaDocCompiler((defaultSettings ++ extraSettings).map{ kv =>
+    val scalac = new GenJavadocCompiler((defaultSettings ++ extraSettings).map{ kv =>
       s"genjavadoc:$kv"
     })
 

@@ -1,4 +1,4 @@
 <plugin>
-  <name>GenJavaDoc</name>
-  <classname>com.typesafe.genjavadoc.GenJavaDocPlugin</classname>
+  <name>GenJavadoc</name>
+  <classname>com.typesafe.genjavadoc.GenJavadocPlugin</classname>
 </plugin>
