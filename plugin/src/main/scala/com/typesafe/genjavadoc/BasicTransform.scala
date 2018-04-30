@@ -51,7 +51,7 @@ trait BasicTransform { this: TransformCake ⇒
         val old = pos
         pos = max(tp, prevTemplateMaxPos)
         if (old.precedes(pos)) {
-          (positions.from(old) intersect positions.to(pos)).toSeq.map(comments).filter(ScalaDoc).lastOption match {
+          (positions.from(old) intersect positions.to(pos)).toSeq.map(comments).filter(Scaladoc).lastOption match {
             case Some(c) ⇒ c.text // :+ s"// found in '${between(old, pos)}'"
             case None ⇒
               // s"// empty '${between(old, pos)}' (${pos.lineContent}:${pos.column})" ::

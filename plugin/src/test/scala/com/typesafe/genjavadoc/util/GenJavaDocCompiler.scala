@@ -9,13 +9,13 @@ import scala.tools.nsc.{Global, Settings}
 /** An instance of the Scala compiler with the genjavadoc plugin enabled
   * @param params additional parameters to pass to the compiler
   */
-class GenJavaDocCompiler(params: Seq[String]) {
+class GenJavadocCompiler(params: Seq[String]) {
 
   private val settings = new Settings
   val reporter = new ConsoleReporter(settings)
   private val global = new Global(settings, reporter) {
     override protected def loadRoughPluginsList() =
-      new GenJavaDocPlugin(this) :: super.loadRoughPluginsList()
+      new GenJavadocPlugin(this) :: super.loadRoughPluginsList()
   }
 
   val target = IO.tempDir("scala-classes")

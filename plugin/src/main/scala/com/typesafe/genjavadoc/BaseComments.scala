@@ -88,7 +88,7 @@ trait BaseComments { this: TransformCake ⇒
 
   def between(p1: Position, p2: Position) = unit.source.content.slice(p1.start, p2.start).filterNot(_ == '\n').mkString
 
-  object ScalaDoc extends (Comment ⇒ Boolean) {
+  object Scaladoc extends (Comment ⇒ Boolean) {
     def apply(c: Comment): Boolean = c.text.head.startsWith("/**")
   }
 
