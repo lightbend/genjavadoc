@@ -50,12 +50,13 @@ lazy val defaults = Seq(
   organization := "com.typesafe.genjavadoc",
   scalaVersion := crossScalaVersions.value.last,
   crossScalaVersions := {
+    val earliest211 = 6
     val latest211 = 12
     val latest212 = 5
     val pre213 = List("M3")
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala211Versions =
-      (0 to latest211)
+      (earliest211 to latest211)
         .map(i => s"2.11.$i")
         .filterNot(skipVersions.contains(_))
     ifJavaVersion(_ < 8) {
