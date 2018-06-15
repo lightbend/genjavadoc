@@ -178,7 +178,7 @@ trait JavaSig { this: TransformCake ⇒
   }
 
   private object NeedsSigCollector extends TypeCollector(false) {
-    def traverse(tp: Type) {
+    def traverse(tp: Type): Unit = {
       if (!result) {
         tp match {
           case st: SubType ⇒

@@ -9,7 +9,7 @@ trait Output { this: TransformCake ⇒
 
   def outputBase: File
 
-  def write(out: Out, c: ClassInfo) {
+  def write(out: Out, c: ClassInfo): Unit = {
     // TODO @param should be transformed to constructor comments
     c.comment foreach {line =>
       val replaced = line.replace("@param", "param: ") match {
@@ -30,7 +30,7 @@ trait Output { this: TransformCake ⇒
     out("}")
   }
 
-  def write(out: Out, m: MethodInfo) {
+  def write(out: Out, m: MethodInfo): Unit = {
     m.comment foreach (out(_))
     out(m.sig)
   }
@@ -39,9 +39,9 @@ trait Output { this: TransformCake ⇒
     var ind = 0
 
     def println(s: String): Unit
-    def apply(s: String) { println(" " * ind + s) }
-    def indent() { ind += 2 }
-    def outdent() { ind -= 2 }
+    def apply(s: String): Unit = { println(" " * ind + s) }
+    def indent(): Unit = { ind += 2 }
+    def outdent(): Unit = { ind -= 2 }
     def close(): Unit
   }
 
@@ -50,8 +50,8 @@ trait Output { this: TransformCake ⇒
     f.getParentFile.mkdirs
     val w = new PrintStream(f, "UTF-8")
     new Out {
-      def println(s: String) { w.println(s) }
-      def close() { w.close() }
+      def println(s: String): Unit = { w.println(s) }
+      def close(): Unit = { w.close() }
     }
   }
 
@@ -107,7 +107,7 @@ trait Output { this: TransformCake ⇒
 
   // goes from object to companion class (not the other way around)
   private def fabricateCompanion(obj: ClassInfo): ClassInfo = {
-    val com = (obj.comment /: obj.members)((c, mem) ⇒ mem match {
+    val com = obj.members.foldLeft(obj.comment)((c, mem) ⇒ mem match {
       case x: MethodInfo if x.name == obj.name ⇒ c ++ x.comment
       case _                                   ⇒ c
     })
@@ -134,7 +134,7 @@ trait Output { this: TransformCake ⇒
       else flatten(obj.classMembers) ++ obj.methodMembers
       )
 
-    val (com: Seq[String], moduleMembers: Vector[Templ]) = ((obj.comment, Vector.empty[Templ]) /: members)((p, mem) ⇒ mem match {
+    val (com: Seq[String], moduleMembers: Vector[Templ]) = members.foldLeft((obj.comment, Vector.empty[Templ]))((p, mem) ⇒ mem match {
       case x: MethodInfo if x.name == obj.name ⇒ (p._1 ++ x.comment, p._2 :+ x.copy(name = x.name + '$', comment = Seq()))
       case x                                   ⇒ (p._1, p._2 :+ x)
     })
