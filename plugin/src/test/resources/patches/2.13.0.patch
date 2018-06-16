@@ -15,6 +15,15 @@
    }
    /**
     * class A.B
+@@ -76,7 +76,7 @@
+      * def b(args: java.lang.String*): Unit
+      * @param args (undocumented)
+      */
+-    public  void b (scala.collection.Seq<java.lang.String> args)  { throw new RuntimeException(); }
++    public  void b (scala.collection.immutable.Seq<java.lang.String> args)  { throw new RuntimeException(); }
+     public  java.lang.String d (java.lang.String a, akka.rk.buh.is.it.X b)  { throw new RuntimeException(); }
+   }
+   public  class C implements akka.rk.buh.is.it.X {
 @@ -94,12 +94,12 @@
      public  class C1$ {
        public   C1$ ()  { throw new RuntimeException(); }
@@ -41,7 +50,15 @@
     * varargs
     * @param s (undocumented)
     * @return (undocumented)
-@@ -219,9 +224,4 @@
+@@ -212,16 +217,11 @@
+    * @param s (undocumented)
+    * @return (undocumented)
+    */
+-  public  int hello (scala.collection.Seq<java.lang.String> s)  { throw new RuntimeException(); }
++  public  int hello (scala.collection.immutable.Seq<java.lang.String> s)  { throw new RuntimeException(); }
+   /**
+    * throws
+    * @return (undocumented)
     */
    public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
    public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }

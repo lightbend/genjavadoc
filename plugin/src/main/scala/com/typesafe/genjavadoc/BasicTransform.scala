@@ -147,11 +147,11 @@ trait BasicTransform { this: TransformCake ⇒
     ret
   }
 
-  private def addMethod(d: DefDef, comment: Seq[String]) {
+  private def addMethod(d: DefDef, comment: Seq[String]): Unit = {
     clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false, deprecation = deprecationInfo(d))))
   }
 
-  private def addVarargsMethod(d: DefDef, comment: Seq[String]) {
+  private def addVarargsMethod(d: DefDef, comment: Seq[String]): Unit = {
     clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true, deprecation = deprecationInfo(d))))
   }
 

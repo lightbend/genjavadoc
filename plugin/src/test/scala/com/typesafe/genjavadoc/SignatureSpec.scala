@@ -84,7 +84,7 @@ class SignatureSpec extends WordSpec with Matchers {
       val exception = "(akka.rk.buh.is.it.A\\$[C1D]+\\$)\\$"
       val replacemnt = "$1"
 
-      def check(jn: String) {
+      def check(jn: String): Unit = {
         val jc: Class[_] = javaCL.loadClass(jn)
         val sc: Class[_] = scalaCL.loadClass(jn.replaceAll(exception, replacemnt))
 

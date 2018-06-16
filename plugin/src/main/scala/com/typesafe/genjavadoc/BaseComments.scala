@@ -36,8 +36,8 @@ trait BaseComments { this: TransformCake ⇒
               s"$prefix$link"
           case x ⇒ x
         }
-        .map(line ⇒ (line /: replacements) { case (l, (from, to)) ⇒ l.replace(from, to) })
-      val (_, _, _, l2) = ((false, false, true, List.empty[String]) /: ll) {
+        .map(line ⇒ replacements.foldLeft(line) { case (l, (from, to)) ⇒ l.replace(from, to) })
+      val (_, _, _, l2) = ll.foldLeft((false, false, true, List.empty[String])) {
         // insert <p> line upon transition to empty, collapse contiguous empty lines
         case ((pre, code, empty, lines), line @ EmptyLine()) ⇒
           val nl =

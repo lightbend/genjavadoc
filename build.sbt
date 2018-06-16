@@ -1,3 +1,5 @@
+val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
+
 // so we can set this from automated builds and also depending on Scala version
 lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.")
 
@@ -26,7 +28,7 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
       IO.write(result, (fullClasspath in Test).value.map(_.data.getAbsolutePath).mkString("\n"))
       result
     },
-    (test in Test) := {
+    test in Test := {
       // since we are building for different Scala patch versions, a clean
       // is required to avoid conflicts in class files
       clean.value
@@ -38,12 +40,15 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
       val default = (unmanagedSourceDirectories in Compile).value
       def r(from: String, to: String) = default.map(f => new java.io.File(f.getPath.replaceAll(from, to)))
       if (scalaVersion.value == "2.12.0") r("""/scala-2\.12$""", "/scala-2.11")
-      else if (scalaVersion.value.startsWith("2.13.")) r("""/scala-2\.13[^/]*$""", "/scala-2.12")
+      else if (scalaMajorVersion.value == 13) r("""/scala-2\.13[^/]*$""", "/scala-2.12")
       else default
     },
     crossVersion := CrossVersion.full,
     exportJars := true,
-    scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-Xlint", "-Xfatal-warnings")
+    scalacOptions ++=
+      Seq("-deprecation", "-feature", "-unchecked", "-Xlint") ++ (
+        if (scalaMajorVersion.value == 13) Seq() // deprecation warnings due to SortedSet.from/to
+        else Seq("-Xfatal-warnings"))
   )
 
 lazy val defaults = Seq(
@@ -53,7 +58,7 @@ lazy val defaults = Seq(
     val earliest211 = 6
     val latest211 = 12
     val latest212 = 6
-    val pre213 = List("M3")
+    val pre213 = List("M4")
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala211Versions =
       (earliest211 to latest211)
@@ -65,11 +70,12 @@ lazy val defaults = Seq(
       scala211Versions ++ (0 to latest212).map(i => s"2.12.$i") ++ pre213.map(s => s"2.13.0-$s")
     }
   },
+  scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
   scalaTestVersion := {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, 13)) => "3.0.5-M1"  // only version available for 2.13.0-M3
-      case Some((2, 12)) => "3.0.4"
-      case _ => "2.1.3"
+    scalaMajorVersion.value match {
+      case 13 => "3.0.6-SNAP1" // the version available for 2.13.0-M4
+      case 12 => "3.0.4"
+      case _  => "2.1.3"
     }
   },
   resolvers += Resolver.mavenLocal,
