@@ -17,6 +17,7 @@ addons:
 jdk:
   - openjdk6
   - oraclejdk8
+  - oraclejdk10
 
 env:
   - SCALA_VERSION=2.11.6
@@ -53,6 +54,16 @@ matrix:
       env: SCALA_VERSION=2.12.6
     - jdk: openjdk6
       env: SCALA_VERSION=2.13.0-M4
+    - jdk: oraclejdk10
+      env: SCALA_VERSION=2.11.6
+    - jdk: oraclejdk10
+      env: SCALA_VERSION=2.11.7
+    - jdk: oraclejdk10
+      env: SCALA_VERSION=2.11.8
+    - jdk: oraclejdk10
+      env: SCALA_VERSION=2.11.11
+    - jdk: oraclejdk10
+      env: SCALA_VERSION=2.12.5
 
 # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script:
