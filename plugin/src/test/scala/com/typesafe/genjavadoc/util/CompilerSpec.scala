@@ -5,12 +5,11 @@ import java.io.InputStreamReader
 import java.io.BufferedReader
 import java.io.File
 
-import org.scalatest.Matchers
-import org.scalatest.WordSpec
+import org.junit.Test
+import org.junit.Assert._
 
-
-/** Utility trait for testing compiler bahaviour. */
-trait CompilerSpec { self: WordSpec with Matchers =>
+/** Utility trait for testing compiler behaviour. */
+trait CompilerSpec {
 
   /** Sources to compile. */
   def sources: Seq[String]
@@ -21,13 +20,7 @@ trait CompilerSpec { self: WordSpec with Matchers =>
   /** Extra plugin arguments. */
   def extraSettings: Seq[String] = Seq.empty
 
-  private def configInfo: String = if (extraSettings.isEmpty) {
-    "default settings"
-  } else {
-    extraSettings.mkString(",")
-  }
-
-  ("GenJavadoc with " + configInfo) must {
+  @Test def compileSourcesAndGenerateExpectedOutput(): Unit = {
     val doc = IO.tempDir("java")
     val docPath = doc.getAbsolutePath
     val defaultSettings = Seq(s"out=$docPath", "suppressSynthetic=false")
@@ -35,18 +28,13 @@ trait CompilerSpec { self: WordSpec with Matchers =>
       s"genjavadoc:$kv"
     })
 
-    "compile Scala sources" in {
-      scalac.compile(sources)
-      assert(!scalac.reporter.hasErrors, "Scala compiler reported errors.")
-    }
+    scalac.compile(sources)
+    assertFalse("Scala compiler reported errors", scalac.reporter.hasErrors)
 
-    "generate the expected output" in {
-      lines(run(".", "diff", "-wurN",
-        "-I", "^ *//", // comment lines
-        "-I", "^ *private  java\\.lang\\.Object readResolve", // since Scala 2.12.0-M3, these methods are emitted in a later compiler phase
-        expectedPath, docPath)) foreach println
-    }
-
+    lines(run(".", "diff", "-wurN",
+      "-I", "^ *//", // comment lines
+      "-I", "^ *private  java\\.lang\\.Object readResolve", // since Scala 2.12.0-M3, these methods are emitted in a later compiler phase
+      expectedPath, docPath)) foreach println
   }
 
   private def run(dir: String, cmd: String*): Process = {
@@ -55,7 +43,9 @@ trait CompilerSpec { self: WordSpec with Matchers =>
 
   private def lines(proc: Process) = {
     val b = new BufferedReader(new InputStreamReader(proc.getInputStream()))
-    Iterator.continually(b.readLine).takeWhile(_ != null || { proc.waitFor(); assert(proc.exitValue == 0); false })
+    Iterator.continually(b.readLine).takeWhile(
+      _ != null || { proc.waitFor(); assert(proc.exitValue == 0); false }
+    )
   }
 
 
