@@ -1,8 +1,5 @@
 val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
 
-// so we can set this from automated builds and also depending on Scala version
-lazy val scalaTestVersion = settingKey[String]("The version of ScalaTest to use.")
-
 // copied from Roman Janusz's Silencer plugin (https://github.com/ghik/silencer/)
 val saveTestClasspath = taskKey[File](
   "Saves test classpath to a file so that it can be used by embedded scalac in tests")
@@ -22,8 +19,7 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "junit" % "junit" % "4.12" % Test,
-      "com.novocode" % "junit-interface" % "0.11" % Test,
-      "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"
+      "com.novocode" % "junit-interface" % "0.11" % Test
     ),
     saveTestClasspath := {
       val result = (classDirectory in Test).value / "embeddedcp"
@@ -73,13 +69,6 @@ lazy val defaults = Seq(
     }
   },
   scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
-  scalaTestVersion := {
-    scalaMajorVersion.value match {
-      case 13 => "3.0.6-SNAP1" // the version available for 2.13.0-M4
-      case 12 => "3.0.4"
-      case _  => "2.1.3"
-    }
-  },
   resolvers += Resolver.mavenLocal,
   publishTo := {
     if (version.value endsWith "-SNAPSHOT") Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
