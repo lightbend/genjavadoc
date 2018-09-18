@@ -18,7 +18,10 @@ object SignatureSpec {
 
   // this should match up against the definition in GenJavadocPlugin
   // with the addition of "$lzycompute", which is special
-  val defaultFilteredStrings = Set("$$", "$lzycompute")
+  val defaultFilteredStrings = Set("$$", "$lzycompute",
+    // and this one's a known issue, https://github.com/lightbend/genjavadoc/issues/143
+    "productElementNames"
+  )
 
   // they can't start with numbers either
   val startsWithNumber = "^\\d".r

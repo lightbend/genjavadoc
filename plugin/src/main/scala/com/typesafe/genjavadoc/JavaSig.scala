@@ -37,7 +37,7 @@ trait JavaSig { this: TransformCake ⇒
     def boundsSig(bounds: List[Type]) = {
       bounds.headOption map (" extends " + boxedSig(_)) getOrElse ""
     }
-    def paramSig(tsym: Symbol) = tsym.name + boundsSig(hiBounds(tsym.info.bounds))
+    def paramSig(tsym: Symbol) = tsym.name.toString + boundsSig(hiBounds(tsym.info.bounds))
     def polyParamSig(tparams: List[Symbol]) = (
       if (tparams.isEmpty) ""
       else tparams map paramSig mkString ("<", ", ", ">"))
