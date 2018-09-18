@@ -21,6 +21,8 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+      "junit" % "junit" % "4.12" % Test,
+      "com.novocode" % "junit-interface" % "0.11" % Test,
       "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test"
     ),
     saveTestClasspath := {
