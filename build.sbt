@@ -21,6 +21,8 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
       "junit" % "junit" % "4.12" % Test,
       "com.novocode" % "junit-interface" % "0.11" % Test
     ),
+    // make JUnit more verbose (info print instead of debug, w/ exception names & stacktraces)
+    testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
     saveTestClasspath := {
       val result = (classDirectory in Test).value / "embeddedcp"
       IO.write(result, (fullClasspath in Test).value.map(_.data.getAbsolutePath).mkString("\n"))
