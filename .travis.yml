@@ -1,4 +1,3 @@
-# Use Docker-based container (instead of OpenVZ)
 sudo: false
 
 cache:
@@ -9,14 +8,9 @@ cache:
 
 language: scala
 
-addons:
-  apt:
-    packages:
-      - openjdk-6-jdk
-
 jdk:
-  - openjdk6
   - oraclejdk8
+  - openjdk11
 
 env:
   - SCALA_VERSION=2.11.6
@@ -24,12 +18,8 @@ env:
   - SCALA_VERSION=2.11.8
   - SCALA_VERSION=2.11.11
   - SCALA_VERSION=2.11.12
-  - SCALA_VERSION=2.12.0
-  - SCALA_VERSION=2.12.1
-  - SCALA_VERSION=2.12.2
   - SCALA_VERSION=2.12.3
   - SCALA_VERSION=2.12.4
-  - SCALA_VERSION=2.12.5
   - SCALA_VERSION=2.12.6
   - SCALA_VERSION=2.12.7
   - SCALA_VERSION=2.12.8
@@ -38,19 +28,11 @@ env:
 # there's no better way it seems.. https://github.com/travis-ci/travis-ci/issues/1519
 matrix:
   exclude:
-    # scala 2.12.x requires jdk8
-    - jdk: openjdk6
-      env: SCALA_VERSION=2.12.0
-    - jdk: openjdk6
-      env: SCALA_VERSION=2.12.1
-    - jdk: openjdk6
-      env: SCALA_VERSION=2.12.2
+    # scala 2.12+ requires jdk8
     - jdk: openjdk6
       env: SCALA_VERSION=2.12.3
     - jdk: openjdk6
       env: SCALA_VERSION=2.12.4
-    - jdk: openjdk6
-      env: SCALA_VERSION=2.12.5
     - jdk: openjdk6
       env: SCALA_VERSION=2.12.6
     - jdk: openjdk6
@@ -59,11 +41,20 @@ matrix:
       env: SCALA_VERSION=2.12.8
     - jdk: openjdk6
       env: SCALA_VERSION=2.13.0-M5
+    # 2.11.12 was the first Scala 2.11.x version to work on jdk11
+    - jdk: openjdk11
+      env: SCALA_VERSION=2.11.6
+    - jdk: openjdk11
+      env: SCALA_VERSION=2.11.7
+    - jdk: openjdk11
+      env: SCALA_VERSION=2.11.8
+    - jdk: openjdk11
+      env: SCALA_VERSION=2.11.11
 
-# Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
 script:
+  # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
   - sbt -J-XX:ReservedCodeCacheSize=256M ++$SCALA_VERSION test
 
-  # Tricks to avoid unnecessary cache updates
+before_cache:
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
