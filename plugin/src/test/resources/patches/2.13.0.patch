@@ -155,14 +155,6 @@ index b0dd497..4950950 100644
    }
 --- target/expected_output/basic/akka/rk/buh/is/it/CompressionProtocol.java
 +++ target/expected_output/basic/akka/rk/buh/is/it/CompressionProtocol.java
-@@ -9,6 +9,7 @@
-       static public  akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected apply (Object key, int id, long count)  { throw new RuntimeException(); }
-       static public  scala.Option<scala.Tuple3<java.lang.Object, java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected x$0)  { throw new RuntimeException(); }
-       static private  java.lang.Object readResolve ()  { throw new RuntimeException(); }
-+      static public  scala.collection.Iterator<java.lang.String> productElementNames ()  { throw new RuntimeException(); }
-       public  Object key ()  { throw new RuntimeException(); }
-       public  int id ()  { throw new RuntimeException(); }
-       public  long count ()  { throw new RuntimeException(); }
 @@ -23,6 +24,7 @@
        public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
        public  int productArity ()  { throw new RuntimeException(); }
@@ -173,14 +165,6 @@ index b0dd497..4950950 100644
        public  int hashCode ()  { throw new RuntimeException(); }
 --- target/expected_output/basic/akka/rk/buh/is/it/EWMA.java
 +++ target/expected_output/basic/akka/rk/buh/is/it/EWMA.java
-@@ -28,6 +28,7 @@
-   static public  akka.rk.buh.is.it.EWMA apply (double value, double alpha) { throw new RuntimeException(); }
-   static public  scala.Option<scala.Tuple2<java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.EWMA x$0) { throw new RuntimeException(); }
-   static private  java.lang.Object readResolve () { throw new RuntimeException(); }
-+  static public  scala.collection.Iterator<java.lang.String> productElementNames ()  { throw new RuntimeException(); }
-   public  double value () { throw new RuntimeException(); }
-   public  double alpha () { throw new RuntimeException(); }
-   // not preceding
 @@ -48,6 +49,7 @@
    public  java.lang.String productPrefix () { throw new RuntimeException(); }
    public  int productArity () { throw new RuntimeException(); }

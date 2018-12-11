@@ -88,7 +88,7 @@ trait Output { this: TransformCake ⇒
    *
    * The first two parts are to be applied recursively to nested objects.
    */
-  def flatten(c: Vector[ClassInfo], forwarders: Boolean = true, staticScope: Boolean = true): Vector[ClassInfo] = {
+  def flattenObjects(c: Vector[ClassInfo], forwarders: Boolean = true, staticScope: Boolean = true): Vector[ClassInfo] = {
     val (obj: Vector[ClassInfo], cls: Vector[ClassInfo]) = c collect PreFilter partition (_.module)
     val classes = cls.map(c ⇒ c.name -> c).toMap
     val objects = obj.map(o ⇒ o.name -> o).toMap
@@ -99,7 +99,7 @@ trait Output { this: TransformCake ⇒
         case (Some(o), Some(c))            ⇒ merge(o, c, forwarders, staticScope)
         case (Some(o), None) if forwarders ⇒ merge(o, fabricateCompanion(o), forwarders, staticScope)
         case (Some(o), None)               ⇒ Vector(mangleModule(o, addMODULE = forwarders, pruneClasses = false))
-        case (None, Some(c))               ⇒ Vector(c.copy(members = flatten(c.classMembers) ++ c.methodMembers.sortBy(_.name)))
+        case (None, Some(c))               ⇒ Vector(c.copy(members = flattenObjects(c.classMembers) ++ c.methodMembers.sortBy(_.name)))
         case (None, None)                  ⇒ ???
       }
     }
@@ -131,7 +131,7 @@ trait Output { this: TransformCake ⇒
 
     val members = moduleInstance ++: (
       if (pruneClasses) obj.methodMembers
-      else flatten(obj.classMembers) ++ obj.methodMembers
+      else flattenObjects(obj.classMembers) ++ obj.methodMembers
       )
 
     val (com: Seq[String], moduleMembers: Vector[Templ]) = members.foldLeft((obj.comment, Vector.empty[Templ]))((p, mem) ⇒ mem match {
@@ -163,11 +163,11 @@ trait Output { this: TransformCake ⇒
           case m: MethodInfo if !(m.name == obj.name) && !cls.members.exists(_.name == m.name) ⇒
             m.copy(pattern = n ⇒ "static " + m.pattern(n))
         }
-        val exclude = (direct.iterator ++ methods.iterator).map(_.name).toSet ++ this.javaKeywords
-        direct ++ inheritedMethods(cls.sym, exclude)
+        val exclude = (direct.iterator ++ methods.iterator).map(_.name).toSet ++ this.javaKeywords ++ excludedForwarders
+        direct ++ inheritedMethods(obj.sym, exclude)
       }
-    val nestedClasses = flatten(classes, forwarders = false, staticScope = false)
-    val nestedStaticClasses = flatten(staticClasses, forwarders = false, staticScope = staticScope)
+    val nestedClasses = flattenObjects(classes, forwarders = false, staticScope = false)
+    val nestedStaticClasses = flattenObjects(staticClasses, forwarders = false, staticScope = staticScope)
     if (forwarders) {
       val base = cls.copy(members = nestedClasses ++ nestedStaticClasses ++ staticMethods ++ methods)
       val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
@@ -178,6 +178,13 @@ trait Output { this: TransformCake ⇒
       Vector(base, mod.copy(members = nestedStaticClasses ++ mod.members))
     }
   }
+
+  private val excludedForwarders =
+    // For case classes, there is a generated companion object that
+    // implements `AbstractFunctionN`, but static forwarders are not created
+    // on the class for the methods on the companion object inherited from
+    // that:
+    Seq("curried", "tupled")
 
   private def inheritedMethods(sym: global.Symbol, exclude: Set[String]): Seq[MethodInfo] = {
     import global._
