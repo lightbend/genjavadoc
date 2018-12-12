@@ -184,7 +184,7 @@ trait Output { this: TransformCake ⇒
     // implements `AbstractFunctionN`, but static forwarders are not created
     // on the class for the methods on the companion object inherited from
     // that:
-    Seq("curried", "tupled")
+    Seq("curried", "tupled", "compose", "andThen")
 
   private def inheritedMethods(sym: global.Symbol, exclude: Set[String]): Seq[MethodInfo] = {
     import global._
