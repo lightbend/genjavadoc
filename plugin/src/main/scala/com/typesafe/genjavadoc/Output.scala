@@ -56,26 +56,32 @@ trait Output { this: TransformCake ⇒
   }
 
   /**
-    * Lift nested interfaces with the same name as their parent class to the parent
+    * Lift nested interfaces and classees with the same name as their parent class to the parent
     * level, as Java does not allow this, mangling their name accordingly
     *
     * Also applied recursively to members
     */
-  def liftInterface(c: ClassInfo): Seq[ClassInfo] = {
+  def liftInnerClassesWithSameName(c: ClassInfo): Seq[ClassInfo] = {
     c.members.find {
-      case member: ClassInfo => member.name == c.name && member.interface
+      case member: ClassInfo => member.name == c.name
       case _ => false
     } match {
-      case Some(nestedInterface: ClassInfo) =>
+      case Some(nestedClass: ClassInfo) =>
         Seq(
-          c.copy(members = c.classMembers.filterNot(_ == nestedInterface).flatMap(liftInterface) ++ c.methodMembers),
-          nestedInterface.copy(
-            name = s"${nestedInterface.name}$$${nestedInterface.name}",
-            static = false
+          c.copy(members = c.classMembers.filterNot(_ == nestedClass).flatMap(liftInnerClassesWithSameName) ++ c.methodMembers),
+          nestedClass.copy(
+            name = s"${nestedClass.name}$$${nestedClass.name}",
+            static = false,
+            members = nestedClass.members.map {
+              case member: MethodInfo if member.name == nestedClass.name =>
+                member.copy(name = s"${nestedClass.name}$$${nestedClass.name}")
+              case member =>
+                member
+            }
           )
         )
       case _ =>
-        Seq(c.copy(members = c.classMembers.flatMap(liftInterface) ++ c.methodMembers))
+        Seq(c.copy(members = c.classMembers.flatMap(liftInnerClassesWithSameName) ++ c.methodMembers))
     }
   }
 

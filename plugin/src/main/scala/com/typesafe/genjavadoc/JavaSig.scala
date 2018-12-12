@@ -57,8 +57,12 @@ trait JavaSig { this: TransformCake ⇒
         else {
           val parent = rec(s.effectiveOwner.enclClass, false)
           staticScope &&= s.needsModuleSuffix
-          if (innermost || !staticScope) parent + "." + s.name + s.moduleSuffix
-          else parent + "." + s.name
+
+          val infix =
+            if (s.effectiveOwner.enclClass.name == s.name) "$"
+            else "."
+          if (innermost || !staticScope) parent + infix + s.name + s.moduleSuffix
+          else parent + infix + s.name
         }
       rec(sym, true)
     }
