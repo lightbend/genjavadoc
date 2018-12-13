@@ -1,15 +1,13 @@
 package com.typesafe.genjavadoc
 
+import java.io.File
+
 import util._
 
 import scala.sys.process._
 
 object BasicSpec {
-  def sources: Seq[String] = Seq(
-    "src/test/resources/input/basic/test.scala",
-    "src/test/resources/input/basic/root.scala",
-    "src/test/resources/input/basic/akka/Main.scala"
-  )
+  def sources: Seq[String] = CompilerSpec.traverseDirectory(new File("src/test/resources/input/basic")).map(_.getAbsolutePath)
 }
 
 /** Test basic behaviour of genjavadoc with standard settings */

@@ -50,3 +50,12 @@ trait CompilerSpec {
 
 
 }
+object CompilerSpec {
+  def traverseDirectory(dir: File): Seq[File] = {
+    dir.listFiles.flatMap { file: File =>
+      if (file.isFile) Seq(file)
+      else if (file.isDirectory) traverseDirectory(file)
+      else Seq.empty
+    }
+  }
+}
