@@ -17,7 +17,7 @@ trait BasicTransform { this: TransformCake ⇒
 
   def newTransformUnit(unit: CompilationUnit): Unit = {
     superTransformUnit(unit)
-    for (c ← flattenObjects(classes.flatMap(liftInnerClassesWithSameName))) {
+    for (c ← flattenObjects(classes.flatMap(liftInnerClassesWithSameName).flatMap(withoutPrivates))) {
       val out = file(c.file)
       try {
         if (c.pckg != "<empty>") out.println(s"package ${c.pckg};")

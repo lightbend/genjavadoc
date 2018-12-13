@@ -19,15 +19,9 @@ package akka.rk.buh.is.it;
  * <p>
  */
 public final class EWMA implements scala.Product, scala.Serializable {
-  /**
-   * math.log(2)
-   * @return (undocumented)
-   */
-  static private  double LogOf2 () { throw new RuntimeException(); }
   // not preceding
   static public  akka.rk.buh.is.it.EWMA apply (double value, double alpha) { throw new RuntimeException(); }
   static public  scala.Option<scala.Tuple2<java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.EWMA x$0) { throw new RuntimeException(); }
-  static private  java.lang.Object readResolve () { throw new RuntimeException(); }
   public  double value () { throw new RuntimeException(); }
   public  double alpha () { throw new RuntimeException(); }
   // not preceding

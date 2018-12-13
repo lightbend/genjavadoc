@@ -100,7 +100,7 @@ class SignatureSpec {
       }
 
       val jm = getMethods(jc, filter = false)
-      val sm = getMethods(sc, filter = true)
+      val sm = getMethods(sc, filter = true).filter(!_.startsWith("private"))
       printIfNotEmpty(sm -- jm, "missing methods:")
       printIfNotEmpty(jm -- sm, "extraneous methods:")
       matchJava(sm, jm)
@@ -109,7 +109,7 @@ class SignatureSpec {
       // doesn't allow an inner class with the same name as its enclosing
       // class, so we exclude it here:
       val jsub = getClasses(jc, filter = false) - "akka.rk.buh.is.it.A$C1$C1$"
-      val ssub = getClasses(sc, filter = true) - "akka.rk.buh.is.it.A$C1$C1$"
+      val ssub = getClasses(sc, filter = true) - "akka.rk.buh.is.it.A$C1$C1$" - "akka.rk.buh.is.it.A$NoComment$" // private class is not converted
       printIfNotEmpty(ssub.keySet -- jsub.keySet, "missing classes:")
       printIfNotEmpty(jsub.keySet -- ssub.keySet, "extraneous classes:")
       matchJava(ssub.keySet, jsub.keySet)

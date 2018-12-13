@@ -34,7 +34,7 @@
    }
    /**
     * object C1
-@@ -147,6 +147,11 @@
+@@ -137,6 +137,11 @@
    static public  java.lang.String stattic ()  { throw new RuntimeException(); }
    static public  java.lang.Object x ()  { throw new RuntimeException(); }
    /**
@@ -46,7 +46,7 @@
     * varargs
     * @param s (undocumented)
     * @return (undocumented)
-@@ -212,16 +217,11 @@
+@@ -202,16 +207,11 @@
     * @param s (undocumented)
     * @return (undocumented)
     */
@@ -151,7 +151,7 @@ index b0dd497..4950950 100644
    }
 --- target/expected_output/basic/akka/rk/buh/is/it/CompressionProtocol.java
 +++ target/expected_output/basic/akka/rk/buh/is/it/CompressionProtocol.java
-@@ -23,6 +24,7 @@
+@@ -22,6 +23,7 @@
        public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
        public  int productArity ()  { throw new RuntimeException(); }
        public  Object productElement (int x$1)  { throw new RuntimeException(); }
@@ -161,7 +161,7 @@ index b0dd497..4950950 100644
        public  int hashCode ()  { throw new RuntimeException(); }
 --- target/expected_output/basic/akka/rk/buh/is/it/EWMA.java
 +++ target/expected_output/basic/akka/rk/buh/is/it/EWMA.java
-@@ -48,6 +49,7 @@
+@@ -42,6 +43,7 @@
    public  java.lang.String productPrefix () { throw new RuntimeException(); }
    public  int productArity () { throw new RuntimeException(); }
    public  Object productElement (int x$1) { throw new RuntimeException(); }
@@ -169,22 +169,12 @@ index b0dd497..4950950 100644
    public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
    public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
    public  int hashCode () { throw new RuntimeException(); }
---- target/expected_output/basic/akka/rk/buh/is/it/Trait.java
-+++ target/expected_output/basic/akka/rk/buh/is/it/Trait.java
-@@ -6,6 +6,7 @@
-     public  java.lang.String productPrefix () { throw new RuntimeException(); }
-     public  int productArity () { throw new RuntimeException(); }
-     public  Object productElement (int x$1) { throw new RuntimeException(); }
-+    public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
-     public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
-     public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
-     public  int hashCode () { throw new RuntimeException(); }
 --- target/expected_output/basic/akka/actor/Identify.java
 +++ target/expected_output/akka/actor/Identify.java
-@@ -3,6 +3,30 @@
+@@ -2,6 +2,30 @@
+ public final class Identify implements scala.Product, scala.Serializable {
    static public  akka.actor.Identify apply (Object messageId)  { throw new RuntimeException(); }
    static public  scala.Option<java.lang.Object> unapply (akka.actor.Identify x$0)  { throw new RuntimeException(); }
-   static private  java.lang.Object readResolve ()  { throw new RuntimeException(); }
 +  static public  boolean apply$mcZD$sp (double v1)  { throw new RuntimeException(); }
 +  static public  double apply$mcDD$sp (double v1)  { throw new RuntimeException(); }
 +  static public  float apply$mcFD$sp (double v1)  { throw new RuntimeException(); }
@@ -212,7 +202,7 @@ index b0dd497..4950950 100644
    public  Object messageId ()  { throw new RuntimeException(); }
    // not preceding
    public   Identify (Object messageId)  { throw new RuntimeException(); }
-@@ -12,6 +12,7 @@
+@@ -11,6 +11,7 @@
    public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
    public  int productArity ()  { throw new RuntimeException(); }
    public  Object productElement (int x$1)  { throw new RuntimeException(); }

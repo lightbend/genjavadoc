@@ -56,7 +56,26 @@ trait Output { this: TransformCake ⇒
   }
 
   /**
-    * Lift nested interfaces and classees with the same name as their parent class to the parent
+    * Private methods and classes are not visible in the javadoc,
+    * so they can be removed wholesale.
+    */
+  def withoutPrivates(c: ClassInfo): Option[ClassInfo] = {
+    def templWithoutPrivates(t: Templ): Option[Templ] = {
+      if (t.access.contains("private")) None
+      else t match {
+        case c: ClassInfo =>
+          Some(c.copy(members = c.members.flatMap(templWithoutPrivates)))
+        case other =>
+          Some(other)
+      }
+    }
+
+    if (c.access.contains("private")) None
+    else Some(c.copy(members = c.members.flatMap(templWithoutPrivates)))
+  }
+
+  /**
+    * Lift nested interfaces with the same name as their parent class to the parent
     * level, as Java does not allow this, mangling their name accordingly
     *
     * Also applied recursively to members
@@ -131,7 +150,7 @@ trait Output { this: TransformCake ⇒
   private def mangleModule(obj: ClassInfo, addMODULE: Boolean, pruneClasses: Boolean): ClassInfo = {
     val moduleInstance =
       if (addMODULE || (obj.module && obj.static))
-        Some(MethodInfo(x ⇒ x, "public static final", s"${obj.name}$$ MODULE$$ = null;",
+        Some(MethodInfo("public", x ⇒ x, "public static final", s"${obj.name}$$ MODULE$$ = null;",
           Seq("/**", " * Static reference to the singleton instance of this Scala object.", " */")))
       else None
 
