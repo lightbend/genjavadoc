@@ -85,21 +85,21 @@ public  class A {
     public  int i ()  { throw new RuntimeException(); }
   }
   /**
+   * object A.C.C1
+   */
+  static public  class C1$C1$ {
+    /**
+     * Static reference to the singleton instance of this Scala object.
+     */
+    public static final C1$C1$ MODULE$ = null;
+    public   C1$C1$ ()  { throw new RuntimeException(); }
+  }
+  /**
    * class A.C
    */
   static public  class C1 {
-    /**
-     * object A.C.C1
-     */
-    public  class C1$ {
-      public   C1$ ()  { throw new RuntimeException(); }
-    }
     public   C1 ()  { throw new RuntimeException(); }
-    /**
-     * Accessor for nested Scala object
-     * @return (undocumented)
-     */
-    public  akka.rk.buh.is.it.A.C1.C1$ C1 ()  { throw new RuntimeException(); }
+    public  akka.rk.buh.is.it.A.C1$C1$ C1 ()  { throw new RuntimeException(); }
   }
   /**
    * object C1

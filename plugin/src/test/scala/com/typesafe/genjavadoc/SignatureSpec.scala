@@ -105,8 +105,11 @@ class SignatureSpec {
       printIfNotEmpty(jm -- sm, "extraneous methods:")
       matchJava(sm, jm)
 
-      val jsub = getClasses(jc, filter = false)
-      val ssub = getClasses(sc, filter = true)
+      // akka.rk.buh.is.it.A$C1$C1$ is a special case, generated because Java
+      // doesn't allow an inner class with the same name as its enclosing
+      // class, so we exclude it here:
+      val jsub = getClasses(jc, filter = false) - "akka.rk.buh.is.it.A$C1$C1$"
+      val ssub = getClasses(sc, filter = true) - "akka.rk.buh.is.it.A$C1$C1$"
       printIfNotEmpty(ssub.keySet -- jsub.keySet, "missing classes:")
       printIfNotEmpty(jsub.keySet -- ssub.keySet, "extraneous classes:")
       matchJava(ssub.keySet, jsub.keySet)

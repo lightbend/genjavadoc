@@ -15,16 +15,12 @@
    }
    /**
     * class A.B
-@@ -94,12 +94,12 @@
-     public  class C1$ {
-       public   C1$ ()  { throw new RuntimeException(); }
-     }
+@@ -98,8 +98,8 @@
+    * class A.C
+    */
+   static public  class C1 {
 -    public   C1 ()  { throw new RuntimeException(); }
-     /**
-      * Accessor for nested Scala object
-      * @return (undocumented)
-      */
-     public  akka.rk.buh.is.it.A.C1.C1$ C1 ()  { throw new RuntimeException(); }
+     public  akka.rk.buh.is.it.A.C1$C1$ C1 ()  { throw new RuntimeException(); }
 +    public   C1 ()  { throw new RuntimeException(); }
    }
    /**
