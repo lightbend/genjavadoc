@@ -7,11 +7,6 @@ public  class EWMA$ implements scala.Serializable {
   public static final EWMA$ MODULE$ = null;
   public   EWMA$ () { throw new RuntimeException(); }
   /**
-   * math.log(2)
-   * @return (undocumented)
-   */
-  private  double LogOf2 () { throw new RuntimeException(); }
-  /**
    * Calculate the alpha (decay factor) used in {@link akka.cluster.EWMA}
    * from specified half-life and interval between observations.
    * Half-life is the interval over which the weights decrease by a factor of two.

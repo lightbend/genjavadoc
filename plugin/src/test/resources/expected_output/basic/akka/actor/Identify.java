@@ -2,7 +2,6 @@ package akka.actor;
 public final class Identify implements scala.Product, scala.Serializable {
   static public  akka.actor.Identify apply (Object messageId)  { throw new RuntimeException(); }
   static public  scala.Option<java.lang.Object> unapply (akka.actor.Identify x$0)  { throw new RuntimeException(); }
-  static private  java.lang.Object readResolve ()  { throw new RuntimeException(); }
   public  Object messageId ()  { throw new RuntimeException(); }
   // not preceding
   public   Identify (Object messageId)  { throw new RuntimeException(); }

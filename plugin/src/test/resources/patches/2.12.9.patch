@@ -25,7 +25,7 @@
    }
    /**
     * object C1
-@@ -147,6 +147,11 @@
+@@ -137,6 +137,11 @@
    static public  java.lang.String stattic ()  { throw new RuntimeException(); }
    static public  java.lang.Object x ()  { throw new RuntimeException(); }
    /**
@@ -37,7 +37,7 @@
     * varargs
     * @param s (undocumented)
     * @return (undocumented)
-@@ -219,9 +224,4 @@
+@@ -209,9 +214,4 @@
     */
    public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
    public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }
@@ -49,10 +49,10 @@
  }
 --- target/expected_output/basic/akka/actor/Identify.java
 +++ target/expected_output/basic/akka/actor/Identify.java
-@@ -3,6 +3,30 @@
+@@ -2,6 +2,30 @@
+ public final class Identify implements scala.Product, scala.Serializable {
    static public  akka.actor.Identify apply (Object messageId)  { throw new RuntimeException(); }
    static public  scala.Option<java.lang.Object> unapply (akka.actor.Identify x$0)  { throw new RuntimeException(); }
-   static private  java.lang.Object readResolve ()  { throw new RuntimeException(); }
 +  static public  boolean apply$mcZD$sp (double v1)  { throw new RuntimeException(); }
 +  static public  double apply$mcDD$sp (double v1)  { throw new RuntimeException(); }
 +  static public  float apply$mcFD$sp (double v1)  { throw new RuntimeException(); }

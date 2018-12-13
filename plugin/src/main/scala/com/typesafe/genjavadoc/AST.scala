@@ -11,6 +11,7 @@ trait AST { this: TransformCake ⇒
   trait Templ {
     def name: String
     def sig: String
+    def access: String
   }
 
   case class ClassInfo(
@@ -90,7 +91,7 @@ trait AST { this: TransformCake ⇒
     }
   }
 
-  case class MethodInfo(pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
+  case class MethodInfo(access: String, pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
     def sig = pattern(s"$ret $name")
   }
   object MethodInfo {
@@ -136,7 +137,7 @@ trait AST { this: TransformCake ⇒
           case Some(deprec) => deprec.appendToComment(commentWithParams)
           case _ => commentWithParams
         }
-      MethodInfo(pattern, ret, name, commentWithParamsAndDeprec)
+      MethodInfo(acc, pattern, ret, name, commentWithParamsAndDeprec)
     }
 
     /**

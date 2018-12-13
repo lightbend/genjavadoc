@@ -126,16 +126,6 @@ public  class A {
     public  void method ()  { throw new RuntimeException(); }
   }
   /**
-   * object A.NoComment
-   */
-  static private  class NoComment$ {
-    /**
-     * Static reference to the singleton instance of this Scala object.
-     */
-    public static final NoComment$ MODULE$ = null;
-    public   NoComment$ ()  { throw new RuntimeException(); }
-  }
-  /**
    * def IAmStatic: Int
    * @return (undocumented)
    */

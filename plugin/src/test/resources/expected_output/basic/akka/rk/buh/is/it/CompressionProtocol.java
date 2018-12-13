@@ -8,7 +8,6 @@ public  class CompressionProtocol {
     public final class HeavyHitterDetected implements akka.rk.buh.is.it.CompressionProtocol.Events.Event, scala.Product, scala.Serializable {
       static public  akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected apply (Object key, int id, long count)  { throw new RuntimeException(); }
       static public  scala.Option<scala.Tuple3<java.lang.Object, java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected x$0)  { throw new RuntimeException(); }
-      static private  java.lang.Object readResolve ()  { throw new RuntimeException(); }
       public  Object key ()  { throw new RuntimeException(); }
       public  int id ()  { throw new RuntimeException(); }
       public  long count ()  { throw new RuntimeException(); }
