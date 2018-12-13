@@ -160,7 +160,7 @@ trait AST { this: TransformCake ⇒
   }
 
   private def access(m: Modifiers, topLevel: Boolean): String = {
-    if (m.isInterface) "public"
+    if (m.isTraitOrInterface) "public"
     else if (m.isPublic) "public"
     else if (m.isProtected && !topLevel) "protected"
     else if (m.isPrivate && !topLevel) {
