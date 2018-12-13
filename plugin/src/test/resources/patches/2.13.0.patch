@@ -185,16 +185,6 @@ index b0dd497..4950950 100644
      public  int hashCode () { throw new RuntimeException(); }
 --- target/expected_output/basic/akka/actor/Identify.java
 +++ target/expected_output/akka/actor/Identify.java
-@@ -12,6 +12,7 @@
-   public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
-   public  int productArity ()  { throw new RuntimeException(); }
-   public  Object productElement (int x$1)  { throw new RuntimeException(); }
-+  public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
-   public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
-   public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
-   public  int hashCode ()  { throw new RuntimeException(); }
---- target/expected_output/basic/akka/actor/Identify.java
-+++ target/expected_output/akka/actor/Identify.java
 @@ -3,6 +3,30 @@
    static public  akka.actor.Identify apply (Object messageId)  { throw new RuntimeException(); }
    static public  scala.Option<java.lang.Object> unapply (akka.actor.Identify x$0)  { throw new RuntimeException(); }
@@ -225,3 +215,21 @@ index b0dd497..4950950 100644
 +  static public  void apply$mcVJ$sp (long v1)  { throw new RuntimeException(); }
    public  Object messageId ()  { throw new RuntimeException(); }
    // not preceding
+   public   Identify (Object messageId)  { throw new RuntimeException(); }
+@@ -12,6 +12,7 @@
+   public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
+   public  int productArity ()  { throw new RuntimeException(); }
+   public  Object productElement (int x$1)  { throw new RuntimeException(); }
++  public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
+   public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
+   public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
+   public  int hashCode ()  { throw new RuntimeException(); }
+--- target/expected_output/basic/akka/actor/dsl/Inbox.java    2018-12-13 15:51:52.473679518 +0100
++++ target/expected_output/basic/akka/actor/dsl/Inbox.java 2018-12-13 15:51:51.473673128 +0100
+@@ -2,5 +2,6 @@
+ public  interface Inbox {
+   public  interface InboxExtension {
+     public  int DSLInboxQueueSize ()  ;
++    public  void akka$actor$dsl$Inbox$InboxExtension$_setter_$DSLInboxQueueSize_$eq (int x$1)  ;
+   }
+ }
