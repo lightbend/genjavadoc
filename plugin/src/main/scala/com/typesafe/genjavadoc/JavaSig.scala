@@ -2,7 +2,7 @@ package com.typesafe.genjavadoc
 
 import scala.reflect.internal.ClassfileConstants
 
-trait JavaSig { this: TransformCake =>
+trait JavaSig extends NeedsJavaSig { this: TransformCake =>
   import global._
   import definitions._
 
@@ -181,36 +181,6 @@ trait JavaSig { this: TransformCake =>
     else result
   }
 
-  private object NeedsSigCollector extends TypeCollector(false) {
-    def traverse(tp: Type): Unit = {
-      if (!result) {
-        tp match {
-          case st: SubType =>
-            traverse(st.supertype)
-          case TypeRef(pre, sym, args) =>
-            if (sym == ArrayClass) args foreach traverse
-            else if (sym.isTypeParameterOrSkolem || sym.isExistentiallyBound || !args.isEmpty) result = true
-            else if (sym.isClass) traverse(rebindInnerClass(pre, sym)) // #2585
-            else if (!sym.owner.isPackageClass) traverse(pre)
-          case PolyType(_, _) | ExistentialType(_, _) =>
-            result = true
-          case RefinedType(parents, _) =>
-            parents foreach traverse
-          case ClassInfoType(parents, _, _) =>
-            parents foreach traverse
-          case at: AnnotatedType =>
-            traverse(at.underlying)
-          case _ =>
-            mapOver(tp)
-        }
-      }
-    }
-  }
-
-  private def rebindInnerClass(pre: Type, cls: Symbol): Type = {
-    if (cls.owner.isClass) cls.owner.tpe else pre // why not cls.isNestedClass?
-  }
-
   private def hiBounds(bounds: TypeBounds): List[Type] = bounds.hi.normalize match {
     case RefinedType(parents, _) => parents map (_.normalize)
     case tp                      => tp :: Nil
@@ -228,8 +198,6 @@ trait JavaSig { this: TransformCake =>
     sym.isTypeParameterOrSkolem && (
       (initialSymbol.enclClassChain.exists(sym isNestedIn _)) ||
       (initialSymbol.isMethod && initialSymbol.typeParams.contains(sym))))
-
-  private def needsJavaSig(tp: Type) = !settings.Ynogenericsig.value && NeedsSigCollector.collect(tp)
 
   class UnknownSig extends Exception
 

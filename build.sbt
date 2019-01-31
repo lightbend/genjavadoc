@@ -40,7 +40,7 @@ lazy val `genjavadoc-plugin` = (project in file("plugin"))
       val default = (unmanagedSourceDirectories in Compile).value
       def r(from: String, to: String) = default.map(f => new java.io.File(f.getPath.replaceAll(from, to)))
       if (scalaVersion.value == "2.12.0") r("""/scala-2\.12$""", "/scala-2.11")
-      else if (scalaMajorVersion.value == 13) r("""/scala-2\.13[^/]*$""", "/scala-2.12")
+      else if (scalaMajorVersion.value == 13) r("""/scala-2\.13[^/]*$""", "/scala-2.13")
       else default
     },
     crossVersion := CrossVersion.full,
@@ -58,7 +58,7 @@ lazy val defaults = Seq(
     val earliest211 = 6
     val latest211 = 12
     val latest212 = 8
-    val pre213 = List("M5")
+    val pre213 = List("RC1")
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala211Versions =
       (earliest211 to latest211)
