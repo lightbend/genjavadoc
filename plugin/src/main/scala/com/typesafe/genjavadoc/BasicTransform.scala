@@ -2,7 +2,7 @@ package com.typesafe.genjavadoc
 
 import scala.reflect.internal.Flags
 
-trait BasicTransform { this: TransformCake ⇒
+trait BasicTransform { this: TransformCake =>
   import global._
 
   private def skippedName(name: String): Boolean = {
@@ -17,7 +17,7 @@ trait BasicTransform { this: TransformCake ⇒
 
   def newTransformUnit(unit: CompilationUnit): Unit = {
     superTransformUnit(unit)
-    for (c ← flattenObjects(classes.flatMap(liftInnerClassesWithSameName).flatMap(withoutPrivates))) {
+    for (c <- flattenObjects(classes.flatMap(liftInnerClassesWithSameName).flatMap(withoutPrivates))) {
       val out = file(c.file)
       try {
         if (c.pckg != "<empty>") out.println(s"package ${c.pckg};")
@@ -30,7 +30,7 @@ trait BasicTransform { this: TransformCake ⇒
 
   private var visited: List[Tree] = Nil
   private var keep = true
-  private def noKeep(code: ⇒ Tree): Tree = {
+  private def noKeep(code: => Tree): Tree = {
     val old = keep
     keep = false
     try code finally keep = old
@@ -52,12 +52,12 @@ trait BasicTransform { this: TransformCake ⇒
         pos = max(tp, prevTemplateMaxPos)
         if (old.precedes(pos)) {
           (positions.from(old) intersect positions.to(pos)).toSeq.map(comments).filter(Scaladoc).lastOption match {
-            case Some(c) ⇒ c.text // :+ s"// found in '${between(old, pos)}'"
-            case None ⇒
+            case Some(c) => c.text // :+ s"// found in '${between(old, pos)}'"
+            case None =>
               // s"// empty '${between(old, pos)}' (${pos.lineContent}:${pos.column})" ::
               Nil
           }
-        } else Seq("// not preceding") ++ visited.reverse.map(t ⇒ "// " + global.showRaw(t))
+        } else Seq("// not preceding") ++ visited.reverse.map(t => "// " + global.showRaw(t))
       } else Seq("// no position")
       advancePos(tp)
       endPos foreach { p =>
@@ -78,18 +78,18 @@ trait BasicTransform { this: TransformCake ⇒
 
     def endPos(t: Tree) = {
       val traverser = new CollectTreeTraverser({
-        case t if t.pos.isDefined ⇒ t.pos
+        case t if t.pos.isDefined => t.pos
       })
       traverser.traverse(t)
       if (traverser.results.isEmpty) None else Some(traverser.results.max)
     }
 
     tree match {
-      case c: ClassDef if keep ⇒
+      case c: ClassDef if keep =>
         withClass(c, commentText(c.pos, None)) {
           superTransform(tree)
         }
-      case d: DefDef if keep ⇒
+      case d: DefDef if keep =>
         val text =
           if (d.mods.hasModuleFlag) { // accessor for an object
             // the accessor occurs out of order; we must not advance the position
@@ -110,11 +110,11 @@ trait BasicTransform { this: TransformCake ⇒
             addMethod(d, text)
         }
         tree
-      case _: ValDef     ⇒ { track(tree) }
-      case _: PackageDef ⇒ { track(tree); superTransform(tree) }
-      case _: Template   ⇒ { track(tree); superTransform(tree) }
-      case _: TypeTree   ⇒ { track(tree) }
-      case _             ⇒ { track(tree); noKeep(superTransform(tree)) }
+      case _: ValDef     => { track(tree) }
+      case _: PackageDef => { track(tree); superTransform(tree) }
+      case _: Template   => { track(tree); superTransform(tree) }
+      case _: TypeTree   => { track(tree) }
+      case _             => { track(tree); noKeep(superTransform(tree)) }
     }
   }
 
@@ -124,7 +124,7 @@ trait BasicTransform { this: TransformCake ⇒
   // the current class, any level
   private var clazz: Option[ClassInfo] = None
 
-  private def withClass(c: ImplDef, comment: Seq[String])(block: ⇒ Tree): Tree = {
+  private def withClass(c: ImplDef, comment: Seq[String])(block: => Tree): Tree = {
     val deprecation = deprecationInfo(c)
     val commentWithDeprecation = deprecation match {
       case Some(deprec) => deprec.appendToComment(comment)
@@ -136,10 +136,10 @@ trait BasicTransform { this: TransformCake ⇒
     val ret = block
     clazz =
       old match {
-        case None ⇒
+        case None =>
           classes :+= clazz.get
           None
-        case Some(oc) ⇒
+        case Some(oc) =>
           Some(oc.addMember(clazz.get))
       }
     pos = templateMaxPos
@@ -148,11 +148,11 @@ trait BasicTransform { this: TransformCake ⇒
   }
 
   private def addMethod(d: DefDef, comment: Seq[String]): Unit = {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false, deprecation = deprecationInfo(d))))
+    clazz = clazz map (c => c.addMember(MethodInfo(d, c.interface, comment, hasVararg = false, deprecation = deprecationInfo(d))))
   }
 
   private def addVarargsMethod(d: DefDef, comment: Seq[String]): Unit = {
-    clazz = clazz map (c ⇒ c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true, deprecation = deprecationInfo(d))))
+    clazz = clazz map (c => c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true, deprecation = deprecationInfo(d))))
   }
 
   private def deprecationInfo(d: DefDef): Option[DeprecationInfo] = deprecationInfo(d.symbol)

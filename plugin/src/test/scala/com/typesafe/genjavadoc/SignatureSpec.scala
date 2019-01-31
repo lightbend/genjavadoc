@@ -114,7 +114,7 @@ class SignatureSpec {
       printIfNotEmpty(jsub.keySet -- ssub.keySet, "extraneous classes:")
       matchJava(ssub.keySet, jsub.keySet)
 
-      for (n ← ssub.keys) {
+      for (n <- ssub.keys) {
         val js = jsub(n)
         val ss = ssub(n)
 
@@ -138,7 +138,7 @@ class SignatureSpec {
     }
 
     def getMethods(c: Class[_], filter: Boolean): Set[String] = {
-      c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
+      c.getDeclaredMethods.filterNot(x => filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
         || javaKeywords.contains(x.getName)
         || x.getName == "$init$" // These synthetic methods show up in 2.12.0-M4+ even though they are not in the generated Java sources
         || (filter && Modifier.isStatic(x.getModifiers) && x.getName.endsWith("$")) // These synthetic static methods appear since 2.12.0-M5+ as companions to default methods
