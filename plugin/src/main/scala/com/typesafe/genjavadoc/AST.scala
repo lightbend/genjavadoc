@@ -86,8 +86,11 @@ trait AST { this: TransformCake ⇒
     def render = s" * @deprecated ${msg}${maybeDot}Since $since${maybeSinceDot}"
 
     def appendToComment(comment: Seq[String]): Seq[String] = comment match {
-      case Nil => List("/**", render, "*/")
-      case c => c.dropRight(1) ++ List(" *", render, "*/")
+      case Nil =>
+        List("/**", render, "*/")
+      case c =>
+        if (c.lastOption.contains(" */")) c.dropRight(1) ++ List(" *", render, "*/")
+        else c ++ List("/**", render, "*/")
     }
   }
 
