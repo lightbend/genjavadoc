@@ -7,11 +7,14 @@ import scala.tools.nsc.reporters.ConsoleReporter
 import scala.tools.nsc.{Global, Settings}
 
 /** An instance of the Scala compiler with the genjavadoc plugin enabled
-  * @param params additional parameters to pass to the compiler
+  * @param pluginOptions additional parameters to pass to the compiler
   */
-class GenJavadocCompiler(params: Seq[String]) {
+class GenJavadocCompiler(pluginOptions: Seq[String], rangepos: Boolean) {
 
   private val settings = new Settings
+
+  settings.Yrangepos.value = rangepos
+
   val reporter = new ConsoleReporter(settings)
   private val global = new Global(settings, reporter) {
     override protected def loadRoughPluginsList() =
@@ -28,7 +31,7 @@ class GenJavadocCompiler(params: Seq[String]) {
   }
 
   settings.outputDirs.setSingleOutput(AbstractFile.getDirectory(target))
-  settings.pluginOptions.value = params.toList
+  settings.pluginOptions.value = pluginOptions.toList
 
   def compile(fileNames: Seq[String]): Unit = {
     val run = new global.Run

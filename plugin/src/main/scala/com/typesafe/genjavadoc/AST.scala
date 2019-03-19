@@ -85,9 +85,11 @@ trait AST { this: TransformCake ⇒
     def maybeSinceDot = if (since.endsWith(".")) " " else ". "
     def render = s" * @deprecated ${msg}${maybeDot}Since $since${maybeSinceDot}"
 
-    def appendToComment(comment: Seq[String]): Seq[String] = comment match {
-      case Nil => List("/**", render, "*/")
-      case c => c.dropRight(1) ++ List(" *", render, "*/")
+    def appendToComment(comment: Seq[String]): Seq[String] = comment.toVector match {
+      case init :+ " */" =>
+        init ++ List(" *", render, " */")
+      case c =>
+        c ++ List("/**", render, "*/")
     }
   }
 
