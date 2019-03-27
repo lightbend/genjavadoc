@@ -28,7 +28,9 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
 
   val name = "genjavadoc"
   val description = ""
-  val components = List[PluginComponent](MyComponent)
+  val components: List[PluginComponent] =
+    if (global.settings.isScaladoc) List.empty
+    else List(MyComponent)
 
   override def processOptions(options: List[String], error: String ⇒ Unit): Unit = {
     myOptions = new Properties()
