@@ -16,11 +16,12 @@ object SignatureSpec {
     "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
     "throw", "throws", "transient", "try", "void", "volatile", "while")
 
-  // this should match up against the definition in GenJavadocPlugin
-  // with the addition of "$lzycompute", which is special
-  val defaultFilteredStrings = Set("$$", "$lzycompute",
-    // and this one's a known issue, https://github.com/lightbend/genjavadoc/issues/143
-    "productElementNames"
+  val defaultFilteredStrings = Set(
+    // this should match up against the definition in GenJavadocPlugin
+    // with the addition of "$lzycompute", which is special
+    "$$", "$lzycompute",
+    // see https://github.com/lightbend/genjavadoc/issues/143
+    "productElementName"
   )
 
   // they can't start with numbers either
@@ -99,8 +100,8 @@ class SignatureSpec {
         assertEquals(msg, s, j)
       }
 
-      val jm = getMethods(jc, filter = false)
-      val sm = getMethods(sc, filter = true).filter(!_.startsWith("private"))
+      val jm = getMethods(jc)
+      val sm = getMethods(sc).filter(!_.startsWith("private"))
       printIfNotEmpty(sm -- jm, "missing methods:")
       printIfNotEmpty(jm -- sm, "extraneous methods:")
       matchJava(sm, jm)
@@ -114,7 +115,7 @@ class SignatureSpec {
       printIfNotEmpty(jsub.keySet -- ssub.keySet, "extraneous classes:")
       matchJava(ssub.keySet, jsub.keySet)
 
-      for (n ← ssub.keys) {
+      for (n <- ssub.keys) {
         val js = jsub(n)
         val ss = ssub(n)
 
@@ -137,12 +138,13 @@ class SignatureSpec {
       s.toList.sorted foreach println
     }
 
-    def getMethods(c: Class[_], filter: Boolean): Set[String] = {
-      c.getDeclaredMethods.filterNot(x ⇒ filter && (defaultFilteredStrings.exists { s => x.getName.contains(s) }
+    def getMethods(c: Class[_]): Set[String] = {
+      c.getDeclaredMethods.filterNot(x =>
+        defaultFilteredStrings.exists(s => x.getName.contains(s))
         || javaKeywords.contains(x.getName)
         || x.getName == "$init$" // These synthetic methods show up in 2.12.0-M4+ even though they are not in the generated Java sources
-        || (filter && Modifier.isStatic(x.getModifiers) && x.getName.endsWith("$")) // These synthetic static methods appear since 2.12.0-M5+ as companions to default methods
-        || startsWithNumber.findFirstIn(x.getName).isDefined))
+        || Modifier.isStatic(x.getModifiers) && x.getName.endsWith("$") // These synthetic static methods appear since 2.12.0-M5+ as companions to default methods
+        || startsWithNumber.findFirstIn(x.getName).isDefined)
         .map(_.toGenericString)
         .map(_.replace("default ", "abstract ")) // Scala 2.12.0-M4+ creates default methods for trait method implementations. We treat them as abstract for now.
         .map(_.replaceAll(exception, replacement))

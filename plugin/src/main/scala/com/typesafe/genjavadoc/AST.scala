@@ -2,7 +2,7 @@ package com.typesafe.genjavadoc
 
 import scala.annotation.tailrec
 
-trait AST { this: TransformCake ⇒
+trait AST { this: TransformCake =>
 
   import global._
 
@@ -18,11 +18,11 @@ trait AST { this: TransformCake ⇒
     sym: Symbol,
     name: String,
     access: String,
-    pattern: (String, String) ⇒ String,
+    pattern: (String, String) => String,
     module: Boolean,
     comment: Seq[String],
     pckg: String,
-    filepattern: String ⇒ String,
+    filepattern: String => String,
     members: Vector[Templ],
     interface: Boolean,
     static: Boolean,
@@ -49,14 +49,14 @@ trait AST { this: TransformCake ⇒
   object ClassInfo {
     def apply(c: ImplDef, comment: Seq[String], topLevel: Boolean): ClassInfo = {
       c match {
-        case ClassDef(mods, _, tparams, impl) ⇒
+        case ClassDef(mods, _, tparams, impl) =>
           val name = c.name.toString
           val acc = access(mods, topLevel)
           val fl = flags(mods)
           val kind = if (mods.isInterface || mods.isTrait) "interface" else "class"
           val tp = c.symbol.owner.thisType.memberInfo(c.symbol) match {
-            case p @ PolyType(params, _) ⇒ js(c.symbol, p)
-            case _                       ⇒ ""
+            case p @ PolyType(params, _) => js(c.symbol, p)
+            case _                       => ""
           }
           val parent = {
             val p = impl.parents.head
@@ -65,13 +65,13 @@ trait AST { this: TransformCake ⇒
               s" extends ${js(c.symbol, p.tpe)}"
             }
           }
-          val intf = impl.parents.tail map (i ⇒ js(c.symbol, i.tpe)) mkString (", ")
+          val intf = impl.parents.tail map (i => js(c.symbol, i.tpe)) mkString (", ")
           val interfaces = if (!intf.isEmpty) (if (mods.isInterface || mods.isTrait) " extends " else " implements ") + intf else ""
-          val sig = (n: String, a: String) ⇒ s"$a $fl $kind $n$tp$parent$interfaces"
+          val sig = (n: String, a: String) => s"$a $fl $kind $n$tp$parent$interfaces"
           val packageName = c.symbol.enclosingPackage.fullName('/')
           val file =
             if (packageName == "<empty>") (n: String) => s"$n.java"
-            else (n: String) ⇒ s"$packageName/$n.java"
+            else (n: String) => s"$packageName/$n.java"
           val pckg = c.symbol.enclosingPackage.fullName
           ClassInfo(c.symbol, name, acc, sig, mods.hasModuleFlag, comment, pckg, file, Vector.empty, kind == "interface", false, true)
       }
@@ -93,7 +93,7 @@ trait AST { this: TransformCake ⇒
     }
   }
 
-  case class MethodInfo(access: String, pattern: String ⇒ String, ret: String, name: String, comment: Seq[String]) extends Templ {
+  case class MethodInfo(access: String, pattern: String => String, ret: String, name: String, comment: Seq[String]) extends Templ {
     def sig = pattern(s"$ret $name")
   }
   object MethodInfo {
@@ -104,13 +104,13 @@ trait AST { this: TransformCake ⇒
           ("", d.symbol.enclClass.name.toString)
         } else (js(d.symbol, d.tpt.tpe), d.name.toString)
       val tp = d.symbol.owner.thisType.memberInfo(d.symbol) match {
-        case p @ PolyType(params, _) ⇒ js(d.symbol, p)
-        case _                       ⇒ ""
+        case p @ PolyType(params, _) => js(d.symbol, p)
+        case _                       => ""
       }
       @tailrec def rec(l: List[ValDef], acc: Vector[String] = Vector.empty): Seq[String] = l match {
-        case x :: Nil if hasVararg ⇒ acc :+ s"${js(d.symbol, x.tpt.tpe, voidOK = false).dropRight(2)}... ${mangleMethodName(x)}"
-        case x :: xs               ⇒ rec(xs, acc :+ s"${js(d.symbol, x.tpt.tpe, voidOK = false)} ${mangleMethodName(x)}")
-        case Nil                   ⇒ acc
+        case x :: Nil if hasVararg => acc :+ s"${js(d.symbol, x.tpt.tpe, voidOK = false).dropRight(2)}... ${mangleMethodName(x)}"
+        case x :: xs               => rec(xs, acc :+ s"${js(d.symbol, x.tpt.tpe, voidOK = false)} ${mangleMethodName(x)}")
+        case Nil                   => acc
       }
       val args = rec(d.vparamss.head) mkString ("(", ", ", ")")
 
@@ -123,7 +123,7 @@ trait AST { this: TransformCake ⇒
       val throws = if (throwsAnnotations.isEmpty) "" else "throws " + throwsAnnotations.mkString(", ")
 
       val impl = if (d.mods.isDeferred || interface) ";" else "{ throw new RuntimeException(); }"
-      val pattern = (n: String) ⇒ s"$acc $tp $n $args $throws $impl"
+      val pattern = (n: String) => s"$acc $tp $n $args $throws $impl"
       def hasParam(n: String) = comment.find(_.contains(s"@param $n")).isDefined
 
       val commentWithParams =
@@ -154,7 +154,7 @@ trait AST { this: TransformCake ⇒
       }
       val d = DefDef(sym, EmptyTree)
       val m = MethodInfo(d, false, Nil, varargs, None)
-      m.copy(pattern = n ⇒ "static " + m.pattern(n))
+      m.copy(pattern = n => "static " + m.pattern(n))
     }
   }
 

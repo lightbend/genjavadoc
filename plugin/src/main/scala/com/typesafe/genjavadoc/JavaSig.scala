@@ -2,7 +2,7 @@ package com.typesafe.genjavadoc
 
 import scala.reflect.internal.ClassfileConstants
 
-trait JavaSig { this: TransformCake ⇒
+trait JavaSig extends NeedsJavaSig { this: TransformCake =>
   import global._
   import definitions._
 
@@ -12,10 +12,10 @@ trait JavaSig { this: TransformCake ⇒
     def removeThis(in: Type): Type = {
       //          println("transforming " + in)
       in match {
-        case ThisType(parent) if !parent.hasPackageFlag ⇒ removeThis(parent.tpe)
-        case SingleType(parent, name)                   ⇒ typeRef(removeThis(parent), name, Nil)
-        case TypeRef(pre, sym, args)                    ⇒ typeRef(removeThis(pre), sym, args)
-        case x                                          ⇒ x
+        case ThisType(parent) if !parent.hasPackageFlag => removeThis(parent.tpe)
+        case SingleType(parent, name)                   => typeRef(removeThis(parent), name, Nil)
+        case TypeRef(pre, sym, args)                    => typeRef(removeThis(pre), sym, args)
+        case x                                          => x
       }
     }
 
@@ -23,7 +23,7 @@ trait JavaSig { this: TransformCake ⇒
       val ps = (
         if (isTraitSignature) {
           // java is unthrilled about seeing interfaces inherit from classes
-          val ok = parents filter (p ⇒ p.typeSymbol.isTrait || p.typeSymbol.isInterface)
+          val ok = parents filter (p => p.typeSymbol.isTrait || p.typeSymbol.isInterface)
           // traits should always list Object.
           if (ok.isEmpty || ok.head.typeSymbol != ObjectClass) ObjectClass.tpe :: ok
           else ok
@@ -31,8 +31,8 @@ trait JavaSig { this: TransformCake ⇒
       (ps map boxedSig).mkString
     }
     def boxedSig(tp: Type) = tp match {
-      case PolyType(tparams, restpe) ⇒ jsig(restpe, primitiveOK = false)
-      case _                         ⇒ jsig(tp, primitiveOK = false)
+      case PolyType(tparams, restpe) => jsig(restpe, primitiveOK = false)
+      case _                         => jsig(tp, primitiveOK = false)
     }
     def boundsSig(bounds: List[Type]) = {
       bounds.headOption map (" extends " + boxedSig(_)) getOrElse ""
@@ -71,11 +71,11 @@ trait JavaSig { this: TransformCake ⇒
       val tp = tp0.dealias
       if (debug) println(s"JSIG: $tp")
       tp match {
-        case st: SubType ⇒
+        case st: SubType =>
           jsig(st.supertype, existentiallyBound, toplevel, primitiveOK)
-        case ExistentialType(tparams, tpe) ⇒
+        case ExistentialType(tparams, tpe) =>
           jsig(tpe, tparams, toplevel, primitiveOK)
-        case TypeRef(pre, sym, args) ⇒
+        case TypeRef(pre, sym, args) =>
           def argSig(tp: Type) =
             if (existentiallyBound contains tp.typeSymbol) {
               val bounds = tp.typeSymbol.info.bounds
@@ -117,24 +117,24 @@ trait JavaSig { this: TransformCake ⇒
                 "<" + (args map argSig).mkString(", ") + ">"
             name + generics
           } else jsig(erasure.erasure(sym0)(tp), existentiallyBound, toplevel, primitiveOK)
-        case PolyType(tparams, restpe) ⇒
+        case PolyType(tparams, restpe) =>
           assert(tparams.nonEmpty, s"expected non-empty type parameters in $tp")
           if (toplevel) polyParamSig(tparams) else ""
 
-        case MethodType(params, restpe) ⇒
+        case MethodType(params, restpe) =>
           "(" + (params map (_.tpe) map (jsig(_))).mkString + ")" +
             (if (restpe.typeSymbol == UnitClass || sym0.isConstructor) ClassfileConstants.VOID_TAG.toString else jsig(restpe))
 
-        case RefinedType(parent :: _, decls) ⇒
+        case RefinedType(parent :: _, decls) =>
           boxedSig(parent)
-        case ClassInfoType(parents, _, _) ⇒
+        case ClassInfoType(parents, _, _) =>
           superSig(parents)
-        case at: AnnotatedType ⇒
+        case at: AnnotatedType =>
           jsig(at.underlying, existentiallyBound, toplevel, primitiveOK)
-        case BoundedWildcardType(bounds) ⇒
+        case BoundedWildcardType(bounds) =>
           println("something's wrong: " + sym0 + ":" + sym0.tpe + " has a bounded wildcard type")
           jsig(bounds.hi, existentiallyBound, toplevel, primitiveOK)
-        case _ ⇒
+        case _ =>
           val etp = erasure.erasure(sym0)(tp)
           if (etp eq tp) throw new UnknownSig
           else jsig(etp)
@@ -144,27 +144,27 @@ trait JavaSig { this: TransformCake ⇒
       if (debug) println(s"JSIG toJava: $info0")
       val info = info0.dealiasWiden
       info.typeSymbol match {
-        case UnitClass    ⇒ if (voidOK) "void" else "scala.runtime.BoxedUnit"
-        case NothingClass ⇒ "scala.runtime.Nothing$"
-        case BooleanClass ⇒ "boolean"
-        case ByteClass    ⇒ "byte"
-        case ShortClass   ⇒ "short"
-        case CharClass    ⇒ "char"
-        case IntClass     ⇒ "int"
-        case LongClass    ⇒ "long"
-        case FloatClass   ⇒ "float"
-        case DoubleClass  ⇒ "double"
-        case ArrayClass   ⇒ jsig(info)
-        case AnyClass     ⇒ "Object"
-        case _ ⇒
+        case UnitClass    => if (voidOK) "void" else "scala.runtime.BoxedUnit"
+        case NothingClass => "scala.runtime.Nothing$"
+        case BooleanClass => "boolean"
+        case ByteClass    => "byte"
+        case ShortClass   => "short"
+        case CharClass    => "char"
+        case IntClass     => "int"
+        case LongClass    => "long"
+        case FloatClass   => "float"
+        case DoubleClass  => "double"
+        case ArrayClass   => jsig(info)
+        case AnyClass     => "Object"
+        case _ =>
           info match {
-            case r @ RefinedType(head :: tail, _) ⇒
+            case r @ RefinedType(head :: tail, _) =>
               fullNameInSig(head.typeSymbol)
-            case TypeRef(pre, sym, _) if sym.isAbstractType ⇒
+            case TypeRef(pre, sym, _) if sym.isAbstractType =>
               fullNameInSig(pre.typeSymbol)
-            case TypeRef(pre, sym, _) if sym.isValueParameter ⇒
+            case TypeRef(pre, sym, _) if sym.isValueParameter =>
               fullNameInSig(info0.memberType(sym).typeSymbol)
-            case _ ⇒
+            case _ =>
               fullNameInSig(info0.typeSymbol)
           }
       }
@@ -174,53 +174,23 @@ trait JavaSig { this: TransformCake ⇒
     val result =
       if (needsJavaSig(info)) {
         try jsig(_info, toplevel = true)
-        catch { case ex: UnknownSig ⇒ toJava(_info) }
+        catch { case ex: UnknownSig => toJava(_info) }
       } else toJava(_info)
     if (result == "scala.Null") "scala.runtime.Null$"
     else if (result == "scala.Nothing") "scala.runtime.Nothing$"
     else result
   }
 
-  private object NeedsSigCollector extends TypeCollector(false) {
-    def traverse(tp: Type): Unit = {
-      if (!result) {
-        tp match {
-          case st: SubType ⇒
-            traverse(st.supertype)
-          case TypeRef(pre, sym, args) ⇒
-            if (sym == ArrayClass) args foreach traverse
-            else if (sym.isTypeParameterOrSkolem || sym.isExistentiallyBound || !args.isEmpty) result = true
-            else if (sym.isClass) traverse(rebindInnerClass(pre, sym)) // #2585
-            else if (!sym.owner.isPackageClass) traverse(pre)
-          case PolyType(_, _) | ExistentialType(_, _) ⇒
-            result = true
-          case RefinedType(parents, _) ⇒
-            parents foreach traverse
-          case ClassInfoType(parents, _, _) ⇒
-            parents foreach traverse
-          case at: AnnotatedType ⇒
-            traverse(at.underlying)
-          case _ ⇒
-            mapOver(tp)
-        }
-      }
-    }
-  }
-
-  private def rebindInnerClass(pre: Type, cls: Symbol): Type = {
-    if (cls.owner.isClass) cls.owner.tpe else pre // why not cls.isNestedClass?
-  }
-
   private def hiBounds(bounds: TypeBounds): List[Type] = bounds.hi.normalize match {
-    case RefinedType(parents, _) ⇒ parents map (_.normalize)
-    case tp                      ⇒ tp :: Nil
+    case RefinedType(parents, _) => parents map (_.normalize)
+    case tp                      => tp :: Nil
   }
 
   import erasure.GenericArray
 
   private def unboundedGenericArrayLevel(tp: Type): Int = tp match {
-    case GenericArray(level, core) if !(core <:< AnyRefClass.tpe) ⇒ level
-    case _ ⇒ 0
+    case GenericArray(level, core) if !(core <:< AnyRefClass.tpe) => level
+    case _ => 0
   }
 
   private def isTypeParameterInSig(sym: Symbol, initialSymbol: Symbol) = (
@@ -228,8 +198,6 @@ trait JavaSig { this: TransformCake ⇒
     sym.isTypeParameterOrSkolem && (
       (initialSymbol.enclClassChain.exists(sym isNestedIn _)) ||
       (initialSymbol.isMethod && initialSymbol.typeParams.contains(sym))))
-
-  private def needsJavaSig(tp: Type) = !settings.Ynogenericsig.value && NeedsSigCollector.collect(tp)
 
   class UnknownSig extends Exception
 

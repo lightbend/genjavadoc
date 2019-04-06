@@ -32,12 +32,12 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
     if (global.settings.isScaladoc) List.empty
     else List(MyComponent)
 
-  override def processOptions(options: List[String], error: String ⇒ Unit): Unit = {
+  override def processOptions(options: List[String], error: String => Unit): Unit = {
     myOptions = new Properties()
-    options foreach { str ⇒
+    options foreach { str =>
       str.indexOf('=') match {
-        case -1 ⇒ myOptions.setProperty(str, "true")
-        case n  ⇒ myOptions.setProperty(str.substring(0, n), str.substring(n + 1))
+        case -1 => myOptions.setProperty(str, "true")
+        case n  => myOptions.setProperty(str.substring(0, n), str.substring(n + 1))
       }
     }
   }
