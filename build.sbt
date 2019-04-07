@@ -74,32 +74,17 @@ lazy val defaults = Seq(
     if (version.value endsWith "-SNAPSHOT") Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
     else Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
   },
-  pomExtra :=
-    (<inceptionYear>2012</inceptionYear>
-     <url>http://github.com/lightbend/genjavadoc</url>
-     <licenses>
-       <license>
-         <name>Apache 2</name>
-         <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-         <distribution>repo</distribution>
-       </license>
-     </licenses>
-     <scm>
-       <url>git://github.com/lightbend/genjavadoc.git</url>
-       <connection>scm:git:git@github.com:lightbend/genjavadoc.git</connection>
-     </scm>) ++ makeDevelopersXml(Map(
-      "rkuhn" -> "Roland Kuhn")))
+  startYear := Some(2012),
+  homepage := Some(url("https://github.com/lightbend/genjavadoc")),
+  licenses := Seq("Apache-2.0" -> url("http://opensource.org/licenses/Apache-2.0")),
+  scmInfo := Some(ScmInfo(url("https://github.com/lightbend/genjavadoc"), "git@github.com:lightbend/genjavadoc.git")),
+  developers += Developer("contributors",
+                          "Contributors",
+                          "https://gitter.im/akka/dev",
+                          url("https://github.com/lightbend/genjavadoc/graphs/contributors"))
+)
 
 lazy val browse = SettingKey[Boolean]("browse", "run with -Ybrowse:uncurry")
-
-def makeDevelopersXml(users: Map[String, String]) =
-  <developers>
-    {
-      for ((id, user) ← users)
-        yield <developer><id>{ id }</id><name>{ user }</name></developer>
-    }
-  </developers>
-
 
 def ifJavaVersion[T](predicate: Int => Boolean)(yes: => T)(no: => T): T = {
   System.getProperty("java.version").split("\\.").toList match {
