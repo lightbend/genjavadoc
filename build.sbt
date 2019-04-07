@@ -8,10 +8,8 @@ lazy val genjavadoc = (project in file("."))
   .aggregate(`genjavadoc-plugin`)
   .settings(defaults)
   .settings(
-    publishArtifact := false,
-    git.useGitDescribe := true
+    publishArtifact := false
   )
-  .enablePlugins(GitVersioning)
 
 lazy val `genjavadoc-plugin` = (project in file("plugin"))
   .settings(defaults)
