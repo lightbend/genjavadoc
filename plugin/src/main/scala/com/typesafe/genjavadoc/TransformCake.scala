@@ -14,4 +14,6 @@ trait TransformCake extends JavaSig with Output with Comments with BasicTransfor
   def javaKeywords: Set[String]
 
   def filteredStrings: Set[String]
+
+  def allowedAnnotations: Set[String]
 }

@@ -28,8 +28,18 @@ trait AST { this: TransformCake =>
     static: Boolean,
     var firstConstructor: Boolean) extends Templ {
 
-    def sig = pattern(name, access)
+    def sig: String = {
+      s"""
+         |${addAnnotations}
+         |${pattern(name, access)}""".stripMargin
+    }
+
     def file = filepattern(name)
+
+    private def addAnnotations: String = sym.annotations
+      .filter(a => allowedAnnotations.contains(a.symbol.fullName('.')))
+      .map { a => s"@${a.symbol.fullName('.')}" }
+      .mkString(System.lineSeparator())
 
     def addMember(t: Templ) = copy(members = members :+ t)
 
@@ -49,7 +59,7 @@ trait AST { this: TransformCake =>
   object ClassInfo {
     def apply(c: ImplDef, comment: Seq[String], topLevel: Boolean): ClassInfo = {
       c match {
-        case ClassDef(mods, _, tparams, impl) =>
+        case cd@ClassDef(mods, _, tparams, impl) =>
           val name = c.name.toString
           val acc = access(mods, topLevel)
           val fl = flags(mods)
@@ -93,9 +103,22 @@ trait AST { this: TransformCake =>
     }
   }
 
-  case class MethodInfo(access: String, pattern: String => String, ret: String, name: String, comment: Seq[String]) extends Templ {
-    def sig = pattern(s"$ret $name")
+  case class MethodInfo(access: String, pattern: String => String, ret: String, name: String, comment: Seq[String], d: Option[DefDef] = None) extends Templ {
+    def sig: String = {
+      s"""
+         |${addAnnotations}
+         |${pattern(s"$ret $name")}""".stripMargin
+    }
+
+    private def addAnnotations: String = d match {
+      case Some(definition) => definition.symbol.annotations
+        .filter(a => allowedAnnotations.contains(a.symbol.fullName('.')))
+        .map { a => s"@${a.symbol.fullName('.')}" }
+        .mkString(System.lineSeparator())
+      case None => ""
+    }
   }
+
   object MethodInfo {
     def apply(d: DefDef, interface: Boolean, comment: Seq[String], hasVararg: Boolean, deprecation: Option[DeprecationInfo]): MethodInfo = {
       val acc = methodAccess(d.symbol, interface) + methodFlags(d.mods, interface)
@@ -139,7 +162,7 @@ trait AST { this: TransformCake =>
           case Some(deprec) => deprec.appendToComment(commentWithParams)
           case _ => commentWithParams
         }
-      MethodInfo(acc, pattern, ret, name, commentWithParamsAndDeprec)
+      MethodInfo(acc, pattern, ret, name, commentWithParamsAndDeprec, Some(d))
     }
 
     /**
