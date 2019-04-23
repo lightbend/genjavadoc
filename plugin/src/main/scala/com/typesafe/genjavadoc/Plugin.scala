@@ -53,6 +53,8 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
 
   private object MyComponent extends PluginComponent with Transform {
 
+    import global._
+
     type GT = GenJavadocPlugin.this.global.type
 
     override val global: GT = GenJavadocPlugin.this.global

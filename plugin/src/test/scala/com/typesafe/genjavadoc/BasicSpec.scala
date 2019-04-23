@@ -13,6 +13,7 @@ object BasicSpec {
 /** Test basic behaviour of genjavadoc with standard settings */
 class BasicSpec extends CompilerSpec {
 
+  override def extraSettings: Seq[String] = Seq("annotations=java.lang.SuppressWarnings")
   override def sources = BasicSpec.sources
   override def expectedPath: String = {
     val scalaVersion = scala.util.Properties.versionNumberString.split("-").head

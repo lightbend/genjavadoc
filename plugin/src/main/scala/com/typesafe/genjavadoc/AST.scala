@@ -29,17 +29,22 @@ trait AST { this: TransformCake =>
     var firstConstructor: Boolean) extends Templ {
 
     def sig: String = {
-      s"""
-         |${addAnnotations}
-         |${pattern(name, access)}""".stripMargin
+      s"$addAnnotations${pattern(name, access)}"
     }
 
     def file = filepattern(name)
 
-    private def addAnnotations: String = sym.annotations
-      .filter(a => allowedAnnotations.contains(a.symbol.fullName('.')))
-      .map { a => s"@${a.symbol.fullName('.')}" }
-      .mkString(System.lineSeparator())
+    private def addAnnotations: String = {
+      val annotations = sym.annotations
+        .filter(a => allowedAnnotations.contains(a.symbol.fullName('.')))
+        .map { a => s"@${a.symbol.fullName('.')}" }
+        .mkString(System.lineSeparator())
+      if (!annotations.isEmpty) {
+        annotations + System.lineSeparator()
+      } else {
+        annotations
+      }
+    }
 
     def addMember(t: Templ) = copy(members = members :+ t)
 
@@ -105,16 +110,21 @@ trait AST { this: TransformCake =>
 
   case class MethodInfo(access: String, pattern: String => String, ret: String, name: String, comment: Seq[String], d: Option[DefDef] = None) extends Templ {
     def sig: String = {
-      s"""
-         |${addAnnotations}
-         |${pattern(s"$ret $name")}""".stripMargin
+      s"$addAnnotations${pattern(s"$ret $name")}"
     }
 
     private def addAnnotations: String = d match {
-      case Some(definition) => definition.symbol.annotations
-        .filter(a => allowedAnnotations.contains(a.symbol.fullName('.')))
-        .map { a => s"@${a.symbol.fullName('.')}" }
-        .mkString(System.lineSeparator())
+      case Some(definition) => {
+        val annotations = definition.symbol.annotations
+          .filter(a => allowedAnnotations.contains(a.symbol.fullName('.')))
+          .map { a => s"@${a.symbol.fullName('.')}" }
+          .mkString(System.lineSeparator())
+        if (!annotations.isEmpty) {
+          annotations + System.lineSeparator()
+        } else {
+          annotations
+        }
+      }
       case None => ""
     }
   }
