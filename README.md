@@ -103,6 +103,36 @@ GenJavadoc can also be integrated into a Maven build (inspired by [this answer o
 </profile>
 ~~~
 
+You can integrate genjavadoc with gradle build:
+
+~~~ groovy
+apply plugin: 'scala'
+
+configurations {
+  scalaCompilerPlugin
+}
+
+dependencies {
+  // ...
+  scalaCompilerPlugin "com.typesafe.genjavadoc:genjavadoc-plugin_${scalaFullVersion}:0.13"
+  
+}
+
+tasks.withType(ScalaCompile) {
+  scalaCompileOptions.with {
+    additionalParameters = [
+        "-Xplugin:" + configurations.scalaCompilerPlugin.asPath,
+        "-P:genjavadoc:out=$buildDir/generated/java".toString()
+    ]
+  }
+}
+
+tasks.withType(Javadoc) {
+  dependsOn("compileScala")
+  source = [sourceSets.main.allJava, "$buildDir/generated/java"]
+}
+~~~
+
 ### Translation of Scaladoc comments
 
 Comments found within the Scala sources are transferred to the corresponding Java sources including some modifications. These are necessary since Scaladoc supports different mark-up elements than Javadoc. The modifications are:

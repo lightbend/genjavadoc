@@ -8,6 +8,7 @@ import nsc.transform.Transform
 import java.io.File
 import java.util.Properties
 
+
 object GenJavadocPlugin {
 
   val javaKeywords = Set("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
@@ -48,6 +49,7 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
   lazy val filteredStrings: Set[String] = stringToFilter(myOptions.getProperty("filter", defaultFilterString))
   lazy val fabricateParams = java.lang.Boolean.parseBoolean(myOptions.getProperty("fabricateParams", "true"))
   lazy val strictVisibility = java.lang.Boolean.parseBoolean(myOptions.getProperty("strictVisibility", "false"))
+  lazy val allowedAnnotations: Set[String] = stringToFilter(myOptions.getProperty("annotations", ""))
 
   private object MyComponent extends PluginComponent with Transform {
 
@@ -78,6 +80,8 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
       override def transformUnit(unit: CompilationUnit) = newTransformUnit(unit)
       override def javaKeywords = GenJavadocPlugin.javaKeywords
       override def filteredStrings = GenJavadocPlugin.this.filteredStrings
+
+      override def allowedAnnotations: Set[String] = GenJavadocPlugin.this.allowedAnnotations
     }
   }
 }
