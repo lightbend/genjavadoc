@@ -56,7 +56,7 @@ lazy val defaults = Seq(
     val earliest211 = 6
     val latest211 = 12
     val latest212 = 8
-    val pre213 = List("RC2")
+    val latest213 = 0
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala211Versions =
       (earliest211 to latest211)
@@ -65,7 +65,7 @@ lazy val defaults = Seq(
     ifJavaVersion(_ < 8) {
       scala211Versions
     } {
-      scala211Versions ++ (0 to latest212).map(i => s"2.12.$i") ++ pre213.map(s => s"2.13.0-$s")
+      scala211Versions ++ (0 to latest212).map(i => s"2.12.$i") ++ (0 to latest213).map(i => s"2.13.$i")
     }
   },
   scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
