@@ -25,6 +25,7 @@ trait Output { this: TransformCake =>
       m match {
         case clazz: ClassInfo   => write(out, clazz)
         case method: MethodInfo => write(out, method)
+        case field: FieldInfo   => write(out, field)
       }
     out.outdent()
     out("}")
@@ -33,6 +34,10 @@ trait Output { this: TransformCake =>
   def write(out: Out, m: MethodInfo): Unit = {
     m.comment foreach (out(_))
     out(m.sig)
+  }
+  def write(out: Out, f: FieldInfo): Unit = {
+    f.comment foreach (out(_))
+    out(f.sig)
   }
 
   trait Out {
@@ -87,7 +92,7 @@ trait Output { this: TransformCake =>
     } match {
       case Some(nestedClass: ClassInfo) =>
         Seq(
-          c.copy(members = c.classMembers.filterNot(_ == nestedClass).flatMap(liftInnerClassesWithSameName) ++ c.methodMembers),
+          c.copy(members = c.classMembers.filterNot(_ == nestedClass).flatMap(liftInnerClassesWithSameName) ++ c.methodMembers ++ c.fieldMembers),
           nestedClass.copy(
             name = s"${nestedClass.name}$$${nestedClass.name}",
             static = false,
@@ -100,7 +105,7 @@ trait Output { this: TransformCake =>
           )
         )
       case _ =>
-        Seq(c.copy(members = c.classMembers.flatMap(liftInnerClassesWithSameName) ++ c.methodMembers))
+        Seq(c.copy(members = c.classMembers.flatMap(liftInnerClassesWithSameName) ++ c.methodMembers ++ c.fieldMembers))
     }
   }
 
@@ -124,7 +129,7 @@ trait Output { this: TransformCake =>
         case (Some(o), Some(c))            => merge(o, c, forwarders, staticScope)
         case (Some(o), None) if forwarders => merge(o, fabricateCompanion(o), forwarders, staticScope)
         case (Some(o), None)               => Vector(mangleModule(o, addMODULE = forwarders, pruneClasses = false))
-        case (None, Some(c))               => Vector(c.copy(members = flattenObjects(c.classMembers) ++ c.methodMembers.sortBy(_.name)))
+        case (None, Some(c))               => Vector(c.copy(members = flattenObjects(c.classMembers) ++ c.methodMembers.sortBy(_.name) ++ c.fieldMembers.sortBy(_.name)))
         case (None, None)                  => ???
       }
     }
@@ -155,8 +160,8 @@ trait Output { this: TransformCake =>
       else None
 
     val members = moduleInstance ++: (
-      if (pruneClasses) obj.methodMembers
-      else flattenObjects(obj.classMembers) ++ obj.methodMembers
+      if (pruneClasses) obj.methodMembers ++ obj.fieldMembers
+      else flattenObjects(obj.classMembers) ++ obj.methodMembers ++ obj.fieldMembers
       )
 
     val (com: Seq[String], moduleMembers: Vector[Templ]) = members.foldLeft((obj.comment, Vector.empty[Templ]))((p, mem) => mem match {
@@ -173,6 +178,12 @@ trait Output { this: TransformCake =>
         if (m.ret.endsWith("$") && classes.exists(_.name == m.name))
           m.copy(comment = Seq("/**", " * Accessor for nested Scala object", " * @return (undocumented)", " */"))
         else m
+    }
+    val fields = cls.members collect {
+      case f: FieldInfo =>
+        if (f.ret.endsWith("$") && classes.exists(_.name == f.name))
+          f.copy(comment = Seq("/**", " * Accessor for nested Scala object", " * @return (undocumented)", " */"))
+        else f
     }
     val staticClasses = obj.members collect {
       case c: ClassInfo =>
@@ -194,11 +205,11 @@ trait Output { this: TransformCake =>
     val nestedClasses = flattenObjects(classes, forwarders = false, staticScope = false)
     val nestedStaticClasses = flattenObjects(staticClasses, forwarders = false, staticScope = staticScope)
     if (forwarders) {
-      val base = cls.copy(members = nestedClasses ++ nestedStaticClasses ++ staticMethods ++ methods)
+      val base = cls.copy(members = nestedClasses ++ nestedStaticClasses ++ staticMethods ++ methods ++ fields)
       val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
       Vector(base, mod)
     } else {
-      val base = cls.copy(members = nestedClasses ++ staticMethods ++ methods)
+      val base = cls.copy(members = nestedClasses ++ staticMethods ++ methods ++ fields)
       val mod = mangleModule(obj, addMODULE = forwarders, pruneClasses = true)
       Vector(base, mod.copy(members = nestedStaticClasses ++ mod.members))
     }

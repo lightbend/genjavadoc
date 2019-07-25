@@ -56,6 +56,7 @@ trait AST { this: TransformCake =>
 
     def classMembers = members.collect { case classInfo: ClassInfo => classInfo }
     def methodMembers = members.collect { case methodInfo: MethodInfo => methodInfo }
+    def fieldMembers = members.collect { case fieldInfo: FieldInfo => fieldInfo }
 
     override def toString =
       s"ClassInfo($name, ${pattern("XXXXX", "AAAAA")}, module=$module, pckg=$pckg, ${filepattern("FFFFFF")}, interface=$interface, static=$static)" +
@@ -191,6 +192,55 @@ trait AST { this: TransformCake =>
     }
   }
 
+  // for val, var and Constructor parameters
+  case class FieldInfo(access: String, pattern: String => String, ret: String, name: String, comment: Seq[String], v: Option[ValDef] = None) extends Templ {
+    def sig: String = {
+      s"$addAnnotations${pattern(s"$ret $name")}"
+    }
+
+    private def addAnnotations: String = v match {
+      case Some(definition) => {
+        val annotations = definition.symbol.annotations
+          .filter(a => allowedAnnotations.contains(a.symbol.fullName('.')))
+          .map { a => s"@${a.symbol.fullName('.')}" }
+          .mkString(System.lineSeparator())
+        if (!annotations.isEmpty) {
+          annotations + System.lineSeparator()
+        } else {
+          annotations
+        }
+      }
+      case None => ""
+    }
+  }
+
+  object FieldInfo {
+    def apply(v: ValDef, interface: Boolean, comment: Seq[String], deprecation: Option[DeprecationInfo]): FieldInfo = {
+      val acc = fieldAccess(v.symbol, interface) + fieldFlags(v.mods, interface)
+
+      val (vt, name) =
+        if (v.name == nme.CONSTRUCTOR) {
+          ("", v.symbol.enclClass.name.toString)
+        } else (js(v.symbol, v.tpt.tpe), v.name.toString)
+
+      val tp = v.symbol.owner.thisType.memberInfo(v.symbol) match {
+        case p@PolyType(params, _) => js(v.symbol, p)
+        case _ => ""
+      }
+
+      val impl = if (v.mods.isDeferred || interface) ";" else "= null;"
+      val pattern = (n: String) => s"$acc $tp $n $impl"
+
+      FieldInfo(acc, pattern, vt, name, comment, Some(v))
+    }
+
+    def apply(sym: Symbol): FieldInfo = {
+      val d = ValDef(sym, EmptyTree)
+      val f = FieldInfo(d, false, Nil, None)
+      f.copy(pattern = n => "static " + f.pattern(n))
+    }
+  }
+
   private def mangleMethodName(p: ValDef): String = {
     if (this.javaKeywords contains p.name.toString) s"${p.name}_" else p.name.toString
   }
@@ -213,6 +263,14 @@ trait AST { this: TransformCake =>
     else "public" // this is the case for interfaces
   }
 
+  private def fieldAccess(sym: Symbol, interface: Boolean): String = {
+    if (sym.isPublic) "public"
+    else if (sym.isProtected && !interface) "protected"
+    else if (sym.isPrivate && !interface) "private"
+    else if (strictVisibility && sym.privateWithin != NoSymbol) ""
+    else "public" // this is the case for interfaces
+  }
+
   private def flags(m: Modifiers): String = {
     var f: List[String] = Nil
     if (m.isFinal) f ::= "final"
@@ -224,6 +282,12 @@ trait AST { this: TransformCake =>
     var f: List[String] = Nil
     if (m.isFinal && !interface) f ::= "final"
     if (m.isDeferred && !interface) f ::= "abstract"
+    (if (f.nonEmpty) " " else "") + f.mkString(" ")
+  }
+
+  private def fieldFlags(m: Modifiers, interface: Boolean): String = {
+    var f: List[String] = Nil
+    if (m.isFinal && !interface) f ::= "final"
     (if (f.nonEmpty) " " else "") + f.mkString(" ")
   }
 

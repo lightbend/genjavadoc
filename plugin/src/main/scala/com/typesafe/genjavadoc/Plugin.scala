@@ -50,6 +50,8 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
   lazy val fabricateParams = java.lang.Boolean.parseBoolean(myOptions.getProperty("fabricateParams", "true"))
   lazy val strictVisibility = java.lang.Boolean.parseBoolean(myOptions.getProperty("strictVisibility", "false"))
   lazy val allowedAnnotations: Set[String] = stringToFilter(myOptions.getProperty("annotations", ""))
+  lazy val createfield = java.lang.Boolean.parseBoolean(myOptions.getProperty("createfields", "true"))
+  lazy val borrowConstructorArgsComment = java.lang.Boolean.parseBoolean(myOptions.getProperty("borrowConstructorArgsComment", "true"))
 
   private object MyComponent extends PluginComponent with Transform {
 
@@ -73,6 +75,8 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
       override val suppressSynthetic: Boolean = GenJavadocPlugin.this.suppressSynthetic
       override val fabricateParams: Boolean = GenJavadocPlugin.this.fabricateParams
       override val strictVisibility: Boolean = GenJavadocPlugin.this.strictVisibility
+      override val createField: Boolean = GenJavadocPlugin.this.createfield
+      override val borrowConstructorArgsComment: Boolean = GenJavadocPlugin.this.createfield && GenJavadocPlugin.this.borrowConstructorArgsComment
 
       override def superTransformUnit(unit: CompilationUnit) = super.transformUnit(unit)
       override def superTransform(tree: Tree) = super.transform(tree)

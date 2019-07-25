@@ -45,6 +45,9 @@ trait BasicTransform { this: TransformCake =>
   private def advancePos(p: Position) =
     if (p.isDefined && p > templateMaxPos) templateMaxPos = p
 
+  def createField: Boolean
+  def borrowConstructorArgsComment: Boolean
+
   def newTransform(tree: Tree): Tree = {
     def commentText(tp: Position, endPos: Option[Position]) = {
       val ret = if (tp.isDefined) {
@@ -110,7 +113,13 @@ trait BasicTransform { this: TransformCake =>
             addMethod(d, text)
         }
         tree
-      case _: ValDef     => { track(tree) }
+      case v: ValDef     => {
+        if (createField) {
+          // addField(v, comments) // not working
+          addField(v.copy(), commentText(v.pos, endPos(v.rhs)))
+        } else track(tree)
+        tree
+      }
       case _: PackageDef => { track(tree); superTransform(tree) }
       case _: Template   => { track(tree); superTransform(tree) }
       case _: TypeTree   => { track(tree) }
@@ -155,6 +164,37 @@ trait BasicTransform { this: TransformCake =>
     clazz = clazz map (c => c.addMember(MethodInfo(d, c.interface, comment, hasVararg = true, deprecation = deprecationInfo(d))))
   }
 
+  private def addField(v: ValDef, comments: Seq[String]): Unit = {
+    clazz = clazz map (c => {
+      def mergeComments(comments: Seq[String]): Seq[String] = {
+        val r = "[ ]?[*] @param[ ]+([a-zA-Z_$][a-zA-Z_$0-9]+)[ ]+.*".r
+        c.comment.collect { case co: String if co.contains("* @param ") =>
+          try {
+            val r(pName) = co
+            if (!pName.isEmpty && pName == v.name.toString.trim) {
+              co.replace("@param ", "")
+            } else ""
+          } catch {
+            case ex: Throwable => ""
+          }
+        }.collect { case str: String if str != "" => str } match {
+          case Nil => comments
+          case fromCon => comments match {
+            case Nil => (Seq("/**") ++ fromCon) :+ " */"
+            case only if only.size == 1 && !only.exists(p => p.contains("/**") && p.contains("*/")) =>
+              (only :+ "/**") ++ fromCon :+ " */"
+            case only if only.size == 1 && only.exists(p => p.contains("/**") && p.contains("*/")) =>
+              Seq("/**") ++ fromCon :+ only.head.replace("/**", " * ")
+            case some => (Seq("/**") ++ fromCon :+ some.head.replace("/**", " *")) ++ some.tail
+          }
+        }
+      }
+      val fieldInfo = FieldInfo(v, c.interface, if (borrowConstructorArgsComment) mergeComments(comments) else comments, deprecation = deprecationInfo(v))
+      c.addMember(fieldInfo)
+    })
+  }
+
+  private def deprecationInfo(v: ValDef): Option[DeprecationInfo] = deprecationInfo(v.symbol)
   private def deprecationInfo(d: DefDef): Option[DeprecationInfo] = deprecationInfo(d.symbol)
   private def deprecationInfo(d: ImplDef): Option[DeprecationInfo] = deprecationInfo(d.symbol)
   private def deprecationInfo(symbol: Symbol): Option[DeprecationInfo] =
