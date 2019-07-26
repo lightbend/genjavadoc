@@ -50,8 +50,8 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
   lazy val fabricateParams = java.lang.Boolean.parseBoolean(myOptions.getProperty("fabricateParams", "true"))
   lazy val strictVisibility = java.lang.Boolean.parseBoolean(myOptions.getProperty("strictVisibility", "false"))
   lazy val allowedAnnotations: Set[String] = stringToFilter(myOptions.getProperty("annotations", ""))
-  lazy val createfield = java.lang.Boolean.parseBoolean(myOptions.getProperty("createfields", "true"))
-  lazy val borrowConstructorArgsComment = java.lang.Boolean.parseBoolean(myOptions.getProperty("borrowConstructorArgsComment", "true"))
+  lazy val createfield = java.lang.Boolean.parseBoolean(myOptions.getProperty("createfields", "false"))
+  lazy val borrowConstructorArgsComment = java.lang.Boolean.parseBoolean(myOptions.getProperty("borrowConstructorArgsComment", "false"))
 
   private object MyComponent extends PluginComponent with Transform {
 
