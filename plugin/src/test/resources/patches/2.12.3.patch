@@ -47,39 +47,6 @@
 -   */
 -  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
  }
---- target/expected_output/basic/akka/actor/Identify.java
-+++ target/expected_output/basic/akka/actor/Identify.java
-@@ -2,6 +2,30 @@
- public final class Identify implements scala.Product, scala.Serializable {
-   static public  akka.actor.Identify apply (Object messageId)  { throw new RuntimeException(); }
-   static public  scala.Option<java.lang.Object> unapply (akka.actor.Identify x$0)  { throw new RuntimeException(); }
-+  static public  boolean apply$mcZD$sp (double v1)  { throw new RuntimeException(); }
-+  static public  double apply$mcDD$sp (double v1)  { throw new RuntimeException(); }
-+  static public  float apply$mcFD$sp (double v1)  { throw new RuntimeException(); }
-+  static public  int apply$mcID$sp (double v1)  { throw new RuntimeException(); }
-+  static public  long apply$mcJD$sp (double v1)  { throw new RuntimeException(); }
-+  static public  void apply$mcVD$sp (double v1)  { throw new RuntimeException(); }
-+  static public  boolean apply$mcZF$sp (float v1)  { throw new RuntimeException(); }
-+  static public  double apply$mcDF$sp (float v1)  { throw new RuntimeException(); }
-+  static public  float apply$mcFF$sp (float v1)  { throw new RuntimeException(); }
-+  static public  int apply$mcIF$sp (float v1)  { throw new RuntimeException(); }
-+  static public  long apply$mcJF$sp (float v1)  { throw new RuntimeException(); }
-+  static public  void apply$mcVF$sp (float v1)  { throw new RuntimeException(); }
-+  static public  boolean apply$mcZI$sp (int v1)  { throw new RuntimeException(); }
-+  static public  double apply$mcDI$sp (int v1)  { throw new RuntimeException(); }
-+  static public  float apply$mcFI$sp (int v1)  { throw new RuntimeException(); }
-+  static public  int apply$mcII$sp (int v1)  { throw new RuntimeException(); }
-+  static public  long apply$mcJI$sp (int v1)  { throw new RuntimeException(); }
-+  static public  void apply$mcVI$sp (int v1)  { throw new RuntimeException(); }
-+  static public  boolean apply$mcZJ$sp (long v1)  { throw new RuntimeException(); }
-+  static public  double apply$mcDJ$sp (long v1)  { throw new RuntimeException(); }
-+  static public  float apply$mcFJ$sp (long v1)  { throw new RuntimeException(); }
-+  static public  int apply$mcIJ$sp (long v1)  { throw new RuntimeException(); }
-+  static public  long apply$mcJJ$sp (long v1)  { throw new RuntimeException(); }
-+  static public  void apply$mcVJ$sp (long v1)  { throw new RuntimeException(); }
-   public  Object messageId ()  { throw new RuntimeException(); }
-   // not preceding
-   public   Identify (Object messageId)  { throw new RuntimeException(); }
 --- target/expected_output/basic/akka/actor/dsl/Inbox.java    2018-12-13 15:51:52.473679518 +0100
 +++ target/expected_output/basic/akka/actor/dsl/Inbox.java 2018-12-13 15:51:51.473673128 +0100
 @@ -2,5 +2,6 @@

@@ -61,9 +61,9 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
 
     override val global: GT = GenJavadocPlugin.this.global
 
-    val isPreFields =
-      nsc.Properties.versionNumberString.startsWith("2.11.")
-    override val runsAfter = List(if(isPreFields) "uncurry" else "fields")
+  val isPreFields = nsc.Properties.versionNumberString.startsWith("2.11.")
+   override val runsAfter = List(if (isPreFields) "uncurry" else "fields")
+   override val runsBefore: List[String] = List("tailcalls")
     val phaseName = "GenJavadoc"
 
     def newTransformer(unit: CompilationUnit) = new GenJavadocTransformer(unit)
