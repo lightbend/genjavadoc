@@ -1,0 +1,58 @@
+--- target/expected_output/basic/akka/rk/buh/is/it/A.java
++++ target/expected_output/basic/akka/rk/buh/is/it/A.java
+@@ -48,13 +48,13 @@
+     public  class NonStatic {
+       public   NonStatic ()  { throw new RuntimeException(); }
+     }
++    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
+     public   D$ ()  { throw new RuntimeException(); }
+     /**
+      * def A.D.math
+      * @return (undocumented)
+      */
+     public  long math ()  { throw new RuntimeException(); }
+-    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
+   }
+   /**
+    * class A.B
+@@ -98,8 +98,8 @@
+    * class A.C
+    */
+   static public  class C1 {
+-    public   C1 ()  { throw new RuntimeException(); }
+     public  akka.rk.buh.is.it.A.C1$C1$ C1 ()  { throw new RuntimeException(); }
++    public   C1 ()  { throw new RuntimeException(); }
+   }
+   /**
+    * object C1
+@@ -137,6 +137,11 @@
+   static public  java.lang.String stattic ()  { throw new RuntimeException(); }
+   static public  java.lang.Object x ()  { throw new RuntimeException(); }
+   /**
++   * Accessor for nested Scala object
++   * @return (undocumented)
++   */
++  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
++  /**
+    * varargs
+    * @param s (undocumented)
+    * @return (undocumented)
+@@ -209,9 +214,4 @@
+    */
+   public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
+   public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }
+-  /**
+-   * Accessor for nested Scala object
+-   * @return (undocumented)
+-   */
+-  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
+ }
+--- target/expected_output/basic/akka/actor/dsl/Inbox.java    2018-12-13 15:51:52.473679518 +0100
++++ target/expected_output/basic/akka/actor/dsl/Inbox.java 2018-12-13 15:51:51.473673128 +0100
+@@ -2,5 +2,6 @@
+ public  interface Inbox {
+   public  interface InboxExtension {
+     public  int DSLInboxQueueSize ()  ;
++    public  void akka$actor$dsl$Inbox$InboxExtension$_setter_$DSLInboxQueueSize_$eq (int x$1)  ;
+   }
+ }
