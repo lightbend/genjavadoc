@@ -61,9 +61,31 @@ class GenJavadocPlugin(val global: Global) extends Plugin {
 
     override val global: GT = GenJavadocPlugin.this.global
 
-  val isPreFields = nsc.Properties.versionNumberString.startsWith("2.11.")
-   override val runsAfter = List(if (isPreFields) "uncurry" else "fields")
-   override val runsBefore: List[String] = List("tailcalls")
+    private[this] val Version = s"""(\\d+)\\.(\\d+)\\.(\\d+).*""".r
+    private[this] val (min, pat) = nsc.Properties.versionNumberString match {
+      case Version("2", b, c) => (b.toInt, c.toInt)
+      case v =>
+        reporter.warning(NoPosition, s"Unexpected Scala version in GenJavadoc: $v")
+        (-1, -1)
+    }
+
+    override val runsAfter: List[String] = List(if (min <= 11) "uncurry" else "fields")
+
+    // This used to be `Nil`. In 2.12.9 and earlier, and also 2.13.0, the phase assembly algorithm
+    // would in fact place the genjavadoc phase much later than `fields`, after `specialize`
+    // (see https://github.com/scala/scala-dev/issues/647#issuecomment-525650681).
+    //
+    // This was never intended, so we tried adding `runsBefore tailcalls`. However, because the
+    // compiler's own phase have ambiguous ordering, the 2.12.9 / 2.13.0 algorithm changed the order
+    // of other phases (see https://github.com/lightbend/genjavadoc/pull/191#issuecomment-532185154).
+    //
+    // In 2.12.10 and 2.13.1, the algorithm was updated (scala/scala#8393), and setting
+    // `runsBefore tailcalls` is now possible. The order of the compiler's own phases is made
+    // unambiguous in scala/scala#8426 and 8427.
+    override val runsBefore: List[String] =
+      if (min == 12 && pat >= 10 || min == 13 && pat >= 1 || min > 13) List("tailcalls")
+      else Nil
+
     val phaseName = "GenJavadoc"
 
     def newTransformer(unit: CompilationUnit) = new GenJavadocTransformer(unit)

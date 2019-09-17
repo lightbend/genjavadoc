@@ -86,7 +86,7 @@
      public  java.lang.String d (java.lang.String a, akka.rk.buh.is.it.X b)  { throw new RuntimeException(); }
    }
    public  class C implements akka.rk.buh.is.it.X {
-@@ -98,8 +98,8 @@
+@@ -103,8 +103,8 @@
     * class A.C
     */
    static public  class C1 {
@@ -96,7 +96,7 @@
    }
    /**
     * object C1
-@@ -137,6 +137,11 @@
+@@ -142,6 +142,11 @@
    static public  java.lang.String stattic ()  { throw new RuntimeException(); }
    static public  java.lang.Object x ()  { throw new RuntimeException(); }
    /**
@@ -108,7 +108,7 @@
     * varargs
     * @param s (undocumented)
     * @return (undocumented)
-@@ -202,16 +207,11 @@
+@@ -207,16 +212,11 @@
     * @param s (undocumented)
     * @return (undocumented)
     */
