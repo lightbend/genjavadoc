@@ -15,7 +15,7 @@
    }
    /**
     * class A.B
-@@ -98,8 +98,8 @@
+@@ -103,8 +103,8 @@
     * class A.C
     */
    static public  class C1 {
@@ -25,7 +25,7 @@
    }
    /**
     * object C1
-@@ -137,6 +137,11 @@
+@@ -142,6 +142,11 @@
    static public  java.lang.String stattic ()  { throw new RuntimeException(); }
    static public  java.lang.Object x ()  { throw new RuntimeException(); }
    /**
@@ -37,7 +37,7 @@
     * varargs
     * @param s (undocumented)
     * @return (undocumented)
-@@ -209,9 +214,4 @@
+@@ -214,9 +219,4 @@
     */
    public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
    public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }

@@ -84,6 +84,11 @@ public  class A {
     public   C ()  { throw new RuntimeException(); }
     public  int i ()  { throw new RuntimeException(); }
   }
+  /** tailrecced */
+  public final class TR {
+    public   TR ()  { throw new RuntimeException(); }
+    public  void tr (java.lang.String r)  { throw new RuntimeException(); }
+  }
   /**
    * object A.C.C1
    */

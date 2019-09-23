@@ -183,6 +183,14 @@ class A {
      */
     object E
   }
+
+  /** tailrecced */
+  final class TR {
+    @scala.annotation.tailrec def tr(r: String): Unit = r match {
+      case _ => tr(r)
+    }
+  }
+
 }
 
 /**
