@@ -18,6 +18,7 @@ env:
   - SCALA_VERSION=2.12.9
   - SCALA_VERSION=2.12.10
   - SCALA_VERSION=2.13.0
+  - SCALA_VERSION=2.13.1
 
 # 2.11.12 was the first Scala 2.11.x version to work on jdk11
 matrix:
