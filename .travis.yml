@@ -54,9 +54,18 @@ env:
 before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
 install: jabba install "$TRAVIS_JDK" && jabba use "$_" && java -Xmx32m -version
 
-script:
-  # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
-  - sbt -J-XX:ReservedCodeCacheSize=256M ++$SCALA_VERSION test
+stages:
+  - name: test
+  - name: release
+    if: tag =~ ^v AND NOT fork
+
+jobs:
+  include:
+    - stage: test
+      # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
+      script: sbt -J-XX:ReservedCodeCacheSize=256M ++$SCALA_VERSION test
+    - stage: release
+      script: echo $PGP_SECRET | base64 --decode | gpg --import && sbt +publishSigned
 
 before_cache:
   - find $HOME/.sbt -name "*.lock" | xargs rm

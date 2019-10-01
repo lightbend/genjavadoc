@@ -4,7 +4,7 @@
   * the next tag version (e.g. `v0.11`)
   * title and release description including notable changes
   * link to the [milestone](https://github.com/lightbend/genjavadoc/milestones) showing an overview of closed issues for this release
-2. Checkout the newly created tag and publish the release by running `sbt +publishSigned`. You will have to have Sonatype OSS repository rights to publish under `com.typesafe` organisation.
+2. This should push the release to sonatype from travis
 3. Login to [Sonatype](https://oss.sonatype.org/) to close and release the repository.
 
 ## Back-releasing for a new Scala version
