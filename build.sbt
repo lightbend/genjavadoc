@@ -74,6 +74,26 @@ lazy val defaults = Seq(
     if (version.value endsWith "-SNAPSHOT") Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
     else Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
   },
+  // This should no longer be necessary once we update to sbt-ci-release
+  // https://github.com/lightbend/genjavadoc/issues/203
+  credentials ++= {
+    val alreadyContainsSonatypeCredentials = credentials.value.collect {
+      case d: DirectCredentials => d.host == "oss.sonatype.org"
+    }.nonEmpty
+    if (!alreadyContainsSonatypeCredentials) {
+      val env = sys.env.get(_)
+      (for {
+        username <- env("SONATYPE_USERNAME")
+        password <- env("SONATYPE_PASSWORD")
+      } yield
+        Credentials(
+          "Sonatype Nexus Repository Manager",
+          "oss.sonatype.org",
+          username,
+          password
+        )).toSeq
+    } else Seq.empty
+  },
   startYear := Some(2012),
   homepage := Some(url("https://github.com/lightbend/genjavadoc")),
   licenses := Seq("Apache-2.0" -> url("http://opensource.org/licenses/Apache-2.0")),
