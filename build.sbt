@@ -4,16 +4,11 @@ val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
 val saveTestClasspath = taskKey[File](
   "Saves test classpath to a file so that it can be used by embedded scalac in tests")
 
-lazy val genjavadoc = (project in file("."))
-  .aggregate(`genjavadoc-plugin`)
+lazy val root = (project in file("."))
   .settings(defaults)
   .settings(
-    publishArtifact := false
-  )
-
-lazy val `genjavadoc-plugin` = (project in file("plugin"))
-  .settings(defaults)
-  .settings(
+    name := "genjavadoc-plugin",
+    scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "junit" % "junit" % "4.12" % Test,
