@@ -65,7 +65,7 @@ jobs:
       # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
       script: sbt -J-XX:ReservedCodeCacheSize=256M ++$SCALA_VERSION test
     - stage: release
-      script: echo $PGP_SECRET | base64 --decode | gpg --import && sbt +publishSigned
+      script: sbt ci-release
 
 before_cache:
   - find $HOME/.sbt -name "*.lock" | xargs rm
