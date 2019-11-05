@@ -9,6 +9,10 @@ import scala.collection.JavaConverters._
 class JavaCompiler {
 
   private val compiler = ToolProvider.getSystemJavaCompiler()
+  if (compiler == null)
+    throw new IllegalStateException(
+      s"No compiler found - please run the tests with a JDK, not just a JRE (${System.getProperties.get("java.home")})"
+    )
 
   val target = IO.tempDir("java-classes")
 
