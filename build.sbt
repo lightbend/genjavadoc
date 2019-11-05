@@ -22,9 +22,6 @@ lazy val root = (project in file("."))
       result
     },
     test in Test := {
-      // since we are building for different Scala patch versions, a clean
-      // is required to avoid conflicts in class files
-      clean.value
       saveTestClasspath.value
       (test in Test).value
     },
