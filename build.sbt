@@ -43,6 +43,7 @@ lazy val root = (project in file("."))
 
 lazy val defaults = Seq(
   organization := "com.typesafe.genjavadoc",
+  sonatypeProfileName := "com.typesafe",
   scalaVersion := crossScalaVersions.value.last,
   crossScalaVersions := {
     val earliest211 = 6
