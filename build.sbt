@@ -11,7 +11,7 @@ lazy val root = (project in file("."))
     scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-      "junit" % "junit" % "4.12" % Test,
+      "junit" % "junit" % "4.13" % Test,
       "com.novocode" % "junit-interface" % "0.11" % Test
     ),
     // make JUnit more verbose (info print instead of debug, w/ exception names & stacktraces)
