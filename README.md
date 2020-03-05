@@ -167,6 +167,8 @@ One drawback of this choice is that the flattening of classes and companion obje
 
  * Classes and objects nested inside nested objects are emitted by Scalac in such a form that there is no valid Java syntax to produce the same binary names. This is due to differences in name mangling (where javac inserts more dollar signs than scalac does). This means that while Javadoc is generated for these (in order to guarantee that Javadoc will find all the types it needs) the precise names are neither correct nor usable in practice.
 
+ * The Java code produced by genjavadoc is 'just correct enough' to be understood by javadoc. It is not a goal of this project to emit correct Java code. On recent version of the JDK you will have to pass the `--ignore-source-errors` flag to make the javadoc tool accept our output.
+
 ## Reporting Bugs
 
 If you find errors in the generation process or have suggestions on how to improve the quality of the emitted Javadoc contents, please report issues on this GitHub repo’s issue tracker.
