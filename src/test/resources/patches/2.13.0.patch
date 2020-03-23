@@ -258,3 +258,31 @@
 -public  interface X extends scala.Serializable, akka.rk.buh.is.it.Y<akka.rk.buh.is.it.A> {
 +public  interface X extends java.io.Serializable, akka.rk.buh.is.it.Y<akka.rk.buh.is.it.A> {
  }
+--- target/expected_output/basic/akka/persistence/testkit/EventStorage.java	2020-03-23 16:20:58.647999228 +0100
++++ target/expected_output/basic/akka/persistence/testkit/EventStorage.java	2020-03-23 16:20:58.647999228 +0100
+@@ -5,7 +5,9 @@
+       * Static reference to the singleton instance of this Scala object.
+       */
+     public static final JournalPolicies$ MODULE$ = null;
++    public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ PassAll ()  { throw new RuntimeException(); }
+     public   JournalPolicies$ ()  { throw new RuntimeException(); }
+   }
+-  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ DefaultPolicy ()  ;
++  public  void akka$persistence$testkit$EventStorage$_setter_$DefaultPolicy_$eq (akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll x$1)  ;
++  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll DefaultPolicy ()  ;
+ }
+--- target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java 2020-03-23 16:20:58.647999228 +0100
++++ target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java 2020-03-23 16:20:58.647999228 +0100
+@@ -10,8 +10,10 @@
+       static public  int hashCode ()  { throw new RuntimeException(); }
+       static public  java.lang.String toString ()  { throw new RuntimeException(); }
+       static public abstract  boolean equals (Object that)  ;
++      static public  java.lang.String productElementName (int n)  { throw new RuntimeException(); }
++      static public  scala.collection.Iterator<java.lang.String> productElementNames ()  { throw new RuntimeException(); }
+     }
+-    public  class PassAll$ implements akka.persistence.testkit.ProcessingPolicy<U>, scala.Product, scala.Serializable {
++    public  class PassAll$ implements akka.persistence.testkit.ProcessingPolicy<U>, scala.Product, java.io.Serializable {
+       /**
+         * Static reference to the singleton instance of this Scala object.
+         */
+

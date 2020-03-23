@@ -10,10 +10,8 @@ public  interface ProcessingPolicy<U extends java.lang.Object> {
       static public  int hashCode ()  { throw new RuntimeException(); }
       static public  java.lang.String toString ()  { throw new RuntimeException(); }
       static public abstract  boolean equals (Object that)  ;
-      static public  java.lang.String productElementName (int n)  { throw new RuntimeException(); }
-      static public  scala.collection.Iterator<java.lang.String> productElementNames ()  { throw new RuntimeException(); }
     }
-    public  class PassAll$ implements akka.persistence.testkit.ProcessingPolicy<U>, scala.Product, java.io.Serializable {
+    public  class PassAll$ implements akka.persistence.testkit.ProcessingPolicy<U>, scala.Product, scala.Serializable {
       /**
         * Static reference to the singleton instance of this Scala object.
         */
