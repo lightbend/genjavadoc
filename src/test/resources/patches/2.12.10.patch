@@ -56,3 +56,16 @@
 +    public  void akka$actor$dsl$Inbox$InboxExtension$_setter_$DSLInboxQueueSize_$eq (int x$1)  ;
    }
  }
+--- target/expected_output/basic/akka/persistence/testkit/EventStorage.java	2020-03-23 16:04:03.313049968 +0100
++++ target/expected_output/basic/akka/persistence/testkit/EventStorage.java	2020-03-23 16:04:03.313049968 +0100
+@@ -5,7 +5,9 @@
+       * Static reference to the singleton instance of this Scala object.
+       */
+     public static final JournalPolicies$ MODULE$ = null;
++    public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ PassAll ()  { throw new RuntimeException(); }
+     public   JournalPolicies$ ()  { throw new RuntimeException(); }
+   }
+-  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ DefaultPolicy ()  ;
++  public  void akka$persistence$testkit$EventStorage$_setter_$DefaultPolicy_$eq (akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll x$1)  ;
++  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll DefaultPolicy ()  ;
+ }

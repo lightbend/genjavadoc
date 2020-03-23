@@ -105,7 +105,7 @@ trait JavaSig extends NeedsJavaSig { this: TransformCake =>
             if (!primitiveOK) jsig(ObjectClass.tpe)
             else if (sym == UnitClass) jsig(BoxedUnitClass.tpe)
             else toJava(tp)
-          } else if (sym.isClass) {
+          } else if (sym.isClass || sym.isModule) {
             val preRebound = pre.baseType(sym.owner) // #2585
             val name =
               if (needsJavaSig(preRebound)) {
