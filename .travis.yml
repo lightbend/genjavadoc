@@ -79,3 +79,4 @@ cache:
   - $HOME/.ivy2
   - $HOME/.sbt/boot
   - $HOME/.sbt/launchers
+  - $HOME/.cache/coursier
