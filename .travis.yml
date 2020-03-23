@@ -63,11 +63,13 @@ stages:
   - name: release
     if: tag =~ ^v AND NOT fork
 
+# Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
+script: sbt -J-XX:ReservedCodeCacheSize=256M ++$SCALA_VERSION test
+
 jobs:
   include:
     - stage: test
-      # Increasing ReservedCodeCacheSize minimizes scala compiler-interface compile times
-      script: sbt -J-XX:ReservedCodeCacheSize=256M ++$SCALA_VERSION test
+      # inherits the global script
     - stage: release
       script: sbt ci-release
 
