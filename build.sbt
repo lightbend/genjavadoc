@@ -49,7 +49,7 @@ lazy val defaults = Seq(
     val earliest211 = 6
     val latest211 = 12
     val latest212 = 12
-    val latest213 = 3
+    val latest213 = 4
     val skipVersions = Set("2.11.9", "2.11.10")
     val scala211Versions =
       (earliest211 to latest211)
