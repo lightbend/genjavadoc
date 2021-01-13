@@ -50,6 +50,10 @@ env:
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.12.12
     TRAVIS_JDK=adopt@~1.11.0-0
+  - SCALA_VERSION=2.12.13
+    TRAVIS_JDK=adopt@~1.8.0-0
+  - SCALA_VERSION=2.12.13
+    TRAVIS_JDK=adopt@~1.11.0-0
   - SCALA_VERSION=2.13.0
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.13.0
