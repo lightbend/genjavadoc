@@ -46,20 +46,13 @@ lazy val defaults = Seq(
   sonatypeProfileName := "com.typesafe",
   scalaVersion := crossScalaVersions.value.last,
   crossScalaVersions := {
-    val earliest211 = 6
-    val latest211 = 12
-    val latest212 = 13
-    val latest213 = 5
-    val skipVersions = Set("2.11.9", "2.11.10")
-    val scala211Versions =
-      (earliest211 to latest211)
-        .map(i => s"2.11.$i")
-        .filterNot(skipVersions.contains(_))
-    ifJavaVersion(_ < 8) {
-      scala211Versions
-    } {
-      scala211Versions ++ (0 to latest212).map(i => s"2.12.$i") ++ (0 to latest213).map(i => s"2.13.$i")
-    }
+    // Remember to keep this list aligned with .travis.yml
+    // 2.11.6 is the first to be supported and we skip 2.11.9 and 2.11.10
+    val supportedScala211Versions = Seq("2.11.6", "2.11.7", "2.11.8", "2.11.11", "2.11.12")
+    // Scala 2.12.[0-2] are not supported
+    val supportedScala212Versions = (3 to 13).map(p => s"2.12.$p")
+    val supportedScala213Versions = (0 to 5).map(p => s"2.13.$p")
+    supportedScala211Versions ++ supportedScala212Versions ++ supportedScala213Versions
   },
   scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
   resolvers += Resolver.mavenLocal,
@@ -74,10 +67,3 @@ lazy val defaults = Seq(
 )
 
 lazy val browse = SettingKey[Boolean]("browse", "run with -Ybrowse:uncurry")
-
-def ifJavaVersion[T](predicate: Int => Boolean)(yes: => T)(no: => T): T = {
-  System.getProperty("java.version").split("\\.").toList match {
-    case "1" :: v :: _ if predicate(v.toInt)  => yes
-    case _ => no
-  }
-}
