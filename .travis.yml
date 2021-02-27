@@ -10,7 +10,7 @@ env:
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.11.8
     TRAVIS_JDK=adopt@~1.8.0-0
-  - SCALA_VERSION=2.11.11
+  - SCALA_VERSION=2.11.12
     TRAVIS_JDK=adopt@~1.8.0-0
   # 2.11.12 was the first Scala 2.11.x version to work on jdk11
   - SCALA_VERSION=2.11.12
