@@ -48,7 +48,7 @@ lazy val defaults = Seq(
   crossScalaVersions := {
     // Remember to keep this list aligned with .travis.yml
     // 2.11.6 is the first to be supported and we skip 2.11.9 and 2.11.10
-    val supportedScala211Versions = Seq("2.11.6", "2.11.7", "2.11.8", "2.11.11", "2.11.12")
+    val supportedScala211Versions = Seq("2.11.6", "2.11.7", "2.11.8", "2.11.11", "2.13.5")
     // Scala 2.12.[0-2] are not supported
     val supportedScala212Versions = (3 to 13).map(p => s"2.12.$p")
     val supportedScala213Versions = (0 to 5).map(p => s"2.13.$p")
