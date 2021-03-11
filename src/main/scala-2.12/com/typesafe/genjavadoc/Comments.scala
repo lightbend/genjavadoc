@@ -13,7 +13,7 @@ trait Comments extends BaseComments { this: TransformCake =>
       override def newScanner = new parser.ScaladocUnitScanner(unit, Nil) {
         override def registerDocComment(str: String, pos: Position) = {
           super.registerDocComment(str, pos)
-          comments += pos -> Comment(pos, str)
+          comments += pos.point -> Comment(pos, str)
         }
       }
     }.parse()
