@@ -21,7 +21,7 @@ trait CompilerSpec {
   def extraSettings: Seq[String] = Seq.empty
 
   /** whether to enable -Yrangepos */
-  def rangepos: Boolean = false
+  def rangepos: Boolean = true
 
   @Test def compileSourcesAndGenerateExpectedOutput(): Unit = {
     val doc = IO.tempDir("java")
