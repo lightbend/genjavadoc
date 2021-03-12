@@ -20,16 +20,13 @@ trait CompilerSpec {
   /** Extra plugin arguments. */
   def extraSettings: Seq[String] = Seq.empty
 
-  /** whether to enable -Yrangepos */
-  def rangepos: Boolean = true
-
   @Test def compileSourcesAndGenerateExpectedOutput(): Unit = {
     val doc = IO.tempDir("java")
     val docPath = doc.getAbsolutePath
     val defaultSettings = Seq(s"out=$docPath", "suppressSynthetic=false")
     val scalac = new GenJavadocCompiler((defaultSettings ++ extraSettings).map{ kv =>
       s"genjavadoc:$kv"
-    }, rangepos)
+    })
 
     scalac.compile(sources)
     assertFalse("Scala compiler reported errors", scalac.reporter.hasErrors)

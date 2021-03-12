@@ -9,11 +9,9 @@ import scala.tools.nsc.{Global, Settings}
 /** An instance of the Scala compiler with the genjavadoc plugin enabled
   * @param pluginOptions additional parameters to pass to the compiler
   */
-class GenJavadocCompiler(pluginOptions: Seq[String], rangepos: Boolean) {
+class GenJavadocCompiler(pluginOptions: Seq[String]) {
 
   private val settings = new Settings
-
-  settings.Yrangepos.value = rangepos
 
   val reporter = new ConsoleReporter(settings)
   private val global = new Global(settings, reporter) {

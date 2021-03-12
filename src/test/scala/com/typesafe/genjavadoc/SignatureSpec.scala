@@ -60,7 +60,7 @@ class SignatureSpec {
     val scalac = new GenJavadocCompiler(Seq(
       s"genjavadoc:out=$docPath",
       "genjavadoc:suppressSynthetic=false"
-    ), rangepos = true)
+    ))
 
     val javaSources = expectedClasses.map{cls =>
       docPath + "/" + cls.replace(".", "/") + ".java"
