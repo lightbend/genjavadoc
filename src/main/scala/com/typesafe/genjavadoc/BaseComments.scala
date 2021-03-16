@@ -71,13 +71,8 @@ trait BaseComments { this: TransformCake =>
     }
   }
 
-  implicit val positionOrdering: Ordering[Position] = new Ordering[Position] {
-    def compare(a: Position, b: Position) =
-      if (a.end < b.start) -1
-      else if (a.start > b.end) 1
-      else 0
-  }
-  var comments = TreeMap[Position, Comment]()
+  implicit val positionOrdering: Ordering[Position] = Ordering.by(_.point)
+  var comments = TreeMap[Int, Comment]()
 
   // This is overriden in the Scala Version Specific Comments.scala
   protected def parseComments(): Unit
