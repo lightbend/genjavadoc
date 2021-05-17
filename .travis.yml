@@ -83,9 +83,9 @@ env:
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.13.4
     TRAVIS_JDK=adopt@~1.11.0-0
-  - SCALA_VERSION=2.13.5
+  - SCALA_VERSION=2.13.6
     TRAVIS_JDK=adopt@~1.8.0-0
-  - SCALA_VERSION=2.13.5
+  - SCALA_VERSION=2.13.6
     TRAVIS_JDK=adopt@~1.11.0-0
 
 before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
