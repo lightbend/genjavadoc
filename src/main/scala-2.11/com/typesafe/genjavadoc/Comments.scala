@@ -38,7 +38,7 @@ trait Comments extends BaseComments { this: TransformCake =>
           def foundStarComment(start: Int, end: Int) = try {
             val str = docBuffer.toString
             val pos = new RangePosition(unit.source, start, start, end)
-            comments += pos -> Comment(pos, str)
+            comments += pos.point -> Comment(pos, str)
             true
           } finally {
             docBuffer = null
