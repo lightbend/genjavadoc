@@ -51,7 +51,7 @@ lazy val defaults = Seq(
     val supportedScala211Versions = Seq("2.11.6", "2.11.7", "2.11.8", "2.11.11", "2.11.12")
     // Scala 2.12.[0-2] are not supported
     val supportedScala212Versions = (3 to 13).map(p => s"2.12.$p")
-    val supportedScala213Versions = (0 to 5).map(p => s"2.13.$p")
+    val supportedScala213Versions = (0 to 6).map(p => s"2.13.$p")
     supportedScala211Versions ++ supportedScala212Versions ++ supportedScala213Versions
   },
   scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
