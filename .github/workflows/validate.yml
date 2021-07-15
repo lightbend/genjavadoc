@@ -56,12 +56,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout GitHub merge
-        if: github.event.pull_request
-        run: |-
-          git fetch origin pull/${{ github.event.pull_request.number }}/merge:scratch
-          git checkout scratch
-
       - name: Set up JDK ${{ matrix.jdk-version }}
         uses: olafurpg/setup-scala@v10
         with:
@@ -69,6 +63,9 @@ jobs:
 
       - name: Cache Coursier cache
         uses: coursier/cache-action@v5
+        with:
+          # add marker for the target scala-version, so that compiler bridge can be cached
+          extraKey: ${{ matrix.jdk-version }}-${{ matrix.scala-version }}
 
       - name: Compile and test for JDK ${{ matrix.jdk-version }}, Scala ${{ matrix.scala-version }}
         run: sbt -J-XX:ReservedCodeCacheSize=256M ++${{ matrix.scala-version }} test
@@ -92,6 +89,9 @@ jobs:
 
       - name: Cache Coursier cache
         uses: coursier/cache-action@v5
+        with:
+          # add marker that this build uses cross building, so hopefully all compiler bridges will be cached
+          extraKey: cross
 
       - name: Publish
         run: sbt ci-release
