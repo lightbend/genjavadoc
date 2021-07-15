@@ -7,7 +7,7 @@ it is time to populate `src/test/resources/expected_output`.
 
 genjavadoc is tested with many different versions of scala, and
 `src/test/resources/expected_output` is expected to correspond to the oldest supported version
-of scala (check .travis.yml).
+of scala (check .github/workflos/validate.yml or build.sbt for the supported scala version matrix).
 
 When changes in Scala cause changes in the expected genjavadoc output, you add them as patches
 in the respective patch in `src/test/resources/expected_output`. Remember to clean between
