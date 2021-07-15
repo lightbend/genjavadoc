@@ -1,6 +1,7 @@
 package com.typesafe.genjavadoc
 
 import scala.reflect.internal.Flags
+import scala.reflect.internal.util.Position
 
 trait BasicTransform { this: TransformCake =>
   import global._
@@ -36,7 +37,7 @@ trait BasicTransform { this: TransformCake =>
     try code finally keep = old
   }
 
-  private var pos: Position = rangePos(unit.source, 0, 0, 0)
+  private var pos: Position = Position.offset(unit.source, 0)
 
   private var templateMaxPos: Position = pos
   private var prevTemplateMaxPos: Position = pos
@@ -50,8 +51,8 @@ trait BasicTransform { this: TransformCake =>
       val ret = if (tp.isDefined) {
         val old = pos
         pos = max(tp, prevTemplateMaxPos)
-        if (old.precedes(pos)) {
-          (positions.from(old) intersect positions.to(pos)).toSeq.map(comments).filter(Scaladoc).lastOption match {
+        if (old <= pos) {
+          (positions.from(old.point) intersect positions.to(pos.point)).toSeq.map(comments).filter(Scaladoc).lastOption match {
             case Some(c) => c.text // :+ s"// found in '${between(old, pos)}'"
             case None =>
               // s"// empty '${between(old, pos)}' (${pos.lineContent}:${pos.column})" ::
@@ -159,7 +160,7 @@ trait BasicTransform { this: TransformCake =>
   private def deprecationInfo(d: ImplDef): Option[DeprecationInfo] = deprecationInfo(d.symbol)
   private def deprecationInfo(symbol: Symbol): Option[DeprecationInfo] =
     if (symbol.isDeprecated) {
-      val deprec = symbol.annotations.find(_.toString contains "deprecated(").get
+      val deprec = symbol.getAnnotation(definitions.DeprecatedAttr).get
       Some(DeprecationInfo(deprec.stringArg(0).getOrElse(""), deprec.stringArg(1).getOrElse("")))
     } else None
 

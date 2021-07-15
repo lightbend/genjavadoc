@@ -1,6 +1,9 @@
 language: scala
 
 env:
+  #
+  # Scala 2.11 supported versions
+  #
   - SCALA_VERSION=2.11.6
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.11.7
@@ -14,6 +17,9 @@ env:
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.11.12
     TRAVIS_JDK=adopt@~1.11.0-0
+  #
+  # Scala 2.12 supported versions
+  #
   - SCALA_VERSION=2.12.3
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.12.3
@@ -50,10 +56,17 @@ env:
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.12.12
     TRAVIS_JDK=adopt@~1.11.0-0
-  - SCALA_VERSION=2.12.13
+  - SCALA_VERSION=2.12.14
     TRAVIS_JDK=adopt@~1.8.0-0
-  - SCALA_VERSION=2.12.13
+  - SCALA_VERSION=2.12.14
     TRAVIS_JDK=adopt@~1.11.0-0
+  - SCALA_VERSION=2.12.14
+    TRAVIS_JDK=adopt@~1.8.0-0
+  - SCALA_VERSION=2.12.14
+    TRAVIS_JDK=adopt@~1.11.0-0
+  #
+  # Scala 2.13 supported versions
+  #
   - SCALA_VERSION=2.13.0
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.13.0
@@ -73,6 +86,14 @@ env:
   - SCALA_VERSION=2.13.4
     TRAVIS_JDK=adopt@~1.8.0-0
   - SCALA_VERSION=2.13.4
+    TRAVIS_JDK=adopt@~1.11.0-0
+  - SCALA_VERSION=2.13.5
+    TRAVIS_JDK=adopt@~1.8.0-0
+  - SCALA_VERSION=2.13.5
+    TRAVIS_JDK=adopt@~1.11.0-0
+  - SCALA_VERSION=2.13.6
+    TRAVIS_JDK=adopt@~1.8.0-0
+  - SCALA_VERSION=2.13.6
     TRAVIS_JDK=adopt@~1.11.0-0
 
 before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
@@ -98,7 +119,7 @@ before_cache:
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
 cache:
   directories:
-  - $HOME/.ivy2
-  - $HOME/.sbt/boot
-  - $HOME/.sbt/launchers
-  - $HOME/.cache/coursier
+    - $HOME/.ivy2
+    - $HOME/.sbt/boot
+    - $HOME/.sbt/launchers
+    - $HOME/.cache/coursier
