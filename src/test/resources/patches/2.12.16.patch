@@ -1,0 +1,71 @@
+--- target/expected_output/basic/akka/rk/buh/is/it/A.java
++++ target/expected_output/basic/akka/rk/buh/is/it/A.java
+@@ -48,13 +48,13 @@
+     public  class NonStatic {
+       public   NonStatic ()  { throw new RuntimeException(); }
+     }
++    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
+     public   D$ ()  { throw new RuntimeException(); }
+     /**
+      * def A.D.math
+      * @return (undocumented)
+      */
+     public  long math ()  { throw new RuntimeException(); }
+-    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
+   }
+   /**
+    * class A.B
+@@ -103,8 +103,8 @@
+    * class A.C
+    */
+   static public  class C1 {
+-    public   C1 ()  { throw new RuntimeException(); }
+     public  akka.rk.buh.is.it.A.C1$C1$ C1 ()  { throw new RuntimeException(); }
++    public   C1 ()  { throw new RuntimeException(); }
+   }
+   /**
+    * object C1
+@@ -142,6 +142,11 @@
+   static public  java.lang.String stattic ()  { throw new RuntimeException(); }
+   static public  java.lang.Object x ()  { throw new RuntimeException(); }
+   /**
++   * Accessor for nested Scala object
++   * @return (undocumented)
++   */
++  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
++  /**
+    * varargs
+    * @param s (undocumented)
+    * @return (undocumented)
+@@ -214,9 +219,4 @@
+    */
+   public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
+   public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }
+-  /**
+-   * Accessor for nested Scala object
+-   * @return (undocumented)
+-   */
+-  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
+ }
+--- target/expected_output/basic/akka/actor/dsl/Inbox.java    2018-12-13 15:51:52.473679518 +0100
++++ target/expected_output/basic/akka/actor/dsl/Inbox.java 2018-12-13 15:51:51.473673128 +0100
+@@ -2,5 +2,6 @@
+ public  interface Inbox {
+   public  interface InboxExtension {
+     public  int DSLInboxQueueSize ()  ;
++    public  void akka$actor$dsl$Inbox$InboxExtension$_setter_$DSLInboxQueueSize_$eq (int x$1)  ;
+   }
+ }
+--- target/expected_output/basic/akka/persistence/testkit/EventStorage.java	2020-03-23 16:04:03.313049968 +0100
++++ target/expected_output/basic/akka/persistence/testkit/EventStorage.java	2020-03-23 16:04:03.313049968 +0100
+@@ -5,7 +5,9 @@
+       * Static reference to the singleton instance of this Scala object.
+       */
+     public static final JournalPolicies$ MODULE$ = null;
++    public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ PassAll ()  { throw new RuntimeException(); }
+     public   JournalPolicies$ ()  { throw new RuntimeException(); }
+   }
+-  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ DefaultPolicy ()  ;
++  public  void akka$persistence$testkit$EventStorage$_setter_$DefaultPolicy_$eq (akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll x$1)  ;
++  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll DefaultPolicy ()  ;
+ }
