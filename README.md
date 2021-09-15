@@ -1,8 +1,12 @@
 # GenJavadoc
 
-[![Build Status](https://travis-ci.org/lightbend/genjavadoc.svg?branch=master)](https://travis-ci.org/lightbend/genjavadoc)
+[![Test and publish](https://github.com/lightbend/genjavadoc/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/lightbend/genjavadoc/actions/workflows/validate.yml)
 
 This project’s goal is the creation of real Javadoc for Scala projects. While Scaladoc—the native API documentation format of Scala—has several benefits over Javadoc, Java programmers are very much used to having access to API documentation in a syntax matching their programming language of choice. Another motivating factor may be that javadoc-JARs are supported within IDE, e.g. showing tooltip help texts.
+
+## Latest Version
+
+[![Latest version](https://img.shields.io/maven-central/v/com.typesafe.genjavadoc/genjavadoc-plugin_2.13.6)]
 
 ## How to Use It
 

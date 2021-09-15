@@ -3,7 +3,7 @@
 1. Create a [new release](https://github.com/lightbend/genjavadoc/releases/new) with:
   * the next tag version (e.g. `v0.11`)
   * title and release description including notable changes
-2. This should push the artifacts from travis to sonatype, and then close and release the repository.
+2. This triggers a Github Action build that should test, build and publish to sonatype, and then close and release the repository to Maven Central.
 
 ## Back-releasing for a new Scala version
 
