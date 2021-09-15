@@ -46,11 +46,11 @@ lazy val defaults = Seq(
   sonatypeProfileName := "com.typesafe",
   scalaVersion := crossScalaVersions.value.last,
   crossScalaVersions := {
-    // Remember to keep this list aligned with .travis.yml
+    // Remember to keep these lists aligned with .github/workflows/validate.yml
     // 2.11.6 is the first to be supported and we skip 2.11.9 and 2.11.10
     val supportedScala211Versions = Seq("2.11.6", "2.11.7", "2.11.8", "2.11.11", "2.11.12")
     // Scala 2.12.[0-2] are not supported
-    val supportedScala212Versions = (3 to 14).map(p => s"2.12.$p")
+    val supportedScala212Versions = (3 to 15).map(p => s"2.12.$p")
     val supportedScala213Versions = (0 to 6).map(p => s"2.13.$p")
     supportedScala211Versions ++ supportedScala212Versions ++ supportedScala213Versions
   },
