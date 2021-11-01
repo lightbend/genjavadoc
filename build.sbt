@@ -12,7 +12,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "junit" % "junit" % "4.13.2" % Test,
-      "com.novocode" % "junit-interface" % "0.11" % Test
+      "com.github.sbt" % "junit-interface" % "0.13.2" % Test
     ),
     // make JUnit more verbose (info print instead of debug, w/ exception names & stacktraces)
     testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
