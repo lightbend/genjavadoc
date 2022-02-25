@@ -15,19 +15,19 @@ lazy val root = (project in file("."))
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test
     ),
     // make JUnit more verbose (info print instead of debug, w/ exception names & stacktraces)
-    testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
+    Test / testOptions := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v")),
     saveTestClasspath := {
-      val result = (classDirectory in Test).value / "embeddedcp"
-      IO.write(result, (fullClasspath in Test).value.map(_.data.getAbsolutePath).mkString("\n"))
+      val result = (Test / classDirectory).value / "embeddedcp"
+      IO.write(result, (Test / fullClasspath).value.map(_.data.getAbsolutePath).mkString("\n"))
       result
     },
-    test in Test := {
+    Test / test := {
       saveTestClasspath.value
-      (test in Test).value
+      (Test / test).value
     },
-    fork in Test := true,
-    unmanagedSourceDirectories in Compile := {
-      val default = (unmanagedSourceDirectories in Compile).value
+    Test / fork := true,
+    Compile / unmanagedSourceDirectories := {
+      val default = (Compile / unmanagedSourceDirectories).value
       def r(from: String, to: String) = default.map(f => new java.io.File(f.getPath.replaceAll(from, to)))
       if (scalaVersion.value == "2.12.0") r("""/scala-2\.12$""", "/scala-2.11")
       else if (scalaMajorVersion.value == 13) r("""/scala-2\.13[^/]*$""", "/scala-2.13")
