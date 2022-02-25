@@ -6,7 +6,7 @@ This project’s goal is the creation of real Javadoc for Scala projects. While 
 
 ## Latest Version
 
-[![Latest version](https://img.shields.io/maven-central/v/com.typesafe.genjavadoc/genjavadoc-plugin_2.13.6)]
+[![Latest version](https://img.shields.io/maven-central/v/com.typesafe.genjavadoc/genjavadoc-plugin_2.13.8)]
 
 ## How to Use It
 
@@ -16,14 +16,14 @@ GenJavadoc is a Scala compiler plugin which emits structurally equivalent Java c
 lazy val Javadoc = config("genjavadoc") extend Compile
 
 lazy val javadocSettings = inConfig(Javadoc)(Defaults.configSettings) ++ Seq(
-  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.11" cross CrossVersion.full),
+  addCompilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.18" cross CrossVersion.full),
   scalacOptions += s"-P:genjavadoc:out=${target.value}/java",
-  packageDoc in Compile := (packageDoc in Javadoc).value,
-  sources in Javadoc :=
+  Compile / packageDoc := (Javadoc / packageDoc).value,
+  Javadoc / sources :=
     (target.value / "java" ** "*.java").get ++
-    (sources in Compile).value.filter(_.getName.endsWith(".java")),
-  javacOptions in Javadoc := Seq(),
-  artifactName in packageDoc in Javadoc := ((sv, mod, art) =>
+    (Compile / sources).value.filter(_.getName.endsWith(".java")),
+  Javadoc / javacOptions := Seq(),
+  Javadoc / packageDoc / artifactName := ((sv, mod, art) =>
     "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar")
 )
 ~~~
@@ -119,7 +119,7 @@ configurations {
 dependencies {
   // ...
   scalaCompilerPlugin "com.typesafe.genjavadoc:genjavadoc-plugin_${scalaFullVersion}:0.13"
-  
+
 }
 
 tasks.withType(ScalaCompile) {
@@ -164,22 +164,18 @@ One drawback of this choice is that the flattening of classes and companion obje
 
 ## Known Limitations
 
- * Many Scaladoc tags and features are simply not supported by the javadoc tool and genjavadoc does not reimplement them:
+* Many Scaladoc tags and features are simply not supported by the javadoc tool and genjavadoc does not reimplement them:
 
      * `@note`, `@example`, `@group` etc. do not work and are errors in Javadoc 8, so they cannot be used
      * links to methods that use the overload disambiguation syntax will not work
 
- * Classes and objects nested inside nested objects are emitted by Scalac in such a form that there is no valid Java syntax to produce the same binary names. This is due to differences in name mangling (where javac inserts more dollar signs than scalac does). This means that while Javadoc is generated for these (in order to guarantee that Javadoc will find all the types it needs) the precise names are neither correct nor usable in practice.
+* Classes and objects nested inside nested objects are emitted by Scalac in such a form that there is no valid Java syntax to produce the same binary names. This is due to differences in name mangling (where javac inserts more dollar signs than scalac does). This means that while Javadoc is generated for these (in order to guarantee that Javadoc will find all the types it needs) the precise names are neither correct nor usable in practice.
 
- * The Java code produced by genjavadoc is 'just correct enough' to be understood by javadoc. It is not a goal of this project to emit correct Java code. On recent version of the JDK you will have to pass the `--ignore-source-errors` flag to make the javadoc tool accept our output.
+* The Java code produced by genjavadoc is 'just correct enough' to be understood by javadoc. It is not a goal of this project to emit correct Java code. On recent version of the JDK you will have to pass the `--ignore-source-errors` flag to make the javadoc tool accept our output.
 
 ## Reporting Bugs
 
-If you find errors in the generation process or have suggestions on how to improve the quality of the emitted Javadoc contents, please report issues on this GitHub repo’s issue tracker.
-
-## License
-
-This software is licensed under the Apache 2 license.
+If you find errors in the generation process or have suggestions on how to improve the quality of the emitted Javadoc, please report issues on this GitHub repo’s issue tracker.
 
 ### Sponsored by Lightbend
 
