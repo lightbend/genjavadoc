@@ -21,7 +21,9 @@ object SignatureSpec {
     // with the addition of "$lzycompute", which is special
     "$$", "$lzycompute",
     // see https://github.com/lightbend/genjavadoc/issues/143
-    "productElementName"
+    "productElementName",
+    // because of https://github.com/scala/scala/pull/10002
+    "productIterator"
   )
 
   // they can't start with numbers either
