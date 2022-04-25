@@ -16,9 +16,11 @@
    static public  akka.actor.Identify apply (Object messageId)  { throw new RuntimeException(); }
    static public  scala.Option<java.lang.Object> unapply (akka.actor.Identify x$0)  { throw new RuntimeException(); }
    public  Object messageId ()  { throw new RuntimeException(); }
-@@ -13,6 +13,7 @@
+@@ -11,8 +11,8 @@
+   public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
+   public  int productArity ()  { throw new RuntimeException(); }
    public  Object productElement (int x$1)  { throw new RuntimeException(); }
-   public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
+-  public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
    public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
 +  public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
    public  int hashCode ()  { throw new RuntimeException(); }
@@ -138,7 +140,15 @@
      /**
       * Static reference to the singleton instance of this Scala object.
       */
-@@ -18,9 +16,8 @@
+@@ -14,7 +12,6 @@
+     public  java.lang.String productPrefix () { throw new RuntimeException(); }
+     public  int productArity () { throw new RuntimeException(); }
+     public  Object productElement (int x$1) { throw new RuntimeException(); }
+-    public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
+     public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
+     public  int hashCode () { throw new RuntimeException(); }
+     public  java.lang.String toString () { throw new RuntimeException(); }
+@@ -18,9 +15,8 @@
      public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
      public  int hashCode () { throw new RuntimeException(); }
      public  java.lang.String toString () { throw new RuntimeException(); }
@@ -149,9 +159,11 @@
      public  java.lang.String x () { throw new RuntimeException(); }
      // not preceding
      public   B (java.lang.String x) { throw new RuntimeException(); }
-@@ -32,12 +29,12 @@
+@@ -30,14 +26,13 @@
+     public  java.lang.String productPrefix () { throw new RuntimeException(); }
+     public  int productArity () { throw new RuntimeException(); }
      public  Object productElement (int x$1) { throw new RuntimeException(); }
-     public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
+-    public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
      public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
 +    public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
      public  int hashCode () { throw new RuntimeException(); }
@@ -175,9 +187,11 @@
        static public  akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected apply (Object key, int id, long count)  { throw new RuntimeException(); }
        static public  scala.Option<scala.Tuple3<java.lang.Object, java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected x$0)  { throw new RuntimeException(); }
        public  Object key ()  { throw new RuntimeException(); }
-@@ -24,11 +24,12 @@
+@@ -22,13 +22,13 @@
+       public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
+       public  int productArity ()  { throw new RuntimeException(); }
        public  Object productElement (int x$1)  { throw new RuntimeException(); }
-       public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
+-      public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
        public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
 +      public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
        public  int hashCode ()  { throw new RuntimeException(); }
@@ -210,9 +224,11 @@
    // not preceding
    static public  akka.rk.buh.is.it.EWMA apply (double value, double alpha) { throw new RuntimeException(); }
    static public  scala.Option<scala.Tuple2<java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.EWMA x$0) { throw new RuntimeException(); }
-@@ -44,6 +44,7 @@
+@@ -42,8 +42,8 @@
+   public  java.lang.String productPrefix () { throw new RuntimeException(); }
+   public  int productArity () { throw new RuntimeException(); }
    public  Object productElement (int x$1) { throw new RuntimeException(); }
-   public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
+-  public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
    public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
 +  public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
    public  int hashCode () { throw new RuntimeException(); }
@@ -245,12 +261,18 @@
 +  public  void akka$persistence$testkit$EventStorage$_setter_$DefaultPolicy_$eq (akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll x$1)  ;
 +  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll DefaultPolicy ()  ;
  }
---- target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java 2020-03-23 16:20:58.647999228 +0100
-+++ target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java 2020-03-23 16:20:58.647999228 +0100
-@@ -10,8 +10,10 @@
+--- target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java
++++ target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java
+@@ -5,13 +5,15 @@
+       static public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
+       static public  int productArity ()  { throw new RuntimeException(); }
+       static public  Object productElement (int x$1)  { throw new RuntimeException(); }
+-      static public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
+       static public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
        static public  int hashCode ()  { throw new RuntimeException(); }
        static public  java.lang.String toString ()  { throw new RuntimeException(); }
        static public abstract  boolean equals (Object that)  ;
++      static public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
 +      static public  java.lang.String productElementName (int n)  { throw new RuntimeException(); }
 +      static public  scala.collection.Iterator<java.lang.String> productElementNames ()  { throw new RuntimeException(); }
      }
@@ -259,4 +281,11 @@
        /**
          * Static reference to the singleton instance of this Scala object.
          */
-
+@@ -20,7 +22,6 @@
+       public  java.lang.String productPrefix ()  { throw new RuntimeException(); }
+       public  int productArity ()  { throw new RuntimeException(); }
+       public  Object productElement (int x$1)  { throw new RuntimeException(); }
+-      public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
+       public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
+       public  int hashCode ()  { throw new RuntimeException(); }
+       public  java.lang.String toString ()  { throw new RuntimeException(); }
