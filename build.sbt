@@ -47,7 +47,7 @@ lazy val defaults = Seq(
   scalaVersion := crossScalaVersions.value.last,
   crossScalaVersions := {
     val supportedScala212Versions = (5 to 18).map(p => s"2.12.$p")
-    val supportedScala213Versions = (0 to 10).map(p => s"2.13.$p")
+    val supportedScala213Versions = (0 to 11).map(p => s"2.13.$p")
     supportedScala212Versions ++ supportedScala213Versions
   },
   scalaMajorVersion := CrossVersion.partialVersion(scalaVersion.value).get._2.toInt,
