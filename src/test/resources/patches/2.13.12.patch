@@ -259,3 +259,14 @@
 -public  interface X extends scala.Serializable, akka.rk.buh.is.it.Y<akka.rk.buh.is.it.A> {
 +public  interface X extends java.io.Serializable, akka.rk.buh.is.it.Y<akka.rk.buh.is.it.A> {
  }
+--- target/expected_output/basic/akka/rk/buh/is/it/DontTouchThis.java
++++ target/expected_output/basic/akka/rk/buh/is/it/DontTouchThis.java
+@@ -12,8 +12,6 @@
+   public void alreadyDeprecatedInComment () { throw new RuntimeException(); }
+   /**
+    * buh!
+-   *
+-   * @deprecated
+    */
+   public  void javaDeprecatedThingie ()  { throw new RuntimeException(); }
+   /**

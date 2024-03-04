@@ -11,6 +11,12 @@ public class DontTouchThis {
    */
   public void alreadyDeprecatedInComment () { throw new RuntimeException(); }
   /**
+   * buh!
+   *
+   * @deprecated
+   */
+  public void javaDeprecatedThingie () { throw new RuntimeException(); }
+  /**
    * Some methods are forever.
    *
    * @deprecated This is replaced by someDiamondsAre. Since now.

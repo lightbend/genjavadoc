@@ -275,6 +275,12 @@ private[it] class DontTouchThis {
    */
   @deprecated("This will be ignored", since = "ever")
   def alreadyDeprecatedInComment = ()
+
+  /**
+   * buh!
+   */
+  @Deprecated
+  def javaDeprecatedThingie = ()
 }
 
 @deprecated("Les Scalac Voyages Extraordinaire", since = "now")

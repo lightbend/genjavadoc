@@ -96,9 +96,11 @@ trait AST { this: TransformCake =>
   def fabricateParams: Boolean
 
   case class DeprecationInfo(msg: String, since: String) {
-    def maybeDot = if (msg.endsWith(".")) " " else ". "
-    def maybeSinceDot = if (since.endsWith(".")) " " else ". "
-    def render = s" * @deprecated ${msg}${maybeDot}Since $since${maybeSinceDot}"
+    def render = {
+      val rMsg = if (msg.isEmpty) "" else s" ${msg.stripSuffix(".")}."
+      val rSince = if (since.isEmpty) "" else s" Since ${since.stripSuffix(".")}."
+      s" * @deprecated$rMsg$rSince"
+    }
 
     def appendToComment(comment: Seq[String]): Seq[String] = comment.toVector match {
       case init :+ " */" =>
