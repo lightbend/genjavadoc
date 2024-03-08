@@ -21,7 +21,7 @@ class BasicSpec extends CompilerSpec {
     if (new java.io.File(patchFile).exists) { // we have a patch to apply to expected output for this scala version
       "rm -rf target/expected_output".! // cleanup from previous runs
       "cp -r src/test/resources/expected_output target/".! // copy expected output to a place which is going to be patched
-      s"patch -p0 -i $patchFile".! // path expected output
+      s"patch -p0 --no-backup-if-mismatch -i $patchFile".! // path expected output
       "target/expected_output/basic"
     } else {
       "src/test/resources/expected_output/basic"

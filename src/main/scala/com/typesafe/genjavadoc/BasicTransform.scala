@@ -160,8 +160,9 @@ trait BasicTransform { this: TransformCake =>
   private def deprecationInfo(d: ImplDef): Option[DeprecationInfo] = deprecationInfo(d.symbol)
   private def deprecationInfo(symbol: Symbol): Option[DeprecationInfo] =
     if (symbol.isDeprecated) {
-      val deprec = symbol.getAnnotation(definitions.DeprecatedAttr).get
-      Some(DeprecationInfo(deprec.stringArg(0).getOrElse(""), deprec.stringArg(1).getOrElse("")))
+      // symbol either has `DeprecatedAttr` or `JavaDeprecatedAttr`
+      val deprec = symbol.getAnnotation(definitions.DeprecatedAttr)
+      Some(DeprecationInfo(deprec.flatMap(_.stringArg(0)).getOrElse(""), deprec.flatMap(_.stringArg(1)).getOrElse("")))
     } else None
 
 }
