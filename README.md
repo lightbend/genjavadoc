@@ -6,7 +6,7 @@ This project’s goal is the creation of real Javadoc for Scala projects. While 
 
 ## Latest Version
 
-[![Latest version](https://img.shields.io/maven-central/v/com.typesafe.genjavadoc/genjavadoc-plugin_2.13.8)]
+[![Latest version](https://img.shields.io/maven-central/v/com.typesafe.genjavadoc/genjavadoc-plugin_2.13.13)]
 
 ## How to Use It
 
@@ -179,9 +179,8 @@ If you find errors in the generation process or have suggestions on how to impro
 
 ### Sponsored by Lightbend
 
-Responsible: Dr. Roland Kuhn ([@rkuhn](https://github.com/rkuhn))
+Originally responsible: Dr. Roland Kuhn ([@rkuhn](https://github.com/rkuhn))
 
-Maintained by [Akka Team](https://github.com/orgs/akka/teams/akka-team) (mostly by [@2m](https://github.com/2m), [@ktoso](https://github.com/ktoso))
+Community maintenance is overseen by Lightbend staff.
 
-Feel free to ping above maintainers for code review or discussions. 
-Pull requests are very welcome–thanks in advance!
+Pull requests are very welcome. Thanks in advance!
