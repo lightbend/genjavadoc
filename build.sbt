@@ -46,7 +46,7 @@ lazy val defaults = Seq(
   sonatypeProfileName := "com.typesafe",
   scalaVersion := crossScalaVersions.value.last,
   crossScalaVersions := {
-    val supportedScala212Versions = (18 to 19).map(p => s"2.12.$p")
+    val supportedScala212Versions = (18 to 20).map(p => s"2.12.$p")
     val supportedScala213Versions = (11 to 14).map(p => s"2.13.$p")
     supportedScala212Versions ++ supportedScala213Versions
   },
