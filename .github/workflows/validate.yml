@@ -36,6 +36,9 @@ jobs:
           distribution: temurin
           java-version: ${{matrix.java}}
 
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
+
       - name: Cache Coursier cache
         uses: coursier/cache-action@v6
 
