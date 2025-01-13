@@ -1,0 +1,261 @@
+--- target/expected_output/basic/akka/actor/Identify$.java
++++ target/expected_output/basic/akka/actor/Identify$.java
+@@ -1,5 +1,5 @@
+ package akka.actor;
+-public  class Identify$ extends scala.runtime.AbstractFunction1<java.lang.Object, akka.actor.Identify> implements scala.Serializable {
++public  class Identify$ extends scala.runtime.AbstractFunction1<java.lang.Object, akka.actor.Identify> implements java.io.Serializable {
+   /**
+    * Static reference to the singleton instance of this Scala object.
+    */
+--- target/expected_output/basic/akka/actor/Identify.java
++++ target/expected_output/basic/akka/actor/Identify.java
+@@ -1,5 +1,5 @@
+ package akka.actor;
+-public final class Identify implements scala.Product, scala.Serializable {
++public final class Identify implements scala.Product, java.io.Serializable {
+   static public  akka.actor.Identify apply (Object messageId)  { throw new RuntimeException(); }
+   static public  scala.Option<java.lang.Object> unapply (akka.actor.Identify x$0)  { throw new RuntimeException(); }
+   public  Object messageId ()  { throw new RuntimeException(); }
+@@ -13,6 +13,7 @@
+   public  Object productElement (int x$1)  { throw new RuntimeException(); }
+   public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
+   public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
++  public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
+   public  int hashCode ()  { throw new RuntimeException(); }
+   public  java.lang.String toString ()  { throw new RuntimeException(); }
+   public  boolean equals (Object x$1)  { throw new RuntimeException(); }
+--- target/expected_output/basic/akka/actor/dsl/Inbox.java
++++ target/expected_output/basic/akka/actor/dsl/Inbox.java
+@@ -2,5 +2,6 @@
+ public  interface Inbox {
+   public  interface InboxExtension {
+     public  int DSLInboxQueueSize ()  ;
++    public  void akka$actor$dsl$Inbox$InboxExtension$_setter_$DSLInboxQueueSize_$eq (int x$1)  ;
+   }
+ }
+--- target/expected_output/basic/akka/actor/typed/DispatcherSelector$.java
++++ target/expected_output/basic/akka/actor/typed/DispatcherSelector$.java
+@@ -1,5 +1,5 @@
+ package akka.actor.typed;
+-public  class DispatcherSelector$ implements scala.Serializable {
++public  class DispatcherSelector$ implements java.io.Serializable {
+   /**
+    * Static reference to the singleton instance of this Scala object.
+    */
+--- target/expected_output/basic/akka/actor/typed/Props.java
++++ target/expected_output/basic/akka/actor/typed/Props.java
+@@ -1,5 +1,5 @@
+ package akka.actor.typed;
+-public abstract class Props implements scala.Product, scala.Serializable {
++public abstract class Props implements scala.Product, java.io.Serializable {
+   public   Props ()  { throw new RuntimeException(); }
+   public abstract  akka.actor.typed.Props next ()  ;
+ }
+--- target/expected_output/basic/akka/persistence/testkit/EventStorage.java
++++ target/expected_output/basic/akka/persistence/testkit/EventStorage.java
+@@ -5,7 +5,9 @@
+       * Static reference to the singleton instance of this Scala object.
+       */
+     public static final JournalPolicies$ MODULE$ = null;
++    public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ PassAll ()  { throw new RuntimeException(); }
+     public   JournalPolicies$ ()  { throw new RuntimeException(); }
+   }
+-  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll$ DefaultPolicy ()  ;
++  public  void akka$persistence$testkit$EventStorage$_setter_$DefaultPolicy_$eq (akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll x$1)  ;
++  public  akka.persistence.testkit.ProcessingPolicy.DefaultPolicies<akka.persistence.testkit.JournalOperation>.PassAll DefaultPolicy ()  ;
+ }
+--- target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java
++++ target/expected_output/basic/akka/persistence/testkit/ProcessingPolicy.java
+@@ -10,8 +10,10 @@
+       static public  int hashCode ()  { throw new RuntimeException(); }
+       static public  java.lang.String toString ()  { throw new RuntimeException(); }
+       static public abstract  boolean equals (Object that)  ;
++      static public  java.lang.String productElementName (int n)  { throw new RuntimeException(); }
++      static public  scala.collection.Iterator<java.lang.String> productElementNames ()  { throw new RuntimeException(); }
+     }
+-    public  class PassAll$ implements akka.persistence.testkit.ProcessingPolicy<U>, scala.Product, scala.Serializable {
++    public  class PassAll$ implements akka.persistence.testkit.ProcessingPolicy<U>, scala.Product, java.io.Serializable {
+       /**
+         * Static reference to the singleton instance of this Scala object.
+         */
+--- target/expected_output/basic/akka/rk/buh/is/it/A.java
++++ target/expected_output/basic/akka/rk/buh/is/it/A.java
+@@ -35,7 +35,7 @@
+   /**
+    * object A.D
+    */
+-  public  class D$ implements scala.Serializable {
++  public  class D$ implements java.io.Serializable {
+     /**
+      * And a nested object.
+      */
+@@ -48,13 +48,13 @@
+     public  class NonStatic {
+       public   NonStatic ()  { throw new RuntimeException(); }
+     }
++    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
+     public   D$ ()  { throw new RuntimeException(); }
+     /**
+      * def A.D.math
+      * @return (undocumented)
+      */
+     public  long math ()  { throw new RuntimeException(); }
+-    public  akka.rk.buh.is.it.A.D$.E$ E ()  { throw new RuntimeException(); }
+   }
+   /**
+    * class A.B
+@@ -76,7 +76,7 @@
+      * def b(args: java.lang.String*): Unit
+      * @param args (undocumented)
+      */
+-    public  void b (scala.collection.Seq<java.lang.String> args)  { throw new RuntimeException(); }
++    public  void b (scala.collection.immutable.Seq<java.lang.String> args)  { throw new RuntimeException(); }
+     public  java.lang.String d (java.lang.String a, akka.rk.buh.is.it.X b)  { throw new RuntimeException(); }
+   }
+   public  class C implements akka.rk.buh.is.it.X {
+@@ -103,8 +103,8 @@
+    * class A.C
+    */
+   static public  class C1 {
+-    public   C1 ()  { throw new RuntimeException(); }
+     public  akka.rk.buh.is.it.A.C1$C1$ C1 ()  { throw new RuntimeException(); }
++    public   C1 ()  { throw new RuntimeException(); }
+   }
+   /**
+    * object C1
+@@ -142,6 +142,11 @@
+   static public  java.lang.String stattic ()  { throw new RuntimeException(); }
+   static public  java.lang.Object x ()  { throw new RuntimeException(); }
+   /**
++   * Accessor for nested Scala object
++   * @return (undocumented)
++   */
++  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
++  /**
+    * varargs
+    * @param s (undocumented)
+    * @return (undocumented)
+@@ -207,16 +212,11 @@
+    * @param s (undocumented)
+    * @return (undocumented)
+    */
+-  public  int hello (scala.collection.Seq<java.lang.String> s)  { throw new RuntimeException(); }
++  public  int hello (scala.collection.immutable.Seq<java.lang.String> s)  { throw new RuntimeException(); }
+   /**
+    * throws
+    * @return (undocumented)
+    */
+   public  int testthrows () throws java.lang.IllegalArgumentException, java.lang.NullPointerException { throw new RuntimeException(); }
+   public  scala.runtime.Null$ getNull ()  { throw new RuntimeException(); }
+-  /**
+-   * Accessor for nested Scala object
+-   * @return (undocumented)
+-   */
+-  public  akka.rk.buh.is.it.A.D$ D ()  { throw new RuntimeException(); }
+ }
+--- target/expected_output/basic/akka/rk/buh/is/it/Blarb.java
++++ target/expected_output/basic/akka/rk/buh/is/it/Blarb.java
+@@ -4,8 +3,7 @@
+  * I am an object. I have no class.
+  */
+ public  class Blarb {
+-  // no position
+-  static public  class A$ implements akka.rk.buh.is.it.Blarb.Fuz, scala.Product, scala.Serializable {
++  static public  class A$ implements akka.rk.buh.is.it.Blarb.Fuz, scala.Product, java.io.Serializable {
+     /**
+      * Static reference to the singleton instance of this Scala object.
+      */
+@@ -18,9 +16,8 @@
+     public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
+     public  int hashCode () { throw new RuntimeException(); }
+     public  java.lang.String toString () { throw new RuntimeException(); }
+-    private  java.lang.Object readResolve () { throw new RuntimeException(); }
+   }
+-  static public  class B implements akka.rk.buh.is.it.Blarb.Fuz, scala.Product, scala.Serializable {
++  static public  class B implements akka.rk.buh.is.it.Blarb.Fuz, scala.Product, java.io.Serializable {
+     public  java.lang.String x () { throw new RuntimeException(); }
+     // not preceding
+     public   B (java.lang.String x) { throw new RuntimeException(); }
+@@ -32,12 +29,12 @@
+     public  Object productElement (int x$1) { throw new RuntimeException(); }
+     public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
+     public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
++    public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
+     public  int hashCode () { throw new RuntimeException(); }
+     public  java.lang.String toString () { throw new RuntimeException(); }
+     public  boolean equals (Object x$1) { throw new RuntimeException(); }
+   }
+-  // no position
+-  static public  class B$ extends scala.runtime.AbstractFunction1<java.lang.String, akka.rk.buh.is.it.Blarb.B> implements scala.Serializable {
++  static public  class B$ extends scala.runtime.AbstractFunction1<java.lang.String, akka.rk.buh.is.it.Blarb.B> implements java.io.Serializable {
+     /**
+      * Static reference to the singleton instance of this Scala object.
+      */
+--- target/expected_output/basic/akka/rk/buh/is/it/CompressionProtocol.java
++++ target/expected_output/basic/akka/rk/buh/is/it/CompressionProtocol.java
+@@ -5,7 +5,7 @@
+      * Static reference to the singleton instance of this Scala object.
+      */
+     public static final Events$ MODULE$ = null;
+-    public final class HeavyHitterDetected implements akka.rk.buh.is.it.CompressionProtocol.Events.Event, scala.Product, scala.Serializable {
++    public final class HeavyHitterDetected implements akka.rk.buh.is.it.CompressionProtocol.Events.Event, scala.Product, java.io.Serializable {
+       static public  akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected apply (Object key, int id, long count)  { throw new RuntimeException(); }
+       static public  scala.Option<scala.Tuple3<java.lang.Object, java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected x$0)  { throw new RuntimeException(); }
+       public  Object key ()  { throw new RuntimeException(); }
+@@ -24,11 +24,12 @@
+       public  Object productElement (int x$1)  { throw new RuntimeException(); }
+       public  scala.collection.Iterator<java.lang.Object> productIterator ()  { throw new RuntimeException(); }
+       public  boolean canEqual (Object x$1)  { throw new RuntimeException(); }
++      public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
+       public  int hashCode ()  { throw new RuntimeException(); }
+       public  java.lang.String toString ()  { throw new RuntimeException(); }
+       public  boolean equals (Object x$1)  { throw new RuntimeException(); }
+     }
+-    public  class HeavyHitterDetected$ extends scala.runtime.AbstractFunction3<java.lang.Object, java.lang.Object, java.lang.Object, akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected> implements scala.Serializable {
++    public  class HeavyHitterDetected$ extends scala.runtime.AbstractFunction3<java.lang.Object, java.lang.Object, java.lang.Object, akka.rk.buh.is.it.CompressionProtocol.Events.HeavyHitterDetected> implements java.io.Serializable {
+       /**
+        * Static reference to the singleton instance of this Scala object.
+        */
+--- target/expected_output/basic/akka/rk/buh/is/it/EWMA$.java
++++ target/expected_output/basic/akka/rk/buh/is/it/EWMA$.java
+@@ -1,6 +1,5 @@
+ package akka.rk.buh.is.it;
+-// no position
+-public  class EWMA$ implements scala.Serializable {
++public  class EWMA$ implements java.io.Serializable {
+   /**
+    * Static reference to the singleton instance of this Scala object.
+    */
+--- target/expected_output/basic/akka/rk/buh/is/it/EWMA.java
++++ target/expected_output/basic/akka/rk/buh/is/it/EWMA.java
+@@ -18,7 +18,7 @@
+  *             This value is always used as the previous EWMA to calculate the new EWMA.
+  * <p>
+  */
+-public final class EWMA implements scala.Product, scala.Serializable {
++public final class EWMA implements scala.Product, java.io.Serializable {
+   // not preceding
+   static public  akka.rk.buh.is.it.EWMA apply (double value, double alpha) { throw new RuntimeException(); }
+   static public  scala.Option<scala.Tuple2<java.lang.Object, java.lang.Object>> unapply (akka.rk.buh.is.it.EWMA x$0) { throw new RuntimeException(); }
+@@ -44,6 +44,7 @@
+   public  Object productElement (int x$1) { throw new RuntimeException(); }
+   public  scala.collection.Iterator<java.lang.Object> productIterator () { throw new RuntimeException(); }
+   public  boolean canEqual (Object x$1) { throw new RuntimeException(); }
++  public  java.lang.String productElementName (int x$1)  { throw new RuntimeException(); }
+   public  int hashCode () { throw new RuntimeException(); }
+   public  java.lang.String toString () { throw new RuntimeException(); }
+   public  boolean equals (Object x$1) { throw new RuntimeException(); }
+--- target/expected_output/basic/akka/rk/buh/is/it/Status$Status.java
++++ target/expected_output/basic/akka/rk/buh/is/it/Status$Status.java
+@@ -1,3 +1,3 @@
+ package akka.rk.buh.is.it;
+-public  interface Status$Status extends scala.Serializable {
++public  interface Status$Status extends java.io.Serializable {
+ }
+--- target/expected_output/basic/akka/rk/buh/is/it/X.java
++++ target/expected_output/basic/akka/rk/buh/is/it/X.java
+@@ -1,3 +1,3 @@
+ package akka.rk.buh.is.it;
+-public  interface X extends scala.Serializable, akka.rk.buh.is.it.Y<akka.rk.buh.is.it.A> {
++public  interface X extends java.io.Serializable, akka.rk.buh.is.it.Y<akka.rk.buh.is.it.A> {
+ }
