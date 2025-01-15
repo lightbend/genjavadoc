@@ -1,15 +1,9 @@
-## Creating a regular release
+## Publishing
 
-Creating a release on GitHub triggers a Github Action build that should test, build and publish to Sonatype, and then close and release the repository to Maven Central.
+Creating a release on GitHub triggers an Actions build that should test, build, and publish to Sonatype, and then close and release the repository to Maven Central.
 
-## Back-releasing for a new Scala version
+## Back-publishing for a new Scala version
 
-It is often the case when this compiler plugin needs to be released for a newly released Scala version. For this the process is the following:
+sbt-ci-release supports this directly.
 
-1. Checkout the version that is to be back-released, which would be
-  * `main`, if no features or bug fixes were merged to the main branch since the latest release. In this case create a tag recording you released from this commit, e.g. `git tag -a -m 'Release 0.19 for Scala 2.12.20' 0.19_2.12.20; git push --tags`. This tag does not start with 'v' to make sure the CI publication does not get triggered.
-  * tag, if the main branch has unreleased features or bug fixes. In this case you will need to cherry pick the commit that adds support for the new Scala version.
-1. Create a file `version.sbt` containing `ThisBuild / version := "0.19"` which sets the version to be back-released. This will override the automatic version derivation from the git history. Alternatively you can `set ThisBuild / version := ...` in the command line.
-1. Publish the release by running `SONATYPE_USERNAME=xxx SONATYPE_PASSWORD=xxx sbt clean ++2.12.20 publishSigned sonatypeBundleRelease` (with the appropriate credentials and scala version). You will need Sonatype OSS repository rights to publish under `com.typesafe` organisation.
-
-It would be nice to have a way to backpublish through GitHub Actions instead of using our laptops. If interested in pursuing this possibility, see https://github.com/lightbend/genjavadoc/issues/333 and https://github.com/sbt/sbt-ci-release/issues/102
+After checking (e.g. with `git diff`) that nothing user-detectable has changed since the last release, push a tag for with the Scala version appended, e.g. to back-publish version 0.19 for Scala 2.13.16, push the tag `v0.19@2.13.16`.
